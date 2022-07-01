@@ -5,7 +5,12 @@ volumes:
       type: none
       device: src/
       o: bind
-
+  nestjs:
+    name: nestjs
+    driver_opts:
+      type: none
+      device: src_nestjs/
+      o: bind
 
 services:
   react:
@@ -15,4 +20,11 @@ services:
       - "3000:3000"
     volumes:
       - react:/home/root/transcendence/src
+  nestjs:
+    image: nestjs
+    build: dockerfiles/nestjs
+    ports:
+      - "5000:5000"
+    volumes:
+      - nestjs:/home/root/transcendence_backend/src
 
