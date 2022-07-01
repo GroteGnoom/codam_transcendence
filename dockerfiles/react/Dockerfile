@@ -6,7 +6,7 @@ RUN apt-get update && apt-get -y install nodejs yarn
 
 WORKDIR /home/root
 
-RUN npx create-react-app transcendence
+RUN npx create-react-app transcendence --template typescript
 
 WORKDIR /home/root/transcendence
 
