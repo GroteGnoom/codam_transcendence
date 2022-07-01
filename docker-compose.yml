@@ -1,7 +1,18 @@
+volumes:
+  react:
+    name: react
+    driver_opts:
+      type: none
+      device: src/
+      o: bind
+
+
 services:
   react:
     image: react
     build: dockerfiles/react
     ports:
       - "3000:3000"
+    volumes:
+      - react:/home/root/transcendence/src
 
