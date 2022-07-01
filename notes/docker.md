@@ -9,9 +9,11 @@ docker run hello-world
 
 1. go to managed software center, remove docker (sometimes can be skipped)
 2. run these, also put them in your .zshrc or something similar
-> rm -rf ~/Library/Containers/com.docker.docker
-> mkdir -p ~/goinfre/docker
-> ln -s ~/goinfre/docker ~/Library/Containers/com.docker.docker
+```
+rm -rf ~/Library/Containers/com.docker.docker
+mkdir -p ~/goinfre/docker
+ln -s ~/goinfre/docker ~/Library/Containers/com.docker.docker
+```
 3. install docker with managed software center
 5. run docker (for example using spotlight)
 6. wait until Docker is started
