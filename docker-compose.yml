@@ -2,4 +2,6 @@ services:
   react:
     image: react
     build: dockerfiles/react
+    ports:
+      - "3000:3000"
 

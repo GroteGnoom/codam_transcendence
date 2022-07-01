@@ -10,6 +10,6 @@ RUN npx create-react-app transcendence
 
 WORKDIR /home/root/transcendence
 
-RUN npm start
+ENTRYPOINT npm start
 
 
