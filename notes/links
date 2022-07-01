@@ -3,3 +3,10 @@ https://reactjs.org/docs/create-a-new-react-app.html#create-react-app
 
 using typscript for react:
 https://create-react-app.dev/docs/adding-typescript/
+
+installing nest:
+https://docs.nestjs.com/
+
+tying everything together:
+https://auth0.com/blog/modern-full-stack-development-with-nestjs-react-typescript-and-mongodb-part-1/
+https://auth0.com/blog/modern-full-stack-development-with-nestjs-react-typescript-and-mongodb-part-2/
