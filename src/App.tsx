@@ -7,37 +7,26 @@ interface SquareProps {
 	onClick: () => void;
 }
 
-interface SquareState {
-	value: string;
-}
-
-class Square extends React.Component<SquareProps, SquareState> {
-	constructor(props: SquareProps) {
-		super(props);
-		this.state = {value: ''};
-	}
-	render() {
-		return (
-			//<button className="square" onClick={function() { console.log('click'); }} >
-			<button className="square" onClick={() => { this.props.onClick()} } >
-			{this.props.value} 
-			{/* TODO */}
-			</button>
-		);
-	}
+function Square(props: SquareProps) {
+	return (
+		<button className="square" onClick={() => { props.onClick()} } >
+		{props.value} 
+		</button>
+	);
 }
 
 interface BoardProps {}
 interface BoardState {
 	squares: string[];
-
+	xIsNext: boolean;
 }
 
 class Board extends React.Component<BoardProps, BoardState> {
 	constructor(props:BoardProps) {
 		super(props);
 		this.state = {
-			squares: Array(9).fill('')
+			squares: Array(9).fill(''),
+			xIsNext: true,
 		};
 	}
 	renderSquare(i: number) {
@@ -49,14 +38,16 @@ class Board extends React.Component<BoardProps, BoardState> {
 	}
 	handleClick(i: number) {
 		const squares = this.state.squares.slice();
-		squares[i] = 'X';
+		squares[i] = this.state.xIsNext ? 'X' : 'O';
 		this.setState({squares: squares});
+		this.setState({xIsNext: !this.state.xIsNext});
 	}
 	render() {
 		return (
 			<div className="App">
 			<header className="App-header">
 			<img src={logo} className="App-logo" alt="logo" />
+			next: {this.state.xIsNext ? 'X' : 'O'}
 			<div>
 			{this.renderSquare(0)}
 			{this.renderSquare(1)}
