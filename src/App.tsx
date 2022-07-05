@@ -1,4 +1,4 @@
-import React from 'react';
+import React , {CSSProperties } from 'react';
 import './App.css';
 
 interface SquareProps {
@@ -18,11 +18,31 @@ interface BoardState {
 interface GameProps {
 }
 
+interface BallProps {
+	x: number;
+	y: number;
+}
+
+class Ball extends React.Component<BallProps> {
+	constructor(props: BallProps) {
+		super(props);
+	}
+	render () {
+		const thestyle: CSSProperties = {position: 'absolute', left: this.props.x + "px", top: this.props.y + "px"};
+		return (
+			<button className="ball" style ={thestyle}>
+			</button>
+		);
+	}
+}
+
 interface GameState {
 	xIsNext: boolean;
 	history: string[][];
 	stepNumber: number;
 	keyPress: number;
+	ballx: number;
+	bally: number;
 }
 
 
@@ -43,7 +63,7 @@ class Board extends React.Component<BoardProps, BoardState> {
 			/>);
 	}
 	render() {
-		const thestyle = {marginLeft: this.props.margin + "px"};
+		const thestyle: CSSProperties = {position: 'absolute', left: this.props.margin + "px"};
 		return (
 			<div>
 			<div style = {thestyle}>
@@ -66,6 +86,8 @@ class Game extends React.Component<GameProps, GameState> {
 			stepNumber: 0,
 			xIsNext: true,
 			keyPress: 0,
+			ballx: 100,
+			bally: 300,
 		};
 	}
 	handleClick(i: number) {
@@ -103,6 +125,9 @@ class Game extends React.Component<GameProps, GameState> {
 			xIsNext: (step % 2) === 0
 		});
 	}
+	doThing() {
+		this.setState({bally: this.state.bally - 10});
+	}
 	componentDidMount() {
 		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
 	}
@@ -110,6 +135,7 @@ class Game extends React.Component<GameProps, GameState> {
 		document.removeEventListener("keydown", this.handleKeyPress, false);
 	}
 	render() {
+		setInterval(this.doThing.bind(this), 1000);
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current);
@@ -132,8 +158,12 @@ class Game extends React.Component<GameProps, GameState> {
 			status = "Next player: " + (this.state.xIsNext ? "X" : "O");
 		}
 		return (
-			<div className="game"> 
+			<div className="game">
 			<div className="game-board">
+			<Ball
+			x={this.state.ballx}
+			y={this.state.bally}
+			/>
 			<Board
 			squares={current}
 			onClick={i => this.handleClick(i)}
