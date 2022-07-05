@@ -29,4 +29,10 @@ services:
     volumes:
       - nestjs:/home/root/transcendence_backend/src
     restart: on-failure
+  postgres:
+    image: postgres
+    build: dockerfiles/postgres
+    ports:
+      - "3306:3306"
+    restart: on-failure
 
