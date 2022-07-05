@@ -24,9 +24,6 @@ interface BallProps {
 }
 
 class Ball extends React.Component<BallProps> {
-	constructor(props: BallProps) {
-		super(props);
-	}
 	render () {
 		const thestyle: CSSProperties = {position: 'absolute', left: this.props.x + "px", top: this.props.y + "px"};
 		return (
@@ -43,6 +40,8 @@ interface GameState {
 	keyPress: number;
 	ballx: number;
 	bally: number;
+	ballvx: number;
+	ballvy: number;
 }
 
 
@@ -88,6 +87,8 @@ class Game extends React.Component<GameProps, GameState> {
 			keyPress: 0,
 			ballx: 100,
 			bally: 300,
+			ballvx: 3,
+			ballvy: -30,
 		};
 	}
 	handleClick(i: number) {
@@ -126,11 +127,20 @@ class Game extends React.Component<GameProps, GameState> {
 		});
 	}
 	doThing() {
-		this.setState({bally: this.state.bally - 10});
+		if ((this.state.bally < 10 && this.state.bally > -10) && this.state.ballvy < 0) {
+			if (this.state.ballx - 200 < this.state.keyPress && this.state.ballx + 200 > this.state.keyPress) 
+			this.setState({ballvy: this.state.ballvy * -1});
+		}
+		if (this.state.bally > 300 && this.state.ballvy > 0) {
+			this.setState({ballvy: this.state.ballvy * -1});
+		}
+		this.setState({bally: this.state.bally + this.state.ballvy,
+					  ballx: this.state.ballx + this.state.ballvx
+		});
 	}
 	componentDidMount() {
 		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
-		setInterval(this.doThing.bind(this), 1000);
+		setInterval(this.doThing.bind(this), 100);
 	}
 	componentWillUnmount(){
 		document.removeEventListener("keydown", this.handleKeyPress, false);
