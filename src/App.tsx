@@ -85,8 +85,17 @@ class Game extends React.Component<GameProps, GameState> {
 		});
 	}
 
-	handleKeyPress() {
-		this.setState({keyPress: this.state.keyPress + 10});
+	handleKeyPress(event: KeyboardEvent) {
+		if (event.key === "k") {
+			if (this.state.keyPress < 500) {
+				this.setState({keyPress: this.state.keyPress + 10});
+			}
+		}
+		if (event.key === "j") {
+			if (this.state.keyPress > 0) {
+				this.setState({keyPress: this.state.keyPress - 10});
+			}
+		}
 	}
 	jumpTo(step: number) {
 		this.setState({
@@ -96,6 +105,9 @@ class Game extends React.Component<GameProps, GameState> {
 	}
 	componentDidMount() {
 		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
+	}
+	componentWillUnmount(){
+		document.removeEventListener("keydown", this.handleKeyPress, false);
 	}
 	render() {
 		const history = this.state.history;
