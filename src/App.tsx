@@ -15,11 +15,14 @@ interface BoardProps {
 interface BoardState {
 }
 
-interface GameProps {}
+interface GameProps {
+}
+
 interface GameState {
 	xIsNext: boolean;
 	history: string[][];
 	stepNumber: number;
+	keyPress: number;
 }
 
 
@@ -48,16 +51,6 @@ class Board extends React.Component<BoardProps, BoardState> {
 			{this.renderSquare(1)}
 			{this.renderSquare(2)}
 			</div>
-			<div>
-			{this.renderSquare(3)}
-			{this.renderSquare(4)}
-			{this.renderSquare(5)}
-			</div>
-			<div>
-			{this.renderSquare(6)}
-			{this.renderSquare(7)}
-			{this.renderSquare(8)}
-			</div>
 			</div>
 		);
 	}
@@ -71,7 +64,8 @@ class Game extends React.Component<GameProps, GameState> {
 					Array(9).fill('')
 			],
 			stepNumber: 0,
-			xIsNext: true
+			xIsNext: true,
+			keyPress: 0,
 		};
 	}
 	handleClick(i: number) {
@@ -91,6 +85,9 @@ class Game extends React.Component<GameProps, GameState> {
 		});
 	}
 
+	handleKeyPress() {
+		this.setState({keyPress: this.state.keyPress + 10});
+	}
 	jumpTo(step: number) {
 		this.setState({
 			stepNumber: step,
@@ -121,12 +118,13 @@ class Game extends React.Component<GameProps, GameState> {
 		}
 
 		return (
-			<div className="game">
+			<div className="game"> 
+			<input type="text" onKeyPress={this.handleKeyPress.bind(this)} />
 			<div className="game-board">
 			<Board
 			squares={current}
 			onClick={i => this.handleClick(i)}
-			margin={this.state.stepNumber}
+			margin={this.state.keyPress}
 			/>
 			</div>
 			<div className="game-info">
