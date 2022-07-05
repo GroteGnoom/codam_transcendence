@@ -9,6 +9,7 @@ interface SquareProps {
 interface BoardProps {
 	squares: string[];
 	onClick: (i: number) => void;
+	margin: number;
 }
 
 interface BoardState {
@@ -39,9 +40,10 @@ class Board extends React.Component<BoardProps, BoardState> {
 			/>);
 	}
 	render() {
+		const thestyle = {marginLeft: this.props.margin + "px"};
 		return (
 			<div>
-			<div>
+			<div style = {thestyle}>
 			{this.renderSquare(0)}
 			{this.renderSquare(1)}
 			{this.renderSquare(2)}
@@ -124,6 +126,7 @@ class Game extends React.Component<GameProps, GameState> {
 			<Board
 			squares={current}
 			onClick={i => this.handleClick(i)}
+			margin={this.state.stepNumber}
 			/>
 			</div>
 			<div className="game-info">
