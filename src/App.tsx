@@ -94,6 +94,9 @@ class Game extends React.Component<GameProps, GameState> {
 			xIsNext: (step % 2) === 0
 		});
 	}
+	componentDidMount() {
+		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
+	}
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
@@ -116,10 +119,8 @@ class Game extends React.Component<GameProps, GameState> {
 		} else {
 			status = "Next player: " + (this.state.xIsNext ? "X" : "O");
 		}
-
 		return (
 			<div className="game"> 
-			<input type="text" onKeyPress={this.handleKeyPress.bind(this)} />
 			<div className="game-board">
 			<Board
 			squares={current}
