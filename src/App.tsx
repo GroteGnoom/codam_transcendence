@@ -130,12 +130,12 @@ class Game extends React.Component<GameProps, GameState> {
 	}
 	componentDidMount() {
 		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
+		setInterval(this.doThing.bind(this), 1000);
 	}
 	componentWillUnmount(){
 		document.removeEventListener("keydown", this.handleKeyPress, false);
 	}
 	render() {
-		setInterval(this.doThing.bind(this), 1000);
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current);
