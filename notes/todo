@@ -1,1 +1,6 @@
-https://www.bigbinary.com/blog/configure-postgresql-to-allow-remote-connection
+we currently have this error:
+nestjs_1    | [Nest] 33  - 07/05/2022, 2:45:52 PM   ERROR [TypeOrmModule] Unable to connect to the database. Retrying (1)...
+nestjs_1    | error: no pg_hba.conf entry for host "172.19.0.2", user "postgres", database "work_db", SSL off
+
+maybe this is the fix;
+https://stackoverflow.com/questions/25000183/node-js-postgresql-error-no-pg-hba-conf-entry-for-host
