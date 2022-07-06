@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+.paddle {
+	background: #ff33cc;
+	border: 1px solid #999;
+	float: left;
+	font-size: 24px;
+	font-weight: bold;
+	line-height: 34px;
+	height: 34px;
+	margin-right: -1px;
+	margin-top: -1px;
+	padding: 0;
+	text-align: center;
+	width: 150px;
+}
+
+.ball {
+	background: #0033cc;
+	border: 5px solid #999;
+	float: left;
+	font-size: 24px;
+	font-weight: bold;
+	line-height: 34px;
+	height: 34px;
+	margin-right: -1px;
+	padding: 0;
+	text-align: center;
+	width: 50px;
+}
