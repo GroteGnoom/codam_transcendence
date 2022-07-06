@@ -11,6 +11,7 @@ COPY script.sql /tmp
 COPY start.sh /tmp
 
 COPY postgresql.conf /etc/postgresql/11/main/
+COPY pg_hba.conf /etc/postgresql/11/main/
 
 ENTRYPOINT /tmp/start.sh
 #ENTRYPOINT sleep infinity
