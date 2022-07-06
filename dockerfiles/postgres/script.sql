@@ -1,6 +1,8 @@
 
-CREATE DATABASE transcendence;
+CREATE DATABASE transcendence_db;
 
-\c transcendence;
+\c transcendence_db;
 
-CREATE TABLE IF NOT EXISTS transcendence (n int4 PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS transcendence_table (n int4 PRIMARY KEY);
+
+ALTER ROLE postgres WITH PASSWORD 'transcendence123';

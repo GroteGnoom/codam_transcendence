@@ -19,6 +19,14 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 				database: configService.get('DB_NAME'),
 				entities: [],
 				synchronize: true,
+				ssl: true,
+				options: {"trustServerCertificate": true},
+				extra: {
+					ssl: {
+						rejectUnauthorized: false,
+					},
+				},
+				//options: {encrypt: false}
 			}),
 			inject: [ConfigService],
 		}),
