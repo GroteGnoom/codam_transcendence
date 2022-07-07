@@ -9,6 +9,7 @@ WORKDIR /home/root
 RUN npx create-react-app transcendence --template typescript
 
 WORKDIR /home/root/transcendence
+RUN npm install react-router-dom@6
 
 ENTRYPOINT npm start
 
