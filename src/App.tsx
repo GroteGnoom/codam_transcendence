@@ -40,8 +40,7 @@ class Ball extends React.Component<BallProps> {
 	render () {
 		const thestyle: CSSProperties = {position: 'absolute', left: this.props.x + "px", top: this.props.y + "px", width: this.props.width};
 		return (
-			<button className="ball" style ={thestyle}>
-			</button>
+			<button className="ball" style ={thestyle}/>
 		);
 	}
 }
