@@ -7,9 +7,9 @@ RUN apt-get update && apt-get -y install nodejs yarn
 WORKDIR /home/root
 
 RUN npx create-react-app transcendence --template typescript
-RUN npm install react-router-dom@6
 
 WORKDIR /home/root/transcendence
+RUN npm install react-router-dom@6
 
 ENTRYPOINT npm start
 

@@ -9,13 +9,13 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <BrowserRouter>
-  <Routes>
   <React.StrictMode>
-  <Route path="/React" element={<App />}/>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />}/>
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
-  </Routes>
-  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
