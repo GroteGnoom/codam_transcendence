@@ -1,4 +1,7 @@
 import React , {CSSProperties } from 'react';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Register from "./Register";
+
 import './App.css';
 
 interface PinkPongState {
@@ -114,6 +117,8 @@ function App() {
 		<div className="App">
 		<header className="App-header">
 		<PinkPong />
+		<a href="/register"><button>Register</button></a>
+		<a href="/login"><button>Login</button></a>
 		</header>
 		</div>
 	);
