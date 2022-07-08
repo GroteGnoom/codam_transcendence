@@ -1,12 +1,12 @@
 import React from 'react';
 
-const Register = () =>
+const Login = () =>
 {
 	return (
 		<main>
-			This page is for login to play Pinkpong
+			This page is for login
 		</main>
 	)
 }
 
-export default Register
+export default Login
