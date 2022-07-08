@@ -19,9 +19,11 @@ RUN nest generate module users
 RUN nest g controller users/controllers/users
 RUN nest g service users/services/users
 
+RUN npm install class-validator
+
 COPY env /home/root/transcendence_backend/.env
-ENTRYPOINT npm run start
 #ENTRYPOINT sleep infinity
+ENTRYPOINT npm run start
 
 
 #RUN git clone https://github.com/nestjs/typescript-starter.git transcendence_backend
