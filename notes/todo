@@ -1,1 +1,4 @@
 once nestjs/config has updated its dependencies, maybe we can upgrade to nestjs 9.0.0
+
+check where entries are saved
+127.0.0.1:5000/users does show them, so they must be saved somewhere?
