@@ -21,6 +21,8 @@ services:
     volumes:
       - react:/home/root/transcendence/src
     restart: on-failure
+    networks:
+      - transcendence
   nestjs:
     image: nestjs
     build: dockerfiles/nestjs
