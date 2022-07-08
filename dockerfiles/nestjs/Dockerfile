@@ -5,7 +5,8 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get -y install nodejs yarn git
 
 WORKDIR /home/root
-RUN npm i -g @nestjs/cli
+
+RUN npm i -g @nestjs/cli@"^8.0.0"
 
 RUN nest new transcendence_backend -p npmi
 
