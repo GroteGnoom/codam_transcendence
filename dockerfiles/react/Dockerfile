@@ -11,6 +11,9 @@ RUN npx create-react-app transcendence --template typescript
 WORKDIR /home/root/transcendence
 RUN npm install react-router-dom@6
 
+RUN sed -i '2 i "  proxy": "http://nestjs:5000",' package.json
+
+#ENTRYPOINT sleep infinity
 ENTRYPOINT npm start
 
 
