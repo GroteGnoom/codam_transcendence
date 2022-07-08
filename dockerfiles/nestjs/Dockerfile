@@ -5,7 +5,8 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get -y install nodejs yarn git
 
 WORKDIR /home/root
-RUN npm i -g @nestjs/cli
+
+RUN npm i -g @nestjs/cli@"^8.0.0"
 
 RUN nest new transcendence_backend -p npmi
 
@@ -18,9 +19,11 @@ RUN nest generate module users
 RUN nest g controller users/controllers/users
 RUN nest g service users/services/users
 
+RUN npm install class-validator
+
 COPY env /home/root/transcendence_backend/.env
-ENTRYPOINT npm run start
 #ENTRYPOINT sleep infinity
+ENTRYPOINT npm run start
 
 
 #RUN git clone https://github.com/nestjs/typescript-starter.git transcendence_backend
