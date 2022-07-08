@@ -1,0 +1,68 @@
+.PinkPong {
+    text-align: center;
+  }
+  
+  .PinkPong-logo {
+    height: 40vmin;
+    pointer-events: none;
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    .PinkPong-logo {
+      animation: PinkPong-logo-spin infinite 20s linear;
+    }
+  }
+  
+  .PinkPong-header {
+    background-color: #0c214c;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  }
+  
+  .PinkPong-link {
+    color: #61dafb;
+  }
+  
+  @keyframes PinkPong-logo-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .paddle {
+      background: #ae2362;
+      border: 1px solid #999;
+      float: left;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 34px;
+      height: 34px;
+      margin-right: -1px;
+      margin-top: -1px;
+      padding: 0;
+      text-align: center;
+      width: 150px;
+  }
+  
+  .ball {
+      background: #0033cc;
+      border: 5px solid #999;
+      float: left;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 34px;
+      height: 34px;
+      margin-right: -1px;
+      padding: 0;
+      text-align: center;
+      width: 50px;
+  }
+  

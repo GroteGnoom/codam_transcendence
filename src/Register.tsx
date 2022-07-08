@@ -4,7 +4,7 @@ const Register = () =>
 {
 	return (
 		<main>
-			This page is for PinkPong registration
+			This page is for registration to PinkPong
 		</main>
 	)
 }

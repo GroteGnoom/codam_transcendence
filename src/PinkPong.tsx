@@ -1,4 +1,5 @@
 import React , {CSSProperties } from 'react';
+import './PinkPong.css';
 
 interface PinkPongState {
 	paddleX: number;
@@ -91,6 +92,7 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 	}
 	render() {
 		return (
+            <header className="PinkPong-header">
 			<div className="game">
 			<div className="game-board">
 			<Ball
@@ -104,6 +106,7 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 			/>
 			</div>
 			</div>
+            </header>
 		);
 	}
 }
