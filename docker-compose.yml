@@ -14,6 +14,7 @@ volumes:
 
 services:
   react:
+    container_name: react
     image: react
     build: dockerfiles/react
     ports:
@@ -24,6 +25,7 @@ services:
     networks:
       - transcendence
   nestjs:
+    container_name: nestjs
     image: nestjs
     build: dockerfiles/nestjs
     ports:
@@ -34,6 +36,7 @@ services:
     networks:
       - transcendence
   postgres:
+    container_name: postgres
     image: postgres
     build: dockerfiles/postgres
     ports:
