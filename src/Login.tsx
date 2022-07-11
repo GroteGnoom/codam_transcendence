@@ -53,7 +53,11 @@ const generateState = () => {
 	let arr = new Uint8Array(40);
 	window.crypto.getRandomValues(arr);
 	arr = arr.map((value: number, index: number, arr: Uint8Array) => validChars.codePointAt(value % validChars.length) ?? 0);
-	const randomState = String.fromCharCode.apply(null, arr);
+	let arr2: number[] = [];
+	for (let i = 0; i < 40; i++ ) {
+		arr2.push(arr[i]);
+	}
+	const randomState = String.fromCharCode.apply(null, arr2);
 	return randomState;
 };
 
