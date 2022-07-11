@@ -48,6 +48,7 @@ interface OAuthProps {
 const OAUTH_STATE_KEY = 'react-use-oauth2-state-key';
 const POPUP_HEIGHT = 700;
 const POPUP_WIDTH = 600;
+const OAUTH_RESPONSE = 'react-use-oauth2-response';
 
 // https://medium.com/@dazcyril/generating-cryptographic-random-state-in-javascript-in-the-browser-c538b3daae50
 const generateState = () => {
@@ -87,45 +88,151 @@ const enhanceAuthorizeUrl = (
 	authorizeUrl: string,
 	clientId: number,
 	redirectUri: string,
-	scope: string, //these two are probably not numbers
+	scope: string,
 	state: string
 ) => {
 	return `${authorizeUrl}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
 };
 
-/*
-const closePopup = (popupRef: number) => {
+//const closePopup = (popupRef:  typeof React.useRef<Window>) => {
+const closePopup = (popupRef: any) => {
 	popupRef.current?.close();
 };
-*/
+
+const cleanup = (
+	intervalRef: any,
+	popupRef: any,
+	handleMessageListener: any
+) => {
+	clearInterval(intervalRef.current);
+	closePopup(popupRef);
+	removeState();
+	window.removeEventListener('message', handleMessageListener);
+};
+
+const objectToQuery = (object: any) => {
+	return new URLSearchParams(object).toString();
+};
+
+const formatExchangeCodeForTokenServerURL = (
+	serverUrl: string,
+	clientId: number,
+	code: any,
+	redirectUri: string
+) => {
+	return `${serverUrl}?${objectToQuery({
+		client_id: clientId,
+		code,
+		redirect_uri: redirectUri,
+	})}`;
+};
+
 
 const useOAuth2 = (props: OAuthProps) => {
 	const {
 		authorizeUrl,
 		clientId,
 		redirectUri,
-      scope = '',
-    } = props;
+		scope = '',
+	} = props;
 
-	  var popupRef = React.useRef<Window | null>(null);
-  const [{ loading, error }, setUI] = useState({ loading: false, error: null });
+		var popupRef = React.useRef<Window | null>(null);
+		const [{ loading, error }, setUI] = useState({ loading: false, error: null });
 
-  const getAuth = useCallback(
-	  (newValue: string): void => { setUI({
-		  loading: true,
-		  error: null,
-	  });
-	  // 2. Generate and save state
-	  const state = generateState();
-	  saveState(state);
+		const getAuth = useCallback(
+			(newValue: string): void => { setUI({
+				loading: true,
+				error: null,
+			});
+			// 2. Generate and save state
+			const state = generateState();
+			saveState(state);
 
-	  // 3. Open popup
-	  popupRef.current = openPopup(
-		  enhanceAuthorizeUrl(authorizeUrl, clientId, redirectUri, scope, state)
-	  );
-	  },
-	  [setUI]
-  )
+			// 3. Open popup
+			popupRef.current = openPopup(
+				enhanceAuthorizeUrl(authorizeUrl, clientId, redirectUri, scope, state)
+			);
+
+			// 4. Register message listener
+			async function handleMessageListener(message: any) {
+				try {
+					const type = message && message.data && message.data.type;
+					if (type === OAUTH_RESPONSE) {
+						const errorMaybe = message && message.data && message.data.error;
+						if (errorMaybe) {
+							setUI({
+								loading: false,
+								error: errorMaybe || 'Unknown Error',
+							});
+						} else {
+							const code = message && message.data && message.data.payload && message.data.payload.code;
+							const response = await fetch(
+								formatExchangeCodeForTokenServerURL(
+									'https://your-server.com/token',
+									clientId,
+									code,
+									redirectUri
+								)
+							);
+							if (!response.ok) {
+								setUI({
+									loading: false,
+									//error: "Failed to exchange code for token", //TODO
+									error: null,
+								});
+							} else {
+								var payload = await response.json();
+								setUI({
+									loading: false,
+									error: null,
+								});
+								//React.setData(payload); //TODO
+							}
+						}
+					}
+				} catch (genericError: any) {
+					console.error(genericError);
+					setUI({
+						loading: false,
+						error: genericError.toString(),
+					});
+				} finally {
+					// Clear stuff ...
+					cleanup(intervalRef, popupRef, handleMessageListener); 
+				}
+			}
+			window.addEventListener('message', handleMessageListener);
+
+			// 4. Begin interval to check if popup was closed forcefully by the user
+			var intervalRef: any;
+			intervalRef.current = setInterval(() => {
+				const popupClosed = !popupRef.current || !popupRef.current.window || popupRef.current.window.closed;
+				if (popupClosed) {
+					// Popup was closed before completing auth...
+					setUI((ui) => ({
+						...ui,
+						loading: false,
+					}));
+					console.warn('Warning: Popup was closed before completing authentication.');
+					clearInterval(intervalRef.current);
+					removeState();
+					window.removeEventListener('message', handleMessageListener);
+				}
+			}, 250);
+
+			// Remove listener(s) on unmount
+			/*
+			   return () => {
+			   window.removeEventListener('message', handleMessageListener);
+			   if (intervalRef.current) clearInterval(intervalRef.current);
+			   };
+			   */ //TODO
+
+
+
+			},
+			[setUI]
+		)
 }
 
 class DoOAuth extends React.Component {
@@ -146,11 +253,11 @@ const Login = () =>
 	return (
 		<main>
 		This page is for login
-		This is just for testing and creates a user:
-			<DoPost />
-		This is for actual authentication:
-			<DoOAuth />
-		</main>
+			This is just for testing and creates a user:
+					<DoPost />
+				This is for actual authentication:
+						<DoOAuth />
+					</main>
 	)
 }
 
