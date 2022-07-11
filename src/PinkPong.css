@@ -21,7 +21,7 @@
     align-items: center;
     justify-content: center;
     font-size: calc(10px + 2vmin);
-    color: white;
+    color: rgb(115, 33, 33);
   }
   
   .PinkPong-link {
@@ -37,16 +37,45 @@
     }
   }
   
+  .field {
+    background: rgb(27, 26, 26);
+    border: #d12e88;
+    float: center;
+    font-size: 25px;
+    line-height: 34px;
+    height: 800px;
+    margin-right: 100px;
+    margin-top: 100px;
+    padding: 100;
+    text-align: center;
+    width: 150px;
+  }
+
   .paddle {
       background: #ae2362;
       border: 1px solid #999;
-      float: left;
+      float: center;
       font-size: 24px;
       font-weight: bold;
       line-height: 34px;
       height: 34px;
-      margin-right: -1px;
-      margin-top: -1px;
+      margin-right: 0px;
+      margin-top: 100px;
+      padding: 0;
+      text-align: center;
+      width: 150px;
+  }
+
+  .opponent {
+      background: #377535;
+      border: 1px solid #999;
+      float: center;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 34px;
+      height: 34px;
+      margin-right: 0px;
+      margin-top: 866px;
       padding: 0;
       text-align: center;
       width: 150px;
@@ -59,7 +88,7 @@
       font-size: 24px;
       font-weight: bold;
       line-height: 34px;
-      height: 34px;
+      height: 50px;
       margin-right: -1px;
       padding: 0;
       text-align: center;
