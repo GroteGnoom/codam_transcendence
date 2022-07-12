@@ -1,16 +1,16 @@
-volumes:
-  react:
-    name: react
-    driver_opts:
-      type: none
-      device: src/
-      o: bind
-  nestjs:
-    name: nestjs
-    driver_opts:
-      type: none
-      device: src_nestjs/
-      o: bind
+# volumes:
+#   react:
+#     name: react
+#     driver_opts:
+#       type: none
+#       device: src/
+#       o: bind
+#   nestjs:
+#     name: nestjs
+#     driver_opts:
+#       type: none
+#       device: src_nestjs/
+#       o: bind
 
 services:
   react:
@@ -20,7 +20,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - react:/home/root/transcendence/src
+      - ./src:/home/root/transcendence/src
     restart: on-failure
     networks:
       - transcendence
@@ -31,7 +31,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - nestjs:/home/root/transcendence_backend/src
+      - ./src_nestjs:/home/root/transcendence_backend/src
     restart: on-failure
     networks:
       - transcendence
