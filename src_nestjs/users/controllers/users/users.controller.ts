@@ -20,12 +20,14 @@ export class UsersController {
 		return this.userService.getUsers();
 	}
 
+	//https://docs.nestjs.com/controllers#route-parameters
 	@Get('id/:id')
 	findUsersById(@Param('id', ParseIntPipe) id: number) {
 		return this.userService.findUsersById(id);
 	}
 
 	@Post('create')
+	//https://docs.nestjs.com/pipes
 	@UsePipes(ValidationPipe)
 	createUsers(@Body() createUserDto: CreateUserDto) {
 		return this.userService.createUser(createUserDto);

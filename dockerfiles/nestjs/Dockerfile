@@ -19,11 +19,18 @@ RUN nest generate module users
 RUN nest g controller users/controllers/users
 RUN nest g service users/services/users
 
+RUN nest g module auth
+RUN nest g service auth
+
 RUN npm install class-validator
 
+RUN npm i @nestjs/passport passport passport-oauth2
+RUN npm i -D @types/passport-oauth2
+
+
 COPY env /home/root/transcendence_backend/.env
-#ENTRYPOINT sleep infinity
-ENTRYPOINT npm run start
+ENTRYPOINT sleep infinity
+#ENTRYPOINT npm run start
 
 
 #RUN git clone https://github.com/nestjs/typescript-starter.git transcendence_backend
