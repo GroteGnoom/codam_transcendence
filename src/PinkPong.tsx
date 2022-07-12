@@ -134,29 +134,33 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 		}
 	}
 	update() {
-		/*	bounce top paddle */
+		/*	handle top side */
 		if (this.state.ballVY < 0 && this.state.ballY <= (100 + 34))
 		{
 			if (this.state.ballY < 100 - 50)
 			{
-				this.setState({scorePlayerOne: this.state.scorePlayerOne + 1});
+				/*	score a point */
+				this.setState({scorePlayerTwo: this.state.scorePlayerTwo + 1});
 				return this.reset();
 			}
 			else if (this.state.ballX + this.state.ballWidth > this.state.paddleX && this.state.ballX <= this.state.paddleX + this.state.paddleWidth)
 			{
+				/*	bounce top paddle */
 				this.setState({ballVY: this.state.ballVY * -1});
 			}
 		}
-		/*	bounce bottom paddle */
+		/*	handle bottom side */
 		else if (this.state.ballVY > 0 && this.state.ballY >= (900 - 34 - 50))
 		{
 			if (this.state.ballY - 0 > 900)
 			{
-				this.setState({scorePlayerTwo: this.state.scorePlayerTwo + 1});
+				/*	score a point */
+				this.setState({scorePlayerOne: this.state.scorePlayerOne + 1});
 				return this.reset();
 			}
 			else if (this.state.ballX + this.state.ballWidth > this.state.Opponent && this.state.ballX <= this.state.Opponent + this.state.paddleWidth)
 			{
+				/*	bounce bottom paddle */
 				this.setState({ballVY: this.state.ballVY * -1});
 			}
 		}
