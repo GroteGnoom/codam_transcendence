@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 const Home = () =>
 {
@@ -6,9 +7,9 @@ const Home = () =>
 		<main>
             <div className="App">
             <header className="App-header">
-            <a href="/register"><button>Register</button></a>
-            <a href="/login"><button>Login</button></a>
-            <a href="/pinkpong"><button>PinkPong</button></a>
+            <Link to= {{pathname:"/register"}}><button>Register</button></Link>
+            <Link to= {{pathname:"/login"}}><button>Login</button></Link>
+            <Link to= {{pathname:"/pinkpong"}}><button>PinkPong</button></Link>
             </header>
             </div>
 		</main>
