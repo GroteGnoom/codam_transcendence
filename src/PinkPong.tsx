@@ -13,15 +13,15 @@ interface PinkPongState {
 	paddleWidth: number;
 	paddleHeight: number;
 	ballWidth: number;
+	scorePlayerOne: number;
+	scorePlayerTwo: number;
 }
 
 interface FieldProps {
 	margin: number;
 	width: number;
 }
-interface FieldState{
-
-}
+interface FieldState{}
 
 interface PinkPongProps {}
 
@@ -43,15 +43,15 @@ class Field extends React.Component<FieldProps, FieldState> {
 		const theStyle: CSSProperties = {position: 'absolute', left: this.props.margin + "px", top: "0px", width: this.props.width + "px"};
 		return (
 			<button className="field" style= {theStyle}/>
-		);
+			);
+		}
 	}
-}
 class Paddle extends React.Component<PaddleProps, PaddleState> {
 	render() {
 		const theStyle: CSSProperties = {position: 'absolute', left: this.props.margin + "px", top: "0px", width: this.props.width + "px"};
 		return (
 			<button className="paddle" style= {theStyle}/>
-		);
+			);
 	}
 }
 class Opponent extends React.Component<PaddleProps, PaddleState> {
@@ -59,16 +59,35 @@ class Opponent extends React.Component<PaddleProps, PaddleState> {
 		const theStyle: CSSProperties = {position: 'absolute', left: this.props.margin + "px", top: "0px", width: this.props.width + "px"};
 		return (
 			<button className="opponent" style= {theStyle}/>
-		);
+			);
 	}
 }
 
 class Ball extends React.Component<BallProps> {
 	render () {
-		const thestyle: CSSProperties = {position: 'absolute', left: this.props.x + "px", top: this.props.y + "px", width: this.props.width};
+		const theStyle: CSSProperties = {position: 'absolute', left: this.props.x + "px", top: this.props.y + "px", width: this.props.width};
 		return (
-			<button className="ball" style ={thestyle}>
+			<button className="ball" style ={theStyle}>
 			</button>
+		);
+	}
+}
+
+interface ScoreProps {
+	playerOneName: string;
+	playerTwoName: string;
+	playerOneScore: number;
+	playerTwoScore: number;
+}
+class ScoreBoard extends React.Component<ScoreProps> {
+	render () {
+		return (
+			<div className={"Score"}>
+				<p className={"playerName"}>{this.props.playerOneName}</p>
+				<p>{this.props.playerOneScore.toString()}</p>
+				<p className={"playerName"}>{this.props.playerTwoName}</p>
+				<p>{this.props.playerTwoScore.toString()}</p>
+			</div>
 		);
 	}
 }
@@ -82,12 +101,14 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 			Opponent: 450,
 			ballX: 475,
 			ballY: 475,
-			ballVX: 1,
-			ballVY: 1,
+			ballVX: 0,
+			ballVY: 3,
 			fieldWidth: 800,
 			paddleWidth: 100,
 			paddleHeight: 50,
 			ballWidth: 50,
+			scorePlayerOne: 0,
+			scorePlayerTwo: 0,
 		};
 	}
 	handleKeyPress(event: KeyboardEvent) {
@@ -114,17 +135,27 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 	}
 	update() {
 		/*	bounce top paddle */
-		if (this.state.ballVY < 0 && this.state.ballY <= (100 + 34) && this.state.ballY > 100)
+		if (this.state.ballVY < 0 && this.state.ballY <= (100 + 34))
 		{
-			if (this.state.ballX + this.state.ballWidth > this.state.paddleX && this.state.ballX <= this.state.paddleX + this.state.paddleWidth)
+			if (this.state.ballY < 100 - 50)
+			{
+				this.setState({scorePlayerOne: this.state.scorePlayerOne + 1});
+				return this.reset();
+			}
+			else if (this.state.ballX + this.state.ballWidth > this.state.paddleX && this.state.ballX <= this.state.paddleX + this.state.paddleWidth)
 			{
 				this.setState({ballVY: this.state.ballVY * -1});
 			}
 		}
 		/*	bounce bottom paddle */
-		else if (this.state.ballVY > 0 && this.state.ballY > (900 - 34 - 50) && this.state.ballY + 50 < 900)
+		else if (this.state.ballVY > 0 && this.state.ballY >= (900 - 34 - 50))
 		{
-			if (this.state.ballX + this.state.ballWidth > this.state.Opponent && this.state.ballX <= this.state.Opponent + this.state.paddleWidth)
+			if (this.state.ballY - 0 > 900)
+			{
+				this.setState({scorePlayerTwo: this.state.scorePlayerTwo + 1});
+				return this.reset();
+			}
+			else if (this.state.ballX + this.state.ballWidth > this.state.Opponent && this.state.ballX <= this.state.Opponent + this.state.paddleWidth)
 			{
 				this.setState({ballVY: this.state.ballVY * -1});
 			}
@@ -144,10 +175,23 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 		this.setState({ballY: this.state.ballY + this.state.ballVY,
 			ballX: this.state.ballX + this.state.ballVX});
 	}
+	reset () {
+		this.setState(
+			{
+
+				ballY: 475,
+				ballX: 475,
+				ballVX: 0,
+				ballVY: 3,
+				paddleX: 450,
+				Opponent: 450,
+			}
+		)
+	}
 
 	componentDidMount() {
 		document.addEventListener("keydown", this.handleKeyPress.bind(this), false);
-		setInterval(this.update.bind(this), 1);
+		setInterval(this.update.bind(this), 10);
 	}
 	componentWillUnmount(){
 		document.removeEventListener("keydown", this.handleKeyPress, false);
@@ -173,6 +217,12 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 			x={this.state.ballX}
 			y={this.state.ballY}
 			width={this.state.ballWidth}
+			/>
+			<ScoreBoard
+			playerOneName ={"Player1_TOP"}
+			playerTwoName ={"Player2_BOTTOM"}
+			playerOneScore ={this.state.scorePlayerOne}
+			playerTwoScore ={this.state.scorePlayerTwo}
 			/>
 			</div>
 			</div>
