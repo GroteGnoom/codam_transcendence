@@ -37,6 +37,19 @@
     }
   }
   
+  .scoreboard {
+    background: rgb(126, 78, 78);
+    border: #682248;
+    float: left;
+    font-size: 25px;
+    line-height: 34px;
+    height: 200px;
+    margin-right: 100px;
+    margin-top: 1000px;
+    padding: 100;
+    text-align: left;
+    width: 150px;
+  }
   .field {
     background: rgb(27, 26, 26);
     border: #d12e88;
