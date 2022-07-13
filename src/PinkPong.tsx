@@ -1,6 +1,12 @@
 import React , {CSSProperties } from 'react';
 import './PinkPong.css';
 
+const FieldHeight: number = 800;
+const FieldWidth: number = 600;
+const PaddleWidth: number = 100;
+const PaddleHeight: number = 25;
+const PaddleMovement: number = 10;
+
 interface PinkPongState {
 	field: number;
 	paddleX: number;
@@ -102,7 +108,7 @@ class PinkPong extends React.Component<PinkPongProps, PinkPongState> {
 			ballX: 475,
 			ballY: 475,
 			ballVX: 0,
-			ballVY: 3,
+			ballVY: 0,
 			fieldWidth: 800,
 			paddleWidth: 100,
 			paddleHeight: 50,
