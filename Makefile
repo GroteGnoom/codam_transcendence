@@ -3,6 +3,9 @@ PROJECT = transcendence
 all:
 	docker-compose up --build -d
 
+fg:
+	docker-compose up --build
+
 clean:
 	docker-compose down
 
