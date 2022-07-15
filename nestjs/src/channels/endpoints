@@ -1,32 +1,32 @@
 Chat endpoints:
 
-Get /chats 						    retrieve chats **
+Get /chats 						    	retrieve chats **
 
-POST /chats 						creates a chat **
+POST /chats 							creates a chat **
 
-GET /chat/{id} 					    retrieves a chat **
+GET /chat/{id} 					    	retrieves a chat **
 
-PUT /chat/{id} 				    	modifies a chat
+PUT /chat/{id} 				    		modifies a chat
 
-DELETE /chat/{id} 					deletes a chat *
+DELETE /chat/{id} 						deletes a chat *
 
-POST /chats/{id}/admins/{tid} 		set participant as admin
+POST /chats/{id}/admins/{tid} 			set participant as admin
 
-DELETE /chats/{id}/admins/{tid}		demote admin
+DELETE /chats/{id}/admins/{tid}			demote admin
 
-POST /chats/{id}/messages 		    broadcast a message
+POST /chats/{id}/messages 		    	broadcast a message
 
-GET /chats/{id}/messages 			retrieves the last 10 messages
+GET /chats/{id}/messages 				retrieves the last messages
 
-POST /chats/{id}/mutes/{tid}			    mutes a user
+POST /chats/{id}/mutes/{tid}			mutes a user
 
 POST chats/{id}/bans/{tid}				bans a user
 
 POST chats/{id}/participants/{tid}		joins a chat room
 
-DELETE chats/{id}/participants/{tid}		leave a chatroom
+DELETE chats/{id}/participants/{tid}	leave a chatroom
 
 DELETE chats/{id}/participants/{tid}	kick a particpant from a chatroom
 
-POST chats/{id}/invites				add participant(s) to the chatroom
+POST chats/{id}/invites					add participant(s) to the chatroom
 

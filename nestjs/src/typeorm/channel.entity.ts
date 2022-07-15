@@ -12,7 +12,8 @@ export class Channel {
     @Column("int", { array: true })
     admins: number[];
 
-    //members
+    @Column("int", { array: true })
+    members: number[];
 
     // @OneToMany(() => Message, (message: Message) => message.channel)
     // messages: Message[]

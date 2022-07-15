@@ -55,4 +55,4 @@ export class ChannelsController {
 	getMessages(@Param('name') channel: string) {
 		return this.channelsService.getMessages(channel);
 	}
-}
+}+
