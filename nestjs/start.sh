@@ -1,3 +1,3 @@
 #!/bin/bash
 npm install
-npm run start:dev   #reloads after making changes in ts files
+npm run start   #reloads after making changes in ts files

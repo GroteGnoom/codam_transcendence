@@ -1,14 +1,5 @@
-import {
-	Body,
-	Controller,
-	Get,
-	Post,
-    Delete,
-    Param,
-    Res,
-	UsePipes,
-    HttpStatus,
-	ValidationPipe,
+import {    Body, Controller, Get, Post, Delete, Put, Param,
+            Res, UsePipes, HttpStatus, ValidationPipe,
 } from '@nestjs/common';
 import { CreateChannelDto } from 'src/channels/dto/channels.dtos';
 import { MessageDto } from '../../dto/message.dtos';
@@ -39,11 +30,10 @@ export class ChannelsController {
         return this.channelsService.removeChannelByName(name);
     }
 
-    @Post(':name/admins/:id')
+    @Put(':name/admins/:id')
     async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number) {
         const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin));
-        if (!channel)
-        {
+        if (!channel) {
             res.status(HttpStatus.NOT_FOUND).send();
         } else {
             res.status(HttpStatus.OK).json(channel).send();
@@ -51,8 +41,8 @@ export class ChannelsController {
     }
 
     @Delete(':name/admins/:id')
-    removeAdminFromChannel(@Param('name') name: string, @Param('id') newAdmin: number) {
-        return this.channelsService.removeAdminFromChannel(name, Number(newAdmin));
+    removeAdminFromChannel(@Param('name') name: string, @Param('id') admin: number) {
+        return this.channelsService.removeAdminFromChannel(name, Number(admin));
     }
 
     @Post(':name/messages')

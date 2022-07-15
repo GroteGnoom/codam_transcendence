@@ -2,14 +2,17 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } f
 import { Channel } from './channel.entity';
     
 @Entity()
-   export class Message {
+export class Message {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
     sender: number;
 
-    @ManyToOne(() => Channel, (channel) => channel.messages)
+    // @ManyToOne(() => Channel, (channel: Channel) => channel.messages)
+    // channel: string;
+
+    @Column()
     channel: string;
     
     @Column()

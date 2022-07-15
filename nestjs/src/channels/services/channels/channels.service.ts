@@ -8,7 +8,7 @@ import { MessageDto } from '../../dto/message.dtos';
 @Injectable()
 export class ChannelsService {
     constructor(
-		@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
+		@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,// templated with typeorm entity
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
 	) {}
 
@@ -24,8 +24,9 @@ export class ChannelsService {
         return this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
             owner: createChannelDto.owner,
-            admins: [createChannelDto.owner]
-        })
+            admins: [createChannelDto.owner],
+            member: [createChannelDto.owner]
+        });
     }
 
     removeChannelByName(name: string) {
@@ -33,17 +34,15 @@ export class ChannelsService {
     }
 
     async addAdminToChannel(name: string, id: number) {
-        const current: Channel = await this.channelRepository.findOneBy({name: name});
-        if (!current) {
+        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+        if (!channel) {
             return undefined;
         }
-        if (current.admins.includes(id)) {
-            return current;
+        if (channel.admins.includes(id)) {
+            return channel;
         }
-        const admins = [...current.admins, id];
-        return this.channelRepository.update(name, {
-            admins: admins
-        })
+        const admins = [...channel.admins, id];
+        return this.channelRepository.update(name, {admins: admins});
     }
 
     async removeAdminFromChannel(name: string, id: number) {
@@ -55,9 +54,7 @@ export class ChannelsService {
             throw new BadRequestException('Cannot remove owner from administators');
         }
         const admins = channel.admins.filter(_id => _id != id)
-        return this.channelRepository.update(name, {
-            admins: admins
-        })    
+        return this.channelRepository.update(name, {admins: admins});  
     }
 
     addMessage(channel: string, message: MessageDto) {
@@ -67,9 +64,6 @@ export class ChannelsService {
     }
 
     getMessages(channel: string) {
-        return this.channelRepository.findOne({
-            where: {name: channel},
-            relations: ['messages'],
-          })
+        return this.messageRepository.findBy({channel: channel});
     }
 }

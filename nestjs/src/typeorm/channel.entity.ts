@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { Message } from './message.entity';
     
 @Entity()
-   export class Channel {
+export class Channel {
     @PrimaryColumn({ unique: true })
     name: string;
     
@@ -12,6 +12,8 @@ import { Message } from './message.entity';
     @Column("int", { array: true })
     admins: number[];
 
-    @OneToMany(() => Message, (message) => message.channel)
-    messages: Message[]
+    //members
+
+    // @OneToMany(() => Message, (message: Message) => message.channel)
+    // messages: Message[]
 }
