@@ -25,7 +25,7 @@ export class ChannelsService {
             name: createChannelDto.name,
             owner: createChannelDto.owner,
             admins: [createChannelDto.owner],
-            member: [createChannelDto.owner]
+            members: [createChannelDto.owner]
         });
     }
 
@@ -45,7 +45,7 @@ export class ChannelsService {
         return this.channelRepository.update(name, {admins: admins});
     }
 
-    async removeAdminFromChannel(name: string, id: number) {
+    async demoteAdmin(name: string, id: number) {
         const channel: Channel = await this.channelRepository.findOneBy({name: name});
         if (!channel) {
             return undefined;
@@ -55,6 +55,30 @@ export class ChannelsService {
         }
         const admins = channel.admins.filter(_id => _id != id)
         return this.channelRepository.update(name, {admins: admins});  
+    }
+
+    async addMemberToChannel(name: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+        if (!channel) {
+            return undefined;
+        }
+        if (channel.members.includes(id)) {
+            return channel;
+        }
+        const members = [...channel.members, id];
+        return this.channelRepository.update(name, {members: members});
+    }
+
+    async removeMemberFromChannel(name: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+        if (!channel) {
+            return undefined;
+        }
+        if (id == channel.owner) {
+            throw new BadRequestException('Cannot remove owner from members');
+        }
+        const members = channel.members.filter(_id => _id != id)
+        return this.channelRepository.update(name, {members: members});  
     }
 
     addMessage(channel: string, message: MessageDto) {

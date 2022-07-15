@@ -1,5 +1,5 @@
 import {    Body, Controller, Get, Post, Delete, Put, Param,
-            Res, UsePipes, HttpStatus, ValidationPipe,
+            Res, UsePipes, HttpStatus, ValidationPipe, NotFoundException
 } from '@nestjs/common';
 import { CreateChannelDto } from 'src/channels/dto/channels.dtos';
 import { MessageDto } from '../../dto/message.dtos';
@@ -30,19 +30,20 @@ export class ChannelsController {
         return this.channelsService.removeChannelByName(name);
     }
 
-    @Put(':name/admins/:id')
+    @Put(':name/admin/:id')
     async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number) {
         const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin));
         if (!channel) {
-            res.status(HttpStatus.NOT_FOUND).send();
+            // res.status(HttpStatus.NOT_FOUND).send();
+            throw new NotFoundException('Channel not found');
         } else {
             res.status(HttpStatus.OK).json(channel).send();
         }
     }
 
-    @Delete(':name/admins/:id')
-    removeAdminFromChannel(@Param('name') name: string, @Param('id') admin: number) {
-        return this.channelsService.removeAdminFromChannel(name, Number(admin));
+    @Delete(':name/admin/:id')
+    demoteAdmin(@Param('name') name: string, @Param('id') admin: number) {
+        return this.channelsService.demoteAdmin(name, Number(admin));
     }
 
     @Post(':name/messages')
@@ -55,4 +56,19 @@ export class ChannelsController {
 	getMessages(@Param('name') channel: string) {
 		return this.channelsService.getMessages(channel);
 	}
-}+
+
+    @Put(':name/member/:id')
+    async addMemberToChannel(@Res() res, @Param('name') name: string, @Param('id') newMember: number) {
+        const channel = await this.channelsService.addMemberToChannel(name, Number(newMember));
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        } else {
+            res.status(HttpStatus.OK).json(channel).send();
+        }
+    }
+
+    @Delete(':name/member/:id')
+    removeMemberFromChannel(@Param('name') name: string, @Param('id') member: number) {
+        return this.channelsService.removeMemberFromChannel(name, Number(member));
+    }
+}
