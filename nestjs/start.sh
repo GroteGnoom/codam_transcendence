@@ -1,3 +1,4 @@
 #!/bin/bash
 npm install
-npm run start   #reloads after making changes in ts files
+#sleep infinity
+npm run start:dev   #reloads after making changes in ts files
