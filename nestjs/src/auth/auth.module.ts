@@ -5,7 +5,7 @@ import {
 //import { AuthService } from './auth.service';
 //import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
-//import { FtStrategy } from './ft.strategy';
+import { FtStrategy } from './ft.strategy';
 
 @Module({
   imports    : [
@@ -14,7 +14,7 @@ import { AuthController } from './auth.controller';
   ],
   providers  : [
     //AuthService,
-    //FtStrategy,
+    FtStrategy,
   ],
   controllers: [
     AuthController,
