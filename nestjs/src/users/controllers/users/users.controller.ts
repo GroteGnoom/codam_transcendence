@@ -7,16 +7,19 @@ import {
 	Post,
 	UsePipes,
 	ValidationPipe,
+	Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/users.dtos';
 import { UsersService } from 'src/users/services/users/users.service';
 
 @Controller('users')
 export class UsersController {
+	private readonly logger = new Logger(UsersController.name);
 	constructor(private readonly userService: UsersService) {}
 
 	@Get()
 	getUsers() {
+		this.logger.log('getting users\n');
 		return this.userService.getUsers();
 	}
 

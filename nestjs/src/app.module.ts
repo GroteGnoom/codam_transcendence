@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import entities from './typeorm';
 import { ChannelsModule } from './channels/channels.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
 	imports: [
@@ -32,6 +33,7 @@ import { ChannelsModule } from './channels/channels.module';
 			}),
 			inject: [ConfigService],
 		}),
+		AuthModule,
 		UsersModule,
 		ChannelsModule,
 	],

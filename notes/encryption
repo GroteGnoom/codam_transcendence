@@ -1,0 +1,14 @@
+to encrypt the nestjs .env file
+we're using 
+https://github.com/AGWA/git-crypt
+which can be installed with
+brew install git-crypt
+
+to unlock it you need a key :)
+
+then do 
+git-crypt unlock /path/to/key
+and everything should work correctly forever.
+
+to check what files are encrypted you can do
+git-crypt status
