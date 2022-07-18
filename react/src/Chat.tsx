@@ -22,20 +22,13 @@ class ChannelList extends React.Component<{}, {
 		.then((response) => response.json())
 	}
 
-    async postMessage() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/messages`, { 
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-			body: JSON.stringify({
-                "sender": 7,
-                "text": this.state.text
-			})
-        })
+    async getChannel() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}`, { method: 'GET'})
 		.then((response) => response.json())
 	}
 
-    async demoteAdmin(admin: number) {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/admin/${admin}`, { method: 'DELETE'})
+    async deleteChannel() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}`, { method: 'DELETE'})
 		.then((response) => response.json())
 	}
 
@@ -51,13 +44,6 @@ class ChannelList extends React.Component<{}, {
 		.then((response) => response.json())
 	}
 
-    componentDidMount() {
-        this.getChannels()
-        .then((response) => {
-            this.setState({ channels: response });
-        })
-    }
-
     async getMessages(channel: string){
         console.log("this is channel", channel);
         return await fetch(`http://127.0.0.1:5000/channels/${channel}/messages`, { method: 'GET'})
@@ -65,6 +51,41 @@ class ChannelList extends React.Component<{}, {
         .then((response) => {
             this.setState({ messages: response });
             this.setState({ activeChannel: channel });
+        })
+    }
+
+    async postMessage() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/messages`, { 
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+			body: JSON.stringify({
+                "sender": 7,
+                "text": this.state.text
+			})
+        })
+		.then((response) => response.json())
+	}
+
+    async createAdmin(admin: number) {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/admin/${admin}`, { method: 'PUT'})
+		.then((response) => response.json())
+	}
+
+    async demoteAdmin(admin: number) {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/admin/${admin}`, { method: 'DELETE'})
+		.then((response) => response.json())
+	}
+
+    async addMember(member: number) {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.state.activeChannel}/admin/${member}`, { method: 'PUT'})
+		.then((response) => response.json())
+	}
+
+
+    componentDidMount() {
+        this.getChannels()
+        .then((response) => {
+            this.setState({ channels: response });
         })
     }
 
@@ -118,7 +139,6 @@ class ChannelList extends React.Component<{}, {
                     />
                     <input type="submit" value="add channel" />
                 </form>
-                {/* <button onClick={() => this.newchannel()}>Add Channel</button>  */}
                 <div className="ChatWindow">
                     {this.state.activeChannel}
                     {messages}
