@@ -25,7 +25,7 @@ export class ChannelsService {
             name: createChannelDto.name,
             owner: createChannelDto.owner,
             admins: [createChannelDto.owner],
-            members: [createChannelDto.owner]
+            members: [createChannelDto.owner],
         });
     }
 

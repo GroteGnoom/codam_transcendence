@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
-import { Message } from './message.entity';
     
 @Entity()
 export class Channel {
@@ -17,4 +16,4 @@ export class Channel {
 
     // @OneToMany(() => Message, (message: Message) => message.channel)
     // messages: Message[]
-}
+} 
