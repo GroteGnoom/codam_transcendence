@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Channel, Message } from '../../../typeorm';
-import { CreateChannelDto } from '../../dto/channels.dtos';
-import { MessageDto } from '../../dto/message.dtos';
+import { Channel, Message } from '../typeorm';
+import { CreateChannelDto } from './channels.dtos';
+import { MessageDto } from './message.dtos';
 
 @Injectable()
 export class ChannelsService {

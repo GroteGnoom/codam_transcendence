@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ChannelsController } from './controllers/channels/channels.controller';
-import { ChannelsService } from './services/channels/channels.service';
+import { ChannelsController } from './channels.controller';
+import { ChannelsService } from './channels.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel, Message } from "src/typeorm";
 

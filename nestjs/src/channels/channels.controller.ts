@@ -1,9 +1,9 @@
 import {    Body, Controller, Get, Post, Delete, Put, Param,
             Res, UsePipes, HttpStatus, ValidationPipe, NotFoundException
 } from '@nestjs/common';
-import { CreateChannelDto } from 'src/channels/dto/channels.dtos';
-import { MessageDto } from '../../dto/message.dtos';
-import { ChannelsService } from '../../services/channels/channels.service';
+import { CreateChannelDto } from 'src/channels/channels.dtos';
+import { MessageDto } from './message.dtos';
+import { ChannelsService } from './channels.service';
 
 @Controller('channels')
 export class ChannelsController {
