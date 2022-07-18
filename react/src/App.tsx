@@ -4,6 +4,7 @@ import Home from './Home';
 import Register from './Register';
 import Login from './Login';
 import PinkPong from './PinkPong';
+import Chat from './Chat';
 
 function App() {
 	return (
@@ -12,6 +13,7 @@ function App() {
         <Route path={"/register"} element={<Register />} />
         <Route path={"/login"} element={<Login />} />
         <Route path={"/pinkpong"} element={<PinkPong />} />
+		<Route path={"/chat"} element={<Chat />} />
       	</Routes>
 		);
 	}

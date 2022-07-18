@@ -37,8 +37,8 @@ services:
     container_name: nestjs
     image: nestjs
     build: dockerfiles/nestjs
-    depends_on:
-      - postgres
+    # depends_on:
+    #   - postgres
     ports:
       - "5000:5000"
     volumes:

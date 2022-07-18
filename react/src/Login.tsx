@@ -2,8 +2,7 @@ import React from 'react';
 
 class DoPost extends React.Component {
 	async handle() {
-		try {
-		await fetch("http://127.0.0.1:5000/users/create", { //I (lindsay) added await, not sure if necessary.. 
+		await fetch("http://127.0.0.1:5000/users/create", {
 			method: 'POST',
 			//mode: 'no-cors',
 			headers: {'Content-Type':'application/json'},
@@ -17,10 +16,6 @@ class DoPost extends React.Component {
 		.then(responseJson => {
 			console.log(responseJson);
 		});
-	}
-	catch (e) {
-		console.log(e)
-    }
 		console.log('gedaan');
 	}
 	render () {
