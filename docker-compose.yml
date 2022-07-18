@@ -24,17 +24,6 @@ services:
     restart: on-failure
     networks:
       - transcendence
-  nestjs:
-    container_name: nestjs
-    image: nestjs
-    build: dockerfiles/nestjs
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./nestjs:/home/root/transcendence_backend/
-    restart: on-failure
-    networks:
-      - transcendence
   postgres:
     container_name: postgres
     image: postgres
@@ -44,6 +33,20 @@ services:
     restart: on-failure
     networks:
       - transcendence
+  nestjs:
+    container_name: nestjs
+    image: nestjs
+    build: dockerfiles/nestjs
+    # depends_on:
+    #   - postgres
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./nestjs:/home/root/transcendence_backend/
+    restart: on-failure
+    networks:
+      - transcendence
+
     
 networks: 
   transcendence:

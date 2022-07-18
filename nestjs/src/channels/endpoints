@@ -22,11 +22,9 @@ POST /chats/{id}/mutes/{tid}			mutes a user
 
 POST chats/{id}/bans/{tid}				bans a user
 
-POST chats/{id}/participants/{tid}		joins a chat room
+POST chats/{id}/participants/{tid}		joins a chat room 
 
 DELETE chats/{id}/participants/{tid}	leave a chatroom
-
-DELETE chats/{id}/participants/{tid}	kick a particpant from a chatroom
 
 POST chats/{id}/invites					add participant(s) to the chatroom
 

@@ -27,7 +27,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 				client_id    : configService.get('FT_OAUTH_CLIENT_ID'),
 				redirect_uri : callbackURL,
 				response_type: 'code',
-				scope        : 'identify',
+				scope        : 'public',
 			}) }`,
 			tokenURL        : 'https://api.intra.42.fr/oauth/token',
 			scope           : 'public',
