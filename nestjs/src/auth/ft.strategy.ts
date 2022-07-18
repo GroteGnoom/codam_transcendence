@@ -11,7 +11,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
 // change these to be your ft client ID and secret
-const callbackURL = 'http://127.0.0.1:5000/auth/callback';
+const callbackURL = 'http://127.0.0.1:5000/auth/ft';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, 'ft')
@@ -40,7 +40,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 	validate ( accessToken: string) {
 		this.logger.log('validate is called\n');
 		const data = this.httpService
-			.get('https://api.intra.42.fr/oauth/token/info', {
+			.get('https://api.intra.42.fr/v2/cursus', {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 		this.logger.log('this is the data:', data);
@@ -59,12 +59,13 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 	async validate(
 		accessToken: string,
 	): Promise<any> {
-		const { data } = await this.http.get('https://discordapp.com/api/users/@me', {
+		this.logger.log('ft strategy validate called', data);
+		const { data } = await this.http.get('https://api.intra.42.fr/v2/cursus', {
 				headers: { Authorization: `Bearer ${ accessToken }` },
 			})
 			.toPromise();
-
-		return this.authService.findUserFromDiscordId(data.id);
+		this.logger.log('this is the data:', data);
+		return data;
 	}
    */
 }
