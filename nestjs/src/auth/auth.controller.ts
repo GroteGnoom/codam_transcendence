@@ -20,4 +20,8 @@ export class AuthController
 	//async getUserFromDiscordLogin(@Req() req): Promise<any> {
 		//return req.user;
 	//}
+	@Get('callback')
+	auth_callback() {
+		this.logger.log('auth callbackft\n');
+	}
 }

@@ -7,6 +7,8 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import entities from './typeorm';
 import { ChannelsModule } from './channels/channels.module';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
 	imports: [
@@ -36,6 +38,9 @@ import { AuthModule } from './auth/auth.module';
 		AuthModule,
 		UsersModule,
 		ChannelsModule,
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, '..', 'test_homepage'), 
+    }),
 	],
 	controllers: [AppController],
 	providers: [AppService],

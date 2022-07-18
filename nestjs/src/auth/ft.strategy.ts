@@ -11,7 +11,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
 // change these to be your ft client ID and secret
-const callbackURL = 'http://www.example.com/index.html';
+const callbackURL = 'http://127.0.0.1:5000/auth/callback';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, 'ft')
