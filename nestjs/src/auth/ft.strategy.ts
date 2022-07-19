@@ -37,7 +37,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		});
 		this.logger.log('FtStrategy constructed\n');
 	}
-	validate ( accessToken: string) {
+	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');
 		/*
 		const data = this.httpService
@@ -46,13 +46,19 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 			});
 		this.logger.log('this is the data:', util.inspect(data, false, null, true));
 	   */
-	  	this.httpService .get('https://api.intra.42.fr/v2/me', {
+	  	const resp = await this.httpService .get('https://api.intra.42.fr/v2/me', {
 	  	//this.httpService .get('https://api.intra.42.fr/v2/users', {
 				headers: { Authorization: `Bearer ${accessToken}` },
-			}).toPromise().then(response =>{this.logger.log(response.data.login);});//.catch(error => {this.logger.log("niet gelukt", error);});
+			}).toPromise();
+
+		//resp.then(resp => {this.logger.log("validation result:", resp.data.login);});
+		this.logger.log("validation result:", resp.data.login);
+
+			
+		//.then(response =>{this.logger.log(response.data.login);});//.catch(error => {this.logger.log("niet gelukt", error);});
 			//}).toPromise().then(response =>{this.logger.log(response);});//.catch(error => {this.logger.log("niet gelukt", error);});
 		//this.logger.log('this is the data:', data.map(res => {return res.json();}));
-		return "hallo";
+		return resp.data.login;
 
 		/*
 		const intraID = data.data.id;
