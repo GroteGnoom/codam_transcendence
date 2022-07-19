@@ -33,6 +33,7 @@
     "class-validator": "^0.13.2",
     "mysql2": "^2.3.3",
     "passport": "^0.6.0",
+    "passport-42": "^1.2.6",
     "passport-local": "^1.0.0",
     "passport-oauth2": "^1.6.1",
     "pg": "^8.7.3",

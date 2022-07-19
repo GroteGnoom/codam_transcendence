@@ -6,4 +6,6 @@ export class CreateChannelDto {
 
 	@IsNotEmpty()
 	owner: number;
+
+	password?: string;
 }
