@@ -3,27 +3,22 @@ import Button from '@mui/material/Button';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import AddIcon from '@mui/icons-material/Add';
 import Avatar from '@mui/material/Avatar';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import StarIcon from '@mui/icons-material/Star';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { List, ListItem, ListItemText, TextField, Typography } from "@mui/material";
+
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 
 interface ChannelListProps { 
     openChat: any;
+    activeChannel?: string;
 }
 
 interface ChannelListState { 
@@ -81,22 +76,22 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     renderChannels = () => {
         const channel = this.state.channels.map((el) => (
             <ListItem sx={ { height: 40 } }> 
-                <ListItemButton onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
+                <ListItemButton selected={el.name==this.props.activeChannel} 
+                    onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     <ListItemText primary={el.name} />
                 </ListItemButton>    
-                {/* <button onClick={() => this.openSettings(el)}>Settings</button>    */}
             </ListItem>
-        ))
+        ))  
         channel.push (            
             <ListItem >
             <ListItemButton onClick={this.handleClickOpen}>
                 <ListItemText primary="add channel" />
+                <ListItemAvatar>
+                    <Avatar sx={{ width: 24, height: 24 }}>
+                        <AddIcon color='secondary' fontSize='small' sx={{ color: 'darkpink' }}/>
+                    </Avatar>
+                </ListItemAvatar>
             </ListItemButton>
-            <ListItemAvatar>
-                <Avatar sx={{ width: 24, height: 24 }}>
-                    <AddIcon fontSize='small'/>
-                </Avatar>
-            </ListItemAvatar>
             </ListItem>
         )
 
@@ -118,30 +113,36 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             // </div>
     }
 
-
     render(){
         return (
         <div>
-            <Box sx={{ width: 250, border: 1, bgcolor: '#ec407a', m:5 }}>
+            <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
             <Typography variant="h5" component="div" align="center">
                 Channels
             </Typography>
             {this.renderChannels()}
             </Box>
-            <Dialog open={this.state.open} onClose={this.handleClose}>
+            <Dialog open={this.state.open} onClose={this.handleClose}>  {/*pop window for new channel */}
                 <DialogTitle>Add a new channel</DialogTitle>
                 <DialogContent>
                     <TextField
-                    onChange={(event) => { this.setState({newChannel: event.target.value}) }}
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Channel name"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    />
+                        onChange={(event) => { this.setState({newChannel: event.target.value}) }}
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Channel name"
+                        type="text"
+                        fullWidth
+                        variant="standard"/>
                 </DialogContent>
+                    <RadioGroup
+                        row
+                        aria-labelledby="demo-row-radio-buttons-group-label"
+                        name="row-radio-buttons-group">
+                        <FormControlLabel value="public" control={<Radio />} label="public" />
+                        <FormControlLabel value="private" control={<Radio />} label="private" />
+                        <FormControlLabel value="protected" control={<Radio />} label="protected" />
+                    </RadioGroup>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
                     <Button variant="contained" onClick={() => this.newchannel()}>Add</Button>

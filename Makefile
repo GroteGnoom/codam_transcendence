@@ -17,7 +17,7 @@ superclean: fclean
 	docker rmi $(docker images -a) || true
 	docker volume rm $(docker volume ls) || true
 	docker network rm transcendence_transcendence || true
-	docker system prune -a -y
+	docker system prune -a
 	rm -r react/node_modules
 	rm -r nestjs/node_modules
 
