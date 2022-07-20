@@ -122,7 +122,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             </Typography>
             {this.renderChannels()}
             </Box>
-            <Dialog open={this.state.open} onClose={this.handleClose}>  {/*pop window for new channel */}
+            <Dialog open={this.state.open} onClose={this.handleClose} >  {/*pop window for new channel */}
                 <DialogTitle>Add a new channel</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -134,7 +134,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         type="text"
                         fullWidth
                         variant="standard"/>
-                </DialogContent>
                     <RadioGroup
                         row
                         aria-labelledby="demo-row-radio-buttons-group-label"
@@ -143,6 +142,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         <FormControlLabel value="private" control={<Radio />} label="private" />
                         <FormControlLabel value="protected" control={<Radio />} label="protected" />
                     </RadioGroup>
+                </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
                     <Button variant="contained" onClick={() => this.newchannel()}>Add</Button>
