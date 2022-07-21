@@ -8,3 +8,5 @@ Iris
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [ ] start met de user account pagina
 [V] aantekingen frontend
+[ ] build controller for showing Username
+[ ] show Username account.tsx file

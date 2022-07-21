@@ -1,0 +1,7 @@
+Account endpoints:
+
+GET /account 						    retrieve account
+
+POST /account/{id} 					    set username
+
+DELETE account/{id}                     delete account
