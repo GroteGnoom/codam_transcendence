@@ -1,9 +1,10 @@
 import React from 'react';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, TextField, Typography } from "@mui/material";
+import { AppBar, Toolbar, Container, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Fragment } from "react";
 import SendIcon from '@mui/icons-material/Send';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,6 +13,7 @@ import Button from '@mui/material/Button';
 
 interface ChatWindowProps { 
     channel: string;
+    openSettings: any;
 }
 
 interface ChatWindowState { 
@@ -88,14 +90,21 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                     <Paper elevation={5} sx={{ bgcolor: '#f48fb1'}}>
                         <Box p={3} sx={{ m:5 }}>
                             <Grid container direction="row" alignItems="center">
-                                <Grid xs={11} item>
+                                <Grid xs={10} item>
                                     <Typography variant="h4" gutterBottom>
                                         {this.props.channel}
                                     </Typography>
                                 </Grid>
                                 <Grid xs={1} item>
-                                    <IconButton onClick={() => { this.setState( {open: true} ) }}
+                                    <IconButton onClick={() => { this.props.openSettings(true) }}
                                         aria-label="settings"
+                                        color="secondary">
+                                            <SettingsIcon />
+                                    </IconButton>
+                                </Grid>
+                                <Grid xs={1} item>
+                                    <IconButton onClick={() => { this.setState( {open: true} ) }}
+                                        aria-label="addPerson"
                                         color="secondary">
                                             <PersonAddIcon />
                                     </IconButton>
