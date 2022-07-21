@@ -17,6 +17,9 @@ export class Channel {
     @Column({ nullable: true })
     password: string;
 
+    @Column()
+    channelType: string;
+
     // @OneToMany(() => Message, (message: Message) => message.channel)
     // messages: Message[]
 } 

@@ -9,11 +9,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
-import { List, ListItem, ListItemText, TextField, Typography } from "@mui/material";
+import { Alert, List, ListItem, ListItemText, TextField, IconButton, Typography } from "@mui/material";
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 
 interface ChannelListProps { 
@@ -24,16 +25,25 @@ interface ChannelListProps {
 interface ChannelListState { 
     channels: any[];
     newChannel: string;
+    newChannelType: string;
+    newChannelPassword: string;
     open: boolean;
+    passwordVisible: boolean;
+    error: string;
 }
 
 class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
+
     constructor(props: any) {
         super(props);
         this.state = { 
             channels: [], 
             newChannel: "",
+            newChannelType: "public",
+            newChannelPassword: "",
             open: false,
+            passwordVisible: false,
+            error: "",
         };
     }
 
@@ -56,12 +66,22 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             headers: {'Content-Type':'application/json'},
 			body: JSON.stringify({
                 "name": this.state.newChannel,
+                "channelType": this.state.newChannelType,
+                "password": this.state.newChannelPassword,
                 "owner": 7
 			})  
         })
-		.then((response) => response.json())
+		.then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)                
+            }
+        })            
         .then( () => this.handleClose() )
         .then( () => this.getChannels() )
+        .catch((err: Error) => this.setState({error: err.message}))
 	}
 
     //Helpers
@@ -123,10 +143,12 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             {this.renderChannels()}
             </Box>
             <Dialog open={this.state.open} onClose={this.handleClose} >  {/*pop window for new channel */}
+                <Box sx={{ bgcolor: '#f48fb1' }}>
                 <DialogTitle>Add a new channel</DialogTitle>
                 <DialogContent>
                     <TextField
                         onChange={(event) => { this.setState({newChannel: event.target.value}) }}
+                        value={this.state.newChannel}
                         autoFocus
                         margin="dense"
                         id="name"
@@ -136,18 +158,56 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         variant="standard"/>
                     <RadioGroup
                         row
+                        value={this.state.newChannelType}
+                        defaultValue="public"
+                        onChange={(event) => { this.setState({newChannelType: event.target.value}) }}
                         aria-labelledby="demo-row-radio-buttons-group-label"
                         name="row-radio-buttons-group">
                         <FormControlLabel value="public" control={<Radio />} label="public" />
                         <FormControlLabel value="private" control={<Radio />} label="private" />
                         <FormControlLabel value="protected" control={<Radio />} label="protected" />
                     </RadioGroup>
+                    {this.state.newChannelType === 'protected' && <TextField
+                        onChange={(event) => { this.setState({newChannelPassword: event.target.value}) }}
+                        autoFocus
+                        value={this.state.newChannelPassword}
+                        margin="dense"
+                        id="name"
+                        label="Password"
+                        type={this.state.passwordVisible ? "text" : "password"}
+                        fullWidth
+                        variant="standard"
+                        InputProps={{
+                            endAdornment: (
+                            <IconButton onClick={() => this.setState({passwordVisible :!this.state.passwordVisible})}
+                                aria-label="send"
+                                color="secondary">
+                                <VisibilityIcon />
+                            </IconButton>
+                            ),
+                          }}                        
+                        />                            
+                        } 
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
                     <Button variant="contained" onClick={() => this.newchannel()}>Add</Button>
                 </DialogActions>
+                </Box>
             </Dialog>
+            <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
+                <DialogTitle>Ohh noooss</DialogTitle>
+                <DialogContent>
+                    <Alert severity="error">
+                        {this.state.error}
+                    </Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => this.setState({error: ""})}>I'm sorry</Button>
+                </DialogActions>
+            </Dialog>
+
         </div>
         )
     }

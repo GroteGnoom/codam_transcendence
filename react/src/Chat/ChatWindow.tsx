@@ -35,14 +35,16 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
-            this.setState({ messages: response });
+            if (response.length != this.state.messages.length) {
+                this.setState({ messages: response });
+            }
         })
     }
 
-    componentDidMount() {
-        console.log("Mounting", this.props.channel)
-        this.getMessages()
-    }
+    // componentDidMount() {
+    //     console.log("Mounting", this.props.channel)
+    //     this.getMessages()
+    // }
 
     componentDidUpdate() {
         console.log("updating")

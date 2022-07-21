@@ -24,13 +24,13 @@ import { join } from 'path';
 				database: configService.get('DB_NAME'),
 				entities: entities,
 				synchronize: true,
-				ssl: true,
-				options: {"trustServerCertificate": true},
-				extra: {
-					ssl: {
-						rejectUnauthorized: false,
-					},
-				},
+				ssl: false,
+				// options: {"trustServerCertificate": true},
+				// extra: {
+				// 	ssl: {
+				// 		rejectUnauthorized: false,
+				// 	},
+				// },
 				//options: {encrypt: false}
 			}),
 			inject: [ConfigService],

@@ -27,9 +27,13 @@ services:
   postgres:
     container_name: postgres
     image: postgres
-    build: dockerfiles/postgres
+    # build: dockerfiles/postgres
     ports:
       - "5432:5432"
+    env_file:
+      - ./dockerfiles/postgres/.env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     restart: on-failure
     networks:
       - transcendence

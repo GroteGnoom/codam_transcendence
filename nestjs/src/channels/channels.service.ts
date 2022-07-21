@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel, Message } from '../typeorm';
-import { CreateChannelDto } from './channels.dtos';
+import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { MessageDto } from './message.dtos';
 
 @Injectable()
@@ -21,12 +21,18 @@ export class ChannelsService {
     }
 
     createChannel(createChannelDto: CreateChannelDto) {
+        if (createChannelDto.channelType == ChannelType.Protected &&
+                !createChannelDto.password) {
+            throw new BadRequestException('Must provide a password for a protected channel');
+        }
+
         return this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
             owner: createChannelDto.owner,
             admins: [createChannelDto.owner],
             members: [createChannelDto.owner],
             password: createChannelDto.password,
+            channelType: createChannelDto.channelType,
         });
     }
 
