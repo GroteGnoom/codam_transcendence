@@ -9,11 +9,11 @@ import Chat from './Chat/Chat';
 function App() {
 	return (
 		<Routes>
-        <Route path={"/"} element={<Home />} />
-        <Route path={"/register"} element={<Register />} />
-        <Route path={"/login"} element={<Login />} />
-        <Route path={"/pinkpong"} element={<PinkPong />} />
-		<Route path={"/chat"} element={<Chat />} />
+			<Route path={"/"} element={<Home />} />
+			<Route path={"/register"} element={<Register />} />
+			<Route path={"/login"} element={<Login />} />
+			<Route path={"/pinkpong"} element={<PinkPong />} />
+			<Route path={"/chat"} element={<Chat />} />
       	</Routes>
 		);
 	}
