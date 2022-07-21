@@ -13,10 +13,10 @@ const Home = () =>
 		<main>
             <div className="App">
             <header className="App-header">
-                  <Link to= {{pathname:"/register"}}><Button variant="contained">Register</Button></Link>
                   <Link to= {{pathname:"/login"}}><Button variant="contained">Login</Button></Link>
                   <Link to= {{pathname:"/pinkpong"}}><Button variant="contained">PinkPong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button variant="contained">Chat</Button></Link>
+                  <Link to= {{pathname:"/account"}}><Button variant="contained">Account</Button></Link>
             </header>
             </div>
 		</main>
