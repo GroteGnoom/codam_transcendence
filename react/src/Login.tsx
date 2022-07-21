@@ -1,15 +1,13 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 
-
-class DoPost extends React.Component<{}, { username: string  }>  {
-    constructor(props: any){
-        super(props);
-        this.state = { 
-			username: ""
-        }	
-    }
-	
+class DoPost extends React.Component {
+	async getJWT() {
+		const resp =  await fetch("http://127.0.0.1:5000/auth/ft", { method: 'GET'});
+		console.log(resp);
+		//.then((response) => response.json())
+		return "gedaan";
+	}
 	async handle() {
 		await fetch("http://127.0.0.1:5000/users/create", {
 			method: 'POST',
@@ -35,6 +33,7 @@ class DoPost extends React.Component<{}, { username: string  }>  {
 
 	render () {
 		return (
+			<div>
 			<form onSubmit={this.handle}>
 			<label>
 			Name:
@@ -42,6 +41,14 @@ class DoPost extends React.Component<{}, { username: string  }>  {
 			</label>
 			<input type="submit" value="Submit" />
 			</form>
+			<form onSubmit={this.getJWT}>
+			<label>
+			Get JWT:
+				<input type="text" name="name" />
+			</label>
+			<input type="submit" value="Submit" />
+			</form>
+			</div>
 		)
 	}
 }
