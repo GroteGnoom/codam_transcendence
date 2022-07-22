@@ -33,9 +33,9 @@ export class AuthController
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
 		const jwt= await this.authService.login(req.user);
 		this.logger.log(jwt );
+		response.cookie('user', req.user);
 		response.cookie('token', jwt.access_token);
 		return {url:'http://127.0.0.1:3000/logged_in/thetoken'};
-		return this.authService.login(req.user); //should probably put this in a header
 		//return user;
 	}
 	//async getUserFromDiscordLogin(@Req() req): Promise<any> {
@@ -65,5 +65,18 @@ export class AuthController
 	showCookie(@Req() req) {
 		this.logger.log(req.cookies);
 		return req.cookies;
+	}
+
+	@Get('amiloggedin')
+	async amILoggedIn(@Req() req) {
+		if (req.cookies['user']) {
+			const jwt = await this.authService.login(req.cookies['user']);
+			this.logger.log("checking login for", req.cookies['user']);
+			this.logger.log("token", req.cookies['token']);
+			this.logger.log("should be", jwt.access_token);
+			if (req.cookies['token'] && req.cookies['token'] == jwt.access_token) //doesn't work, jwt sign does not just depend on the inputs
+				return true;
+		}
+		return false;
 	}
 }
