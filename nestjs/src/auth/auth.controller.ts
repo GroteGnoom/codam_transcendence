@@ -3,11 +3,12 @@ import {
 	Get,
 	Redirect,
 	Req,
+	Res,
 	UseGuards,
 	Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -20,7 +21,7 @@ export class AuthController
 	@Get('ft')
 	@Redirect('http://127.0.0.1:3000/logged_in', 302)
 	@UseGuards(AuthGuard('ft')) //before returning the get request this will try the ft strategy for authentication. If ft exists is checked during runtime, and will give Unknown authentication strategy "ft" if it doesn't exist.
-	async login(@Req() req: Request): Promise<any> { //the function name doesn't matter?
+	async login(@Req() req: Request, @Res() response:Response): Promise<any> { //the function name doesn't matter?
 		const areq = await req;
 		//this.logger.log('get on auth/ft request:', util.inspect(areq, false, null, true)); /// HUGE!
 		//this.logger.log('get on auth/ft request:', util.inspect(areq.body, false, null, true)); // nothing
@@ -30,6 +31,9 @@ export class AuthController
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
+		const jwt= await this.authService.login(req.user);
+		this.logger.log(jwt );
+		response.cookie('token', jwt.access_token);
 		return {url:'http://127.0.0.1:3000/logged_in/thetoken'};
 		return this.authService.login(req.user); //should probably put this in a header
 		//return user;
@@ -49,5 +53,17 @@ export class AuthController
 	@Get('profile')
 	getProfile(@Req() req) {
 		return req.user;
+	}
+
+	@Get('getcookie')
+	getCookie(@Res({passthrough: true}) response: Response) {
+		response.cookie('key', Date.now())
+		return "cookie gezet";
+	}
+
+	@Get('showcookie')
+	showCookie(@Req() req) {
+		this.logger.log(req.cookies);
+		return req.cookies;
 	}
 }
