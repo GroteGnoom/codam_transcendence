@@ -1,6 +1,7 @@
 import {
 	Controller,
 	Get,
+	Redirect,
 	Req,
 	UseGuards,
 	Logger,
@@ -17,6 +18,7 @@ export class AuthController
 	constructor(private authService: AuthService) {}
 	private readonly logger = new Logger(AuthController.name);
 	@Get('ft')
+	@Redirect('http://127.0.0.1:3000/logged_in', 302)
 	@UseGuards(AuthGuard('ft')) //before returning the get request this will try the ft strategy for authentication. If ft exists is checked during runtime, and will give Unknown authentication strategy "ft" if it doesn't exist.
 	async login(@Req() req: Request): Promise<any> { //the function name doesn't matter?
 		const areq = await req;
@@ -28,7 +30,8 @@ export class AuthController
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
-		return this.authService.login(req.user);
+		return {url:'http://127.0.0.1:3000/logged_in/thetoken'};
+		return this.authService.login(req.user); //should probably put this in a header
 		//return user;
 	}
 	//async getUserFromDiscordLogin(@Req() req): Promise<any> {

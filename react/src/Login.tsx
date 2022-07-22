@@ -3,8 +3,18 @@ import {Link} from 'react-router-dom';
 
 class DoPost extends React.Component {
 	async getJWT() {
-		const resp =  await fetch("http://127.0.0.1:5000/auth/ft", { method: 'GET'});
-		console.log(resp);
+		console.log("ik ga 5000 fetchen");
+		const resp =  await fetch("/auth/ft", { 
+			method: 'GET',
+			//mode: 'no-cors',
+		});
+		//const body = await resp.json();
+		const body = await resp.text();
+		console.log(body);
+		console.log("ik heb 5000 gefetcht");
+		//console.log(resp);
+		//const respa = await resp;
+		//console.log(respa);
 		//.then((response) => response.json())
 		return "gedaan";
 	}
