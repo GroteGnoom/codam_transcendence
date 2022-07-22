@@ -19,6 +19,10 @@ export class UsersService {
 		return this.userRepository.find();
 	}
 
+	setUsername(username: string) {
+		// return this.userRepository.save(username);
+	}
+
 	findUsersById(id: number) {
 		return this.userRepository.findOneBy({id: id});
 	}

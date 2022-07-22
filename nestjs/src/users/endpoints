@@ -1,11 +1,13 @@
 Users endpoints:
 
-GET /Users 						    retrieve Users
+GET /Users 					retrieve Users
 
-GET /Users/{id} 				    get username
+GET /Users/{id} 			get username
 
-POST /Users/{id} 					set username
+POST /Users/username 		set username
 
-GET /Users/id/{id}                  find user by id
+POST /Users/                set username
 
-DELETE Users/{id}                   delete Users
+GET /Users/id/{id}          find user by id
+
+DELETE Users/{id}           delete Users

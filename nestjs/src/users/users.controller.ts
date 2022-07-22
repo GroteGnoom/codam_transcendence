@@ -33,4 +33,11 @@ export class UsersController {
 	createUsers(@Body() createUserDto: CreateUserDto) {
 		return this.userService.createUser(createUserDto);
 	}
+
+	@Post('setusername')
+	@UsePipes(ValidationPipe)
+	setUsername(username: string) {
+		this.logger.log("setUsername called");
+		return this.userService.setUsername(username);
+	}
 }
