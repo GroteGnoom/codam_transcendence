@@ -12,6 +12,12 @@ import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import "express-session";
+declare module "express-session" {
+  interface SessionData {
+    logged_in: boolean;
+  }
+}
 
 @Controller('auth')
 export class AuthController
@@ -35,6 +41,7 @@ export class AuthController
 		this.logger.log(jwt );
 		response.cookie('user', req.user);
 		response.cookie('token', jwt.access_token);
+		req.session.logged_in = true;
 		return {url:'http://127.0.0.1:3000/logged_in/thetoken'};
 		//return user;
 	}
@@ -67,6 +74,7 @@ export class AuthController
 		return req.cookies;
 	}
 
+	/*
 	@Get('amiloggedin')
 	async amILoggedIn(@Req() req) {
 		if (req.cookies['user']) {
@@ -77,6 +85,15 @@ export class AuthController
 			if (req.cookies['token'] && req.cookies['token'] == jwt.access_token) //doesn't work, jwt sign does not just depend on the inputs
 				return true;
 		}
+		return false;
+	}
+   */
+
+	@Get('amiloggedin')
+	amILoggedIn(@Req() request: Request) {
+		this.logger.log("logged in?", request.session.logged_in);
+		if (request.session.logged_in)
+			return true;
 		return false;
 	}
 }
