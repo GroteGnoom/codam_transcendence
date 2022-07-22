@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 
 
-const Logged_in = () => 
+const LoggedIn = () => 
 {  
 	let { token } = useParams();
 	localStorage.setItem('token', token!);
@@ -16,4 +16,4 @@ const Logged_in = () =>
 	)
 	}
 
-export default Logged_in
+export default LoggedIn
