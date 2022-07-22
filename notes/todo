@@ -6,5 +6,6 @@ check where entries are saved
 Iris
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
-[ ] start met de user account pagina
 [V] aantekingen frontend
+[ ] user account pagina:
+[ ] set username
