@@ -18,24 +18,6 @@ class DoPost extends React.Component {
 		//.then((response) => response.json())
 		return "gedaan";
 	}
-	async handle() {
-		await fetch("http://127.0.0.1:5000/users/create", {
-			method: 'POST',
-			//redirect: 'follow',
-			//mode: 'no-cors',
-			headers: {'Content-Type':'application/json'},
-			body: JSON.stringify({
-				username: this.state.username,
-				password: "passpaaass",
-				email: "bla@bla.com",
-			})
-		})
-		// .then(response => response.json())
-		.then(responseJson => {
-			console.log(responseJson);
-		});
-		console.log('gedaan');
-	}
 
     // componentDidMount() {
     //     this.handle()
@@ -44,13 +26,6 @@ class DoPost extends React.Component {
 	render () {
 		return (
 			<div>
-			<form onSubmit={this.handle}>
-			<label>
-			Name:
-				<input type="text" name="name" />
-			</label>
-			<input type="submit" value="Submit" />
-			</form>
 			<form onSubmit={this.getJWT}>
 			<label>
 			Get JWT:
