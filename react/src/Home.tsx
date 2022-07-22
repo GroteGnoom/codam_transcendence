@@ -16,7 +16,7 @@ const Home = () =>
                   <Link to= {{pathname:"/login"}}><Button variant="contained">Login</Button></Link>
                   <Link to= {{pathname:"/pinkpong"}}><Button variant="contained">PinkPong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button variant="contained">Chat</Button></Link>
-                  <Link to= {{pathname:"/account"}}><Button variant="contained">Account</Button></Link>
+                  <Link to= {{pathname:"/account"}}><Button variant="contained">My account</Button></Link>
             </header>
             </div>
 		</main>

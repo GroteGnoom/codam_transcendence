@@ -37,5 +37,7 @@ We can use Bootstrap to very easily make a good looking website (Rutger)
 
 Our frontend also contains a backend: we listen and can send request to port 3000, and for the backend this is port 5000. There is no communication possible between the browser and the frontend, for which we need a websocket.
 
+`` needed for fetching with variables inside.
+
 3. postgres - database
 There is not a lot of code around the database, only the dockerfiles that set up the database.
