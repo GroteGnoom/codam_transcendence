@@ -39,10 +39,10 @@ export class AuthController
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
 		const jwt= await this.authService.login(req.user);
 		this.logger.log(jwt );
-		response.cookie('user', req.user);
-		response.cookie('token', jwt.access_token);
+		//response.cookie('user', req.user);
+		//response.cookie('token', jwt.access_token);
 		req.session.logged_in = true;
-		return {url:'http://127.0.0.1:3000/logged_in/thetoken'};
+		return {url:'http://127.0.0.1:3000/'};
 		//return user;
 	}
 	//async getUserFromDiscordLogin(@Req() req): Promise<any> {
