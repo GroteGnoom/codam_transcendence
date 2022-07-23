@@ -15,21 +15,22 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Channel } from './Chat.types';
 
 
 interface ChannelListProps { 
     openChat: any;
     activeChannel?: string;
+    setError: (err: string) => void;
 }
 
 interface ChannelListState { 
-    channels: any[];
+    channels: Channel[];
     newChannel: string;
     newChannelType: string;
     newChannelPassword: string;
     open: boolean;
     passwordVisible: boolean;
-    error: string;
 }
 
 class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
@@ -43,7 +44,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             newChannelPassword: "",
             open: false,
             passwordVisible: false,
-            error: "",
         };
     }
 
@@ -81,7 +81,9 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         })            
         .then( () => this.handleClose() )
         .then( () => this.getChannels() )
-        .catch((err: Error) => this.setState({error: err.message}))
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
 	}
 
     //Helpers
@@ -95,7 +97,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     renderChannels = () => {
         const channel = this.state.channels.map((el) => (
-            <ListItem sx={ { height: 40 } }> 
+            <ListItem sx={ { height: 40 } } key={el.name}> 
                 <ListItemButton selected={el.name==this.props.activeChannel} 
                     onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     <ListItemText primary={el.name} />
@@ -103,7 +105,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             </ListItem>
         ))  
         channel.push (            
-            <ListItem >
+            <ListItem key="NEW">
             <ListItemButton onClick={this.handleClickOpen}>
                 <ListItemText primary="add channel" />
                 <ListItemAvatar>
@@ -196,18 +198,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                 </DialogActions>
                 </Box>
             </Dialog>
-            <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
-                <DialogTitle>Ohh noooss</DialogTitle>
-                <DialogContent>
-                    <Alert severity="error">
-                        {this.state.error}
-                    </Alert>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({error: ""})}>I'm sorry</Button>
-                </DialogActions>
-            </Dialog>
-
         </div>
         )
     }

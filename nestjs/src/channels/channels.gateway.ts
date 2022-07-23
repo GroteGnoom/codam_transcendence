@@ -9,14 +9,14 @@ import {
   import { Socket, Server } from 'socket.io';
   import { ChannelsService } from './channels.service';
   import { SocketMessage } from './message.dtos';
+
   @WebSocketGateway({
-    cors: {
+      cors: {
       origin: '*',
-    },
+      },
   })
-  export class ChannelsGateway
-    implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-  {
+
+  export class ChannelsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     constructor(private channelsService: ChannelsService) {}
   
     @WebSocketServer() server: Server;
@@ -42,4 +42,17 @@ import {
       console.log(`Connected ${client.id}`);
       //Do stuffs
     }
+<<<<<<< HEAD
   }
+=======
+  }
+
+  
+
+//   Lifecycle hooks#
+// There are 3 useful lifecycle hooks available. All of them have corresponding interfaces and are described in the following table:
+
+// OnGatewayInit	Forces to implement the afterInit() method. Takes library-specific server instance as an argument (and spreads the rest if required).
+// OnGatewayConnection	Forces to implement the handleConnection() method. Takes library-specific client socket instance as an argument.
+// OnGatewayDisconnect	Forces to implement the handleDisconnect() method. Takes library-specific client socket instance as an argument.
+>>>>>>> d318f79b8b8c788d96d37f27383871c73c57b515
