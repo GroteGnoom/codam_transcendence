@@ -26,6 +26,14 @@ The x.module.ts files specify the stuff used by the module and import the necess
 
 When using `make fg`, the logs of the nestjs are shown; f.e. the adding of controllers by the RoutesResolver and the mappings of our controllers to their endpoints. We also log information by using nestjs' logger.log function.
 
+How to store user information: sessions/cookies?
+
+Input validation: https://docs.nestjs.com/techniques/validation
+Do we want a global validation pipe??
+All different input validators: https://github.com/typestack/class-validator
+
+Decorators associate classes with required metadata and enable Nest to create a routing map (tie requests to the corresponding controllers).
+
 2. react - frontend
 File structure:
 `node_modules` - works same as for our backend
@@ -37,7 +45,21 @@ We can use Bootstrap to very easily make a good looking website (Rutger)
 
 Our frontend also contains a backend: we listen and can send request to port 3000, and for the backend this is port 5000. There is no communication possible between the browser and the frontend, for which we need a websocket.
 
-`` needed for fetching with variables inside.
+`` needed for fetching with variables inside call.
+
+-----React-----
+-library, not framework
+-JavaScript Syntax Extension: HTML + JavaScript code
+-virtual DOM (vDOM): copy of the real DOM, but lightweight, React finds the exact change in VDOM objects
+
+Features:
+-components: are shown in webpage, they return a set of react elements; should inherit from react.Compnent and should have a render method. The render method returns HTML.
+Constructor functions can be called when component gets initiated- here the component properties are initiated. Component properties are kept in a state object. When the state object changes, the component re-renders.
+To change something in the state component you run the this.setState() method.
+When there is a constructor, props should be passed to the constructor, and to the React.Component via the super() method.
+
+componentDidMount(): when component is mounted, then execute function f.e.
+
 
 3. postgres - database
 There is not a lot of code around the database, only the dockerfiles that set up the database.

@@ -3,8 +3,12 @@ once nestjs/config has updated its dependencies, maybe we can upgrade to nestjs 
 check where entries are saved
 127.0.0.1:5000/users does show them, so they must be saved somewhere?
 
-Iris
+Iris----
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
-[ ] start met de user account pagina
 [V] aantekingen frontend
+[ ] user account pagina:
+[ ] set username
+
+user authentication -> set username page -> create user
+when clicked on my account -> user already exists -> set account properties

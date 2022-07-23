@@ -13,17 +13,4 @@ export class User {
 		default: '',
 	})
 	username: string;
-
-	@Column({
-		name: 'email_address',
-		nullable: false,
-		default: '',
-	})
-	email: string;
-
-	@Column({
-		nullable: false,
-		default: '',
-	})
-	password: string;
 }
