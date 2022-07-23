@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import ChatWindow from './ChatWindow';
-import ChannelList from './ChannelList';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import Stack from '@mui/material/Stack';
+import { useState } from 'react';
+import ChannelList from './ChannelList';
 import ChannelSettings from './ChannelSettings';
-import { Alert, Dialog, DialogTitle, DialogActions, DialogContent, Button } from "@mui/material";
+import ChatWindow from './ChatWindow';
 
 const Chat = () => {
     const [activeChannel, setActiveChannel] = useState();// return prop and setter

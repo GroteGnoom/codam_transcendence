@@ -9,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
+import { io } from "socket.io-client";
 
 interface ChatWindowProps { 
     channel: string;
@@ -22,7 +23,7 @@ interface ChatWindowState {
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
-    private webSocket: WebSocket = new WebSocket('ws://127.0.0.1:5000');
+    private webSocket: any = undefined;
 
     constructor(props: ChatWindowProps){
         super(props);
@@ -43,54 +44,59 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         })
     }
 
-    // openWebsocket() {        
-    //     console.log('Opening WebSocket');
-    //     this.webSocket = new WebSocket('ws://localhost:5000');
-    //     this.webSocket.onopen = (event) => {
-    //         console.log('Open:', event);
-    //     }
-    //     this.webSocket.onclose = (event) => {
-    //         console.log('Close:', event);
-    //     }
-    //     this.webSocket.onmessage = (event) => {
-    //         const chatMessageDto = JSON.parse(event.data);
-    //         console.log('Message:', chatMessageDto);
-    //     }
-    //     this.webSocket.onerror = (err: any) => {
-    //         console.error(
-    //             "Socket encountered error: ",
-    //             err,
-    //             "Closing socket"
-    //         );
+    onReceiveMessage(socketMessage: any){   //subscribed to recMessage events through ws
+        if (socketMessage.channel === this.props.channel) {
+            console.log("Received a message for this channel")
+            this.setState( { messages: [...this.state.messages, socketMessage.message] } );
+        } else {
+            console.log(`Message for ${socketMessage.channel} is not important` )
+        }        
+    }
 
-    //         this.webSocket.close();
-    //     };
-    // }
+    openWebsocket() {
+        if (!this.webSocket) {
+            console.log('Opening WebSocket');
+            this.webSocket = io("ws://localhost:5000");
+            this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
+        }
+    }
 
-    // componentDidMount() {
-    //     console.log("Mounting", this.props.channel)
-    //     this.openWebsocket()
-    // }
+    componentDidMount() {
+        console.log("Mounting", this.props.channel)
+        this.getMessages()
+        this.openWebsocket()
+    }
 
-    componentDidUpdate() {
+    componentDidUpdate() { // this function shouldnt be necessary, look for solution when switching channels
         console.log("updating")
         this.getMessages()
     }
 
     async postMessage() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { 
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-			body: JSON.stringify({
+        this.webSocket.emit("sendMessage", { 
+            "channel": this.props.channel,
+            "message": {
                 "sender": 7,
                 "text": this.state.text
-			})
-        })
-		.then((response) => response.json())
-        .then(() => this.setState({text: ""}))
-        .then(() => this.getMessages())
-
+            }
+        }) //There is no need to run JSON.stringify() on objects as it will be done for you by Socket.io
+        this.setState({text: ""})
 	}
+
+    // async postMessage() {
+	// 	return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { 
+    //         method: 'POST',
+    //         headers: {'Content-Type':'application/json'},
+	// 		body: JSON.stringify({
+    //             "sender": 7,
+    //             "text": this.state.text
+	// 		})
+    //     })
+	// 	.then((response) => response.json())
+    //     .then(() => this.setState({text: ""}))
+    //     .then(() => this.getMessages())
+
+	// }
 
     formatMessageTime(message: any) {
         const date = new Date(message.date)
@@ -175,19 +181,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     </IconButton>
                                 </Grid>                                
                             </Grid>
-
-                            <Box
-      component="form"
-      sx={{
-        '& > :not(style)': { m: 1, width: '25ch' },
-      }}
-      noValidate
-      autoComplete="off"
-    >
-      <TextField id="outlined-basic" label="Outlined" variant="outlined" />
-      <TextField id="filled-basic" label="Filled" variant="filled" />
-      <TextField id="standard-basic" label="Standard" variant="standard" />
-    </Box>
                         </Box>
                     </Paper>
                 </Container>
