@@ -19,3 +19,7 @@ We're almost at 4. Posting and getting data from tables
 about package.lock:
 https://stackoverflow.com/questions/44206782/do-i-commit-the-package-lock-json-file-created-by-npm-5
 https://stackoverflow.com/questions/45022048/why-does-npm-install-rewrite-package-lock-json
+
+
+two-factor auth via goole authenticator:
+https://wanago.io/2021/03/08/api-nestjs-two-factor-authentication/

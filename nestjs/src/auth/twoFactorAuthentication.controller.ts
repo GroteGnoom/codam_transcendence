@@ -59,4 +59,26 @@ export class TwoFactorAuthenticationController {
 		}
 		await this.usersService.turnOnTwoFactorAuthentication(request.user.id);
 	}
+
+	@Post('authenticate')
+	@HttpCode(200)
+	//@UseGuards(JwtAuthenticationGuard)
+	async authenticate(
+		@Req() request: RequestWithUser,
+		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
+	) {
+		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
+			twoFactorAuthenticationCode, request.user
+		);
+		if (!isCodeValid) {
+			throw new UnauthorizedException('Wrong authentication code');
+		}
+
+		//const accessTokenCookie = this.authenticationService.getCookieWithJwtAccessToken(request.user.id, true);
+
+		//request.res.setHeader('Set-Cookie', [accessTokenCookie]);
+		//TODO set user to authenticated
+
+		return request.user;
+	}
 }
