@@ -22,4 +22,12 @@ export class User {
 
 	@Column({ default: true })
   	isActive: boolean;
+	@Column({
+		nullable: false,
+		default: '',
+	})
+
+	@Column({ nullable: true })
+	public twoFactorAuthenticationSecret?: string;
+	password: string;
 }
