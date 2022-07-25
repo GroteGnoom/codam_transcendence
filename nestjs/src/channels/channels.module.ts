@@ -4,9 +4,13 @@ import { ChannelsService } from './channels.service';
 import { ChannelsGateway} from './channels.gateway'
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Channel, Message } from "src/typeorm";
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Channel, Message]), ],
+  imports: [
+    TypeOrmModule.forFeature([Channel, Message]), 
+    UsersModule  
+  ],
   controllers: [ChannelsController],
   providers: [ChannelsService, ChannelsGateway]
 })

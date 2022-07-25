@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany } from 'typeorm';
+import { User } from './user.entity';
     
 @Entity()
 export class Channel {
@@ -11,8 +12,8 @@ export class Channel {
     @Column("int", { array: true })
     admins: number[];
 
-    @Column("int", { array: true })
-    members: number[];
+    // @Column("int", { array: true })
+    // members: number[];
 
     @Column({ nullable: true })
     password: string;
@@ -20,6 +21,6 @@ export class Channel {
     @Column()
     channelType: string;
 
-    // @OneToMany(() => Message, (message: Message) => message.channel)
-    // messages: Message[]
+    @ManyToMany(() => User, (user: User) => user.id)
+    members: User[]
 } 
