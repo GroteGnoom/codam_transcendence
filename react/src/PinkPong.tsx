@@ -78,25 +78,21 @@ export default function PinkPong() {
 		if (event.key === "k") {
 			if (paddleP1X < canvas.width) {
 				paddleP1X = paddleP1X + paddleSpeed;
-				// this.setState({paddleX: this.state.paddleX + 10});
 			}
 		}
 		if (event.key === "j") {
 			if (paddleP1X > 0) {
 				paddleP1X = paddleP1X - paddleSpeed;
-				// this.setState({paddleX: this.state.paddleX - 10});
 			}
 		}
 		if (event.key === "x") {
 			if (paddleP2X < canvas.width) {
 				paddleP2X = paddleP2X + paddleSpeed;
-				// this.setState({Opponent: this.state.Opponent + 10});
 			}
 		}
 		if (event.key === "z") {
 			if (paddleP2X > 0) {
 				paddleP2X = paddleP2X - paddleSpeed;
-				// this.setState({Opponent: this.state.Opponent - 10});
 			}
 		}
 	}
@@ -145,74 +141,47 @@ export default function PinkPong() {
 			draw();
 		}
 	}
+	
+	function drawRectangle(x:number, y:number, width:number, height:number, fillColour:string, strokeColour:string) {
+		ctx.save();
+		ctx.beginPath();
+		{
+			ctx.fillStyle = fillColour;
+			ctx.strokeStyle = strokeColour;
+			ctx.rect(x, y, width, height);
+			ctx.fill();
+			ctx.stroke();
+		}
+		ctx.closePath();
+		ctx.restore();
+	}
+
+	function drawText(text:string, x:number, y:number, font:string) {
+		ctx.save();
+		ctx.beginPath();
+		{
+			ctx.font = font;
+			ctx.fillText(text, x, y);
+		}
+		ctx.closePath();
+		ctx.restore();
+	}
 
 	function draw(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
 		//background
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.fillStyle = 'pink';
-			ctx.rect(0, 0, canvas.width, canvas.height);
-			ctx.fill();
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
 		//score P1
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.font = '48px serif';
-			ctx.fillText(scoreP1.toString(), 600, 300);
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawText(scoreP1.toString(), 600, 300, '48px serif');
 		//score P2
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.font = '48px serif';
-			ctx.fillText(scoreP2.toString(), 600, 800);
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawText(scoreP2.toString(), 600, 800, '48px serif');
 		//paddle P1
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.fillStyle = 'black';
-			ctx.strokeStyle = 'yellow';
-			ctx.rect(paddleP1X, paddleP1Y, paddleWidth, paddleHeight);
-			ctx.fill();
-			ctx.stroke();
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawRectangle(paddleP1X, paddleP1Y, paddleWidth, paddleHeight, 'black', 'yellow');
 		//paddle P2
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.fillStyle = 'white';
-			ctx.strokeStyle = 'yellow';
-			ctx.rect(paddleP2X, paddleP2Y, paddleWidth, paddleHeight);
-			ctx.fill();
-			ctx.stroke();
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawRectangle(paddleP2X, paddleP2Y, paddleWidth, paddleHeight, 'white', 'yellow');
 		//ball
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.fillStyle = 'blue';
-			ctx.strokeStyle = 'yellow';
-			ctx.arc(ballX, ballY, ballWidth, -1.5 * Math.PI, 1.5 * Math.PI);
-			ctx.fill();
-			ctx.stroke();
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
 		if (gameEnd == true)
 			endGame();
 		else
@@ -225,36 +194,14 @@ export default function PinkPong() {
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		//background
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.fillStyle = 'pink';
-			ctx.rect(0, 0, canvas.width, canvas.height);
-			ctx.fill();
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
 		//Show winner
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.font = '64px serif';
-			if (scoreP1 == maxScore)
-				ctx.fillText("Player 1 has won!", 440, 400);
-			else
-				ctx.fillText("Player 2 has won!", 440, 400);
-		}
-		ctx.closePath();
-		ctx.restore();
+		if (scoreP1 == maxScore)
+			drawText("Player 1 has won!", 440, 400, '64px serif');
+		else
+			drawText("Player 2 has won!", 440, 400, '64px serif');
 		//Show score
-		ctx.save();
-		ctx.beginPath();
-		{
-			ctx.font = '48px serif';
-			ctx.fillText(scoreP1.toString() + " - " + scoreP2.toString(), 600, 600);
-		}
-		ctx.closePath();
-		ctx.restore();
+		drawText(scoreP1.toString() + " - " + scoreP2.toString(), 600, 600, '48px serif');
 	}
 
 
