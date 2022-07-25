@@ -8,10 +8,14 @@ import {
 	UseGuards,
 	Req,
 	Get,
+	Body,
+	UnauthorizedException, HttpCode,
 } from '@nestjs/common';
 import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
 import { Response } from 'express';
 import { User } from '../typeorm/user.entity';
+import { UsersService } from '../users/users.service';
+import { TwoFactorAuthenticationDto } from './dto'
 //import JwtAuthenticationGuard from '../jwt-authentication.guard';
 //import RequestWithUser from '../requestWithUser.interface';
  
@@ -25,6 +29,7 @@ export default RequestWithUser;
 export class TwoFactorAuthenticationController {
 	constructor(
 		private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
+		private readonly usersService: UsersService
 	) {}
 
 	@Post('generate')
@@ -37,5 +42,21 @@ export class TwoFactorAuthenticationController {
 	@Get("generate")
 	warning() { 
 		return "you're supposed to POST!"
+	}
+
+	@Post('turn-on')
+	@HttpCode(200)
+	//@UseGuards(JwtAuthenticationGuard)
+	async turnOnTwoFactorAuthentication(
+		@Req() request: RequestWithUser,
+		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
+	) {
+		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
+			twoFactorAuthenticationCode, request.user
+		);
+		if (!isCodeValid) {
+			throw new UnauthorizedException('Wrong authentication code');
+		}
+		await this.usersService.turnOnTwoFactorAuthentication(request.user.id);
 	}
 }
