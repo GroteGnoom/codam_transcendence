@@ -38,8 +38,6 @@ export default function PinkPong() {
 		if (!canvas)
 			throw ("error");
 		ctx = canvas.getContext("2d");
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
 		
 		if (gameEnd === false)
 		{
@@ -110,6 +108,9 @@ export default function PinkPong() {
 	}
 
 	function update(){
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
 		if (gameEnd == false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
