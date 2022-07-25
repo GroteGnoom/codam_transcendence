@@ -10,7 +10,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
 
-
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
 class Account extends react.Component<{}, {users:[], username: string, intraName: string, isActive: boolean, error: string}> { //set the props to empty object, and set the state to {name: string}
@@ -18,8 +17,8 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
         super(props);
         this.state = {
             users: [],
-            username: "default",
-            intraName: "bla",
+            username: "",
+            intraName: "",
             isActive: true,
             error: ""
         }
@@ -27,6 +26,8 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
 
     async createUser() {
         console.log("try create user...");
+        console.log("current users");
+        console.log(this.getUsers());
         return await fetch("http://127.0.0.1:5000/users/create", {
             method: "POST",
             headers: {'Content-Type':'application/json'},
@@ -51,6 +52,14 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
         .catch((err: Error) => this.setState({error: err.message}))
     }
 
+    async getUser() {
+        // return await fetch(`http://127.0.0.1:5000/users/id/${this.state.user.id}`, {
+        return await fetch("http://127.0.0.1:5000/users/id/1", {
+            method: "GET" })
+        .then((response) => response.json())
+        .catch((err: Error) => this.setState({error: err.message}))
+    }
+
     async changeUsername () {
         return await fetch("http://127.0.0.1:5000/users/setusername", {
             method: "POST",
@@ -72,12 +81,14 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
 	}
 
     async getUsers () {
-        return await fetch("http://127.0.0.1:5000/users", { method: "GET"} )
+        return await fetch("http://127.0.0.1:5000/users", {
+            method: "GET"} )
         .then((response) => response.json())
+        .catch((err: Error) => this.setState({error: err.message}))
     }
 
     render(){ // holds the HTML code
-        console.log(this.state.users);
+        console.log(this.state.username);
 
         return (
             // render user etc. when database is updated!
@@ -106,14 +117,14 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
                     > Create new user! </Button>
                 </div>
                 <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
-                <DialogTitle>Ohh noooss</DialogTitle>
+                <DialogTitle>Erreur</DialogTitle>
                 <DialogContent>
                     <Alert severity="error">
                         {this.state.error}
                     </Alert>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({error: ""})}>I'm sorry</Button>
+                    <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button>
                 </DialogActions>
             </Dialog>
             </ThemeProvider>

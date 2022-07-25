@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { useContainer } from 'class-validator'
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {logger: ['log']});
   app.use(cookieParser());
+  // useContainer(app.select(AppModule), { fallbackOnErrors: true }); // for custom validation
   app.use(
 	  session({
 		  secret: 'my-secret', //TODO actual secret

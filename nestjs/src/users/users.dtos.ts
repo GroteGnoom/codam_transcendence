@@ -1,8 +1,9 @@
-import { IsNotEmpty, MinLength } from "class-validator";
+import { IsNotEmpty } from "class-validator";
+import { uniqueUser } from './uniqueUser';
 
 export class CreateUserDto {
 	@IsNotEmpty()
-	@MinLength(1) // same as not empty?
+	// @uniqueUser({message: 'Username already exists. Choose another name.'})
 	// TODO: add more validation: no special characters etc.
 	username: string;
 
