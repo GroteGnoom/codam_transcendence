@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
-import ChatWindow from './ChatWindow';
-import ChannelList from './ChannelList';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import Stack from '@mui/material/Stack';
-
+import { useState } from 'react';
+import ChannelList from './ChannelList';
+import ChannelSettings from './ChannelSettings';
+import ChatWindow from './ChatWindow';
 
 const Chat = () => {
     const [activeChannel, setActiveChannel] = useState();// return prop and setter
+	const [settingsOpen, openSettings] = useState(false);
+	const [error, setError] = useState("");
+
+	const errorPopup = (<Dialog open={error !== ""} >  {/*pop window for new error message */}
+		<DialogTitle>Ohh noooss</DialogTitle>
+		<DialogContent>
+			<Alert severity="error">
+				{error}
+			</Alert>
+		</DialogContent>
+		<DialogActions>
+			<Button variant="contained" onClick={() => setError("")}>I'm sorry</Button>
+		</DialogActions>
+	</Dialog>);
 
 	return (
 		<main>
 			<Stack direction="row">
-				<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} />
-            	{activeChannel && <ChatWindow channel={activeChannel} />}
+				<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+            	{activeChannel && <ChatWindow channel={activeChannel} openSettings={openSettings} />}
+				{settingsOpen && <ChannelSettings channel={activeChannel} openSettings={openSettings} setError={setError} />}
+				{errorPopup}
 			</Stack>
 		</main>
 	)

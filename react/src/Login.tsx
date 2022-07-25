@@ -1,32 +1,21 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
 
-
-class DoPost extends React.Component<{}, { username: string  }>  {
-    constructor(props: any){
-        super(props);
-        this.state = { 
-			username: ""
-        }	
-    }
-	
-	async handle() {
-		await fetch("http://127.0.0.1:5000/users/create", {
-			method: 'POST',
-			//redirect: 'follow',
+class DoPost extends React.Component {
+	async getJWT() {
+		console.log("ik ga 5000 fetchen");
+		const resp =  await fetch("/auth/ft", { 
+			method: 'GET',
 			//mode: 'no-cors',
-			headers: {'Content-Type':'application/json'},
-			body: JSON.stringify({
-				username: this.state.username,
-				password: "passpaaass",
-				email: "bla@bla.com",
-			})
-		})
-		// .then(response => response.json())
-		.then(responseJson => {
-			console.log(responseJson);
 		});
-		console.log('gedaan');
+		//const body = await resp.json();
+		const body = await resp.text();
+		console.log(body);
+		console.log("ik heb 5000 gefetcht");
+		//console.log(resp);
+		//const respa = await resp;
+		//console.log(respa);
+		//.then((response) => response.json())
+		return "gedaan";
 	}
 
     // componentDidMount() {
@@ -35,13 +24,15 @@ class DoPost extends React.Component<{}, { username: string  }>  {
 
 	render () {
 		return (
-			<form onSubmit={this.handle}>
+			<div>
+			<form onSubmit={this.getJWT}>
 			<label>
-			Name:
+			Get JWT:
 				<input type="text" name="name" />
 			</label>
 			<input type="submit" value="Submit" />
 			</form>
+			</div>
 		)
 	}
 }

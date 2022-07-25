@@ -1,16 +1,15 @@
-import {    Body, Controller, Get, Post, Delete, Put, Param,
-            Res, UsePipes, HttpStatus, ValidationPipe, NotFoundException
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, Session, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateChannelDto } from 'src/channels/channels.dtos';
-import { MessageDto } from './message.dtos';
 import { ChannelsService } from './channels.service';
+import { MessageDto } from './message.dtos';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('channels')
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
 
     @Get()
-    getChannels() {        
+    getChannels() { 
         return this.channelsService.getChannels();
     }
 

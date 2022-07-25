@@ -5,6 +5,16 @@ import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { MessageDto } from './message.dtos';
 
+import {
+    SubscribeMessage,
+    WebSocketGateway,
+    OnGatewayInit,
+    WebSocketServer,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+   } from '@nestjs/websockets';
+   import { Socket, Server } from 'socket.io';
+
 @Injectable()
 export class ChannelsService {
     constructor(

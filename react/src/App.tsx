@@ -5,6 +5,7 @@ import Login from './Login';
 import PinkPong from './PinkPong';
 import Chat from './Chat/Chat';
 import Account from './account/Account';
+import LoggedIn from './LoggedIn';
 
 function App() {
 	return (
@@ -14,6 +15,7 @@ function App() {
 			<Route path={"/pinkpong"} element={<PinkPong />} />
 			<Route path={"/chat"} element={<Chat />} />
 			<Route path={"/account"} element={<Account />} />
+			<Route path={"/logged_in/:token"} element={<LoggedIn />} />
       	</Routes>
 		);
 	}

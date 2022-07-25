@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import AddIcon from '@mui/icons-material/Add';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { IconButton, List, ListItem, ListItemText, TextField, Typography } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-import Box from '@mui/material/Box';
-import { Alert, List, ListItem, ListItemText, TextField, IconButton, Typography } from "@mui/material";
-
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import React from 'react';
+import { Channel } from './Chat.types';
 
 
 interface ChannelListProps { 
     openChat: any;
     activeChannel?: string;
+    setError: (err: string) => void;
 }
 
 interface ChannelListState { 
-    channels: any[];
+    channels: Channel[];
     newChannel: string;
     newChannelType: string;
     newChannelPassword: string;
     open: boolean;
     passwordVisible: boolean;
-    error: string;
 }
 
 class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
@@ -43,7 +43,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             newChannelPassword: "",
             open: false,
             passwordVisible: false,
-            error: "",
         };
     }
 
@@ -81,7 +80,9 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         })            
         .then( () => this.handleClose() )
         .then( () => this.getChannels() )
-        .catch((err: Error) => this.setState({error: err.message}))
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
 	}
 
     //Helpers
@@ -95,15 +96,15 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     renderChannels = () => {
         const channel = this.state.channels.map((el) => (
-            <ListItem sx={ { height: 40 } }> 
-                <ListItemButton selected={el.name==this.props.activeChannel} 
+            <ListItem sx={ { height: 40 } } key={el.name}> 
+                <ListItemButton selected={el.name===this.props.activeChannel} 
                     onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     <ListItemText primary={el.name} />
                 </ListItemButton>    
             </ListItem>
         ))  
         channel.push (            
-            <ListItem >
+            <ListItem key="NEW">
             <ListItemButton onClick={this.handleClickOpen}>
                 <ListItemText primary="add channel" />
                 <ListItemAvatar>
@@ -120,17 +121,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             {channel}
         </List>
         );
-
-            // <div>
-            //     <h2>Channels</h2>
-            //     <ButtonGroup
-            //         orientation="vertical"
-            //         aria-label="vertical contained button group"
-            //         variant="text"
-            //         >
-            //         {channel}
-            //     </ButtonGroup>
-            // </div>
     }
 
     render(){
@@ -167,27 +157,28 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         <FormControlLabel value="private" control={<Radio />} label="private" />
                         <FormControlLabel value="protected" control={<Radio />} label="protected" />
                     </RadioGroup>
-                    {this.state.newChannelType === 'protected' && <TextField
-                        onChange={(event) => { this.setState({newChannelPassword: event.target.value}) }}
-                        autoFocus
-                        value={this.state.newChannelPassword}
-                        margin="dense"
-                        id="name"
-                        label="Password"
-                        type={this.state.passwordVisible ? "text" : "password"}
-                        fullWidth
-                        variant="standard"
-                        InputProps={{
-                            endAdornment: (
-                            <IconButton onClick={() => this.setState({passwordVisible :!this.state.passwordVisible})}
-                                aria-label="send"
-                                color="secondary">
-                                <VisibilityIcon />
-                            </IconButton>
-                            ),
-                          }}                        
+                    {this.state.newChannelType === 'protected' && 
+                        <TextField
+                            onChange={(event) => { this.setState({newChannelPassword: event.target.value}) }}
+                            autoFocus
+                            value={this.state.newChannelPassword}
+                            margin="dense"
+                            id="name"
+                            label="Password"
+                            type={this.state.passwordVisible ? "text" : "password"}
+                            fullWidth
+                            variant="standard"
+                            InputProps={{
+                                endAdornment: (
+                                <IconButton onClick={() => this.setState({passwordVisible :!this.state.passwordVisible})}
+                                    aria-label="send"
+                                    color="secondary">
+                                    <VisibilityIcon />
+                                </IconButton>
+                                ),
+                            }}
                         />                            
-                        } 
+                    } 
 
                 </DialogContent>
                 <DialogActions>
@@ -196,18 +187,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                 </DialogActions>
                 </Box>
             </Dialog>
-            <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
-                <DialogTitle>Ohh noooss</DialogTitle>
-                <DialogContent>
-                    <Alert severity="error">
-                        {this.state.error}
-                    </Alert>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({error: ""})}>I'm sorry</Button>
-                </DialogActions>
-            </Dialog>
-
         </div>
         )
     }
