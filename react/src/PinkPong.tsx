@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import Home from './Home';
-import {Route, Navigate} from 'react-router-dom';
+import {Navigate, useNavigate } from 'react-router-dom';
 
 export default function PinkPong() {
 	const paddleWidth = 100;
@@ -23,8 +22,24 @@ export default function PinkPong() {
 	var ballVX: number;
 	var ballVY: number;
 
+	var gameEnd: boolean = false;
 	var scoreP1: number = 0;
 	var scoreP2: number = 0;
+
+	let navigate = useNavigate();
+
+	(async () => { 
+        // Do something before delay
+        console.log('before delay')
+
+        await delay(1000);
+
+        // Do something after
+        console.log('after delay')
+    })();
+	function delay(ms: number) {
+		return new Promise( resolve => setTimeout(resolve, ms) );
+	}
 
 	useEffect(() => {
 		canvas = document.getElementById("myCanvas");
@@ -34,9 +49,12 @@ export default function PinkPong() {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		
-		setGame();
-		componentDidMount();
-		update();
+		if (gameEnd === false)
+		{
+			setGame();
+			componentDidMount();
+			update();
+		}
 	}, []);
 	
 	function setGame() {
@@ -60,9 +78,7 @@ export default function PinkPong() {
 			ballVY = ballVY * ballSpeed;
 		}
 		else {
-			<Navigate to="/" replace={true} />
-			//end the game
-			//	https://reactrouter.com/docs/en/v6/components/navigate
+			gameEnd = true;
 		}
 	}
 
@@ -102,45 +118,48 @@ export default function PinkPong() {
 	}
 
 	function update(){
-		/*	handle top side */
-		if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - ballWidth <= paddleP1Y + paddleHeight)
-		{
-			/*	bounce top paddle */
-			ballVY = ballVY * -1;
-		}
-		else if (ballY < paddleP1Y)
-		{
-			/*	score a point */
-			scoreP2 = scoreP2 + 1;
-			setGame();
-		}
-		/*	handle bottom side */
-		if ((ballX + ballWidth > paddleP2X && ballX <= paddleP2X + paddleWidth) && ballY + ballWidth >= paddleP2Y)
-		{
-			/*	bounce bottom paddle */
-			ballVY = ballVY * -1;
-		}
-		else if (ballY > paddleP2Y)
-		{
-			/*	score a point */
-			scoreP1 = scoreP1 + 1;
-			setGame();
-		}
-		/*	bounce east wall */
-		if (ballX + ballWidth > canvas.width && ballVX > 0)
-		{
-			ballVX = ballVX * -1;
-		}
-		/*	bounce west wall */
-		else if (ballX - ballWidth <= 0 && ballVX < 0)
-		{
-			ballVX = ballVX * -1;
-		}
+		if (gameEnd == false){
 
-		/*	calculate next position */
-		ballY = ballY + ballVY;
-		ballX = ballX + ballVX;
-		draw();
+			/*	handle top side */
+			if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - ballWidth <= paddleP1Y + paddleHeight)
+			{
+				/*	bounce top paddle */
+				ballVY = ballVY * -1;
+			}
+			else if (ballY < paddleP1Y)
+			{
+				/*	score a point */
+				scoreP2 = scoreP2 + 1;
+				setGame();
+			}
+			/*	handle bottom side */
+			if ((ballX + ballWidth > paddleP2X && ballX <= paddleP2X + paddleWidth) && ballY + ballWidth >= paddleP2Y)
+			{
+				/*	bounce bottom paddle */
+				ballVY = ballVY * -1;
+			}
+			else if (ballY > paddleP2Y)
+			{
+				/*	score a point */
+				scoreP1 = scoreP1 + 1;
+				setGame();
+			}
+			/*	bounce east wall */
+			if (ballX + ballWidth > canvas.width && ballVX > 0)
+			{
+				ballVX = ballVX * -1;
+			}
+			/*	bounce west wall */
+			else if (ballX - ballWidth <= 0 && ballVX < 0)
+			{
+				ballVX = ballVX * -1;
+			}
+			
+			/*	calculate next position */
+			ballY = ballY + ballVY;
+			ballX = ballX + ballVX;
+			draw();
+		}
 	}
 
 	function draw(){
@@ -210,7 +229,13 @@ export default function PinkPong() {
 		}
 		ctx.closePath();
 		ctx.restore();
-		requestAnimationFrame(update);
+		if (gameEnd == true)
+		{
+			setTimeout(() => {
+				navigate("/chat", { replace: true });}, 3000);
+		}
+		else
+			requestAnimationFrame(update);
 	}
 
 
