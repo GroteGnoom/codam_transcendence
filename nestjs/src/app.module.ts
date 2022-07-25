@@ -7,6 +7,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import entities from './typeorm';
 import { ChannelsModule } from './channels/channels.module';
 import { AuthModule } from './auth/auth.module';
+import { TwoFactorAuthenticationModule } from './auth/twoFactorAuthentication.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -36,6 +37,7 @@ import { join } from 'path';
 			inject: [ConfigService],
 		}),
 		AuthModule,
+		TwoFactorAuthenticationModule,
 		UsersModule,
 		ChannelsModule,
 		ServeStaticModule.forRoot({
