@@ -99,9 +99,9 @@ export default function PinkPong() {
 
 	function update(){
 		if (gameEnd == false){
-
+			var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - ballWidth <= paddleP1Y + paddleHeight)
+			if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - 0 <= paddleP1Y + paddleHeight)
 			{
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
@@ -125,16 +125,15 @@ export default function PinkPong() {
 				setGame();
 			}
 			/*	bounce east wall */
-			if (ballX + ballWidth > canvas.width && ballVX > 0)
+			if (ballX + scrollBarWidth > canvas.width && ballVX > 0)
 			{
 				ballVX = ballVX * -1;
 			}
 			/*	bounce west wall */
-			else if (ballX - ballWidth <= 0 && ballVX < 0)
+			else if (ballX - 0 <= 0 && ballVX < 0)
 			{
 				ballVX = ballVX * -1;
 			}
-			
 			/*	calculate next position */
 			ballY = ballY + ballVY;
 			ballX = ballX + ballVX;
