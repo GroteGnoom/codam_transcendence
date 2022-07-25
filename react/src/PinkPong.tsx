@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import {Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function PinkPong() {
 	const paddleWidth = 100;
@@ -108,9 +108,6 @@ export default function PinkPong() {
 	}
 
 	function update(){
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-
 		if (gameEnd == false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
@@ -166,13 +163,13 @@ export default function PinkPong() {
 	function drawRectangle(x:number, y:number, width:number, height:number, fillColour:string, strokeColour:string) {
 		ctx.save();
 		ctx.beginPath();
-		{
-			ctx.fillStyle = fillColour;
-			ctx.strokeStyle = strokeColour;
-			ctx.rect(x, y, width, height);
-			ctx.fill();
-			ctx.stroke();
-		}
+	
+		ctx.fillStyle = fillColour;
+		ctx.strokeStyle = strokeColour;
+		ctx.rect(x, y, width, height);
+		ctx.fill();
+		ctx.stroke();
+	
 		ctx.closePath();
 		ctx.restore();
 	}
@@ -180,18 +177,20 @@ export default function PinkPong() {
 	function drawText(text:string, x:number, y:number, font:string) {
 		ctx.save();
 		ctx.beginPath();
-		{
-			ctx.font = font;
-			ctx.fillText(text, x, y);
-		}
+	
+		ctx.font = font;
+		ctx.fillText(text, x, y);
+	
 		ctx.closePath();
 		ctx.restore();
 	}
 
 	function draw(){
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
-		//background
+		// //background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
 		//score P1
 		drawText(scoreP1.toString(), 600, 300, '48px serif');
@@ -208,12 +207,23 @@ export default function PinkPong() {
 		else
 			requestAnimationFrame(update);
 	}
-
+	
 	function endGame() {
 		setTimeout(() => {
 			navigate("/", { replace: true });}, 5000); //Reroute to home page after 5 seconds
+		
+		getWindowSize();
+	}
 
+	function getWindowSize() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		drawEndScreen();
+	}
+
+	function drawEndScreen() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
 		//Show winner
@@ -223,16 +233,16 @@ export default function PinkPong() {
 			drawText("Player 2 has won!", 440, 400, '64px serif');
 		//Show score
 		drawText(scoreP1.toString() + " - " + scoreP2.toString(), 600, 600, '48px serif');
+		requestAnimationFrame(getWindowSize);
 	}
 
-
-  return (
-    <div>
-      <canvas
-        id="myCanvas"
-      >
-        Your browser does not support the HTML canvas tag.
-      </canvas>
-    </div>
-  );
+	return (
+		<div>
+			<canvas
+			id="myCanvas"
+			>
+			Your browser does not support the HTML canvas tag.
+			</canvas>
+		</div>
+	);
 }
