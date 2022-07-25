@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Home from './Home';
-import {Route} from 'react-router-dom';
+import {Route, Navigate} from 'react-router-dom';
 
 export default function PinkPong() {
 	const paddleWidth = 100;
@@ -60,6 +60,7 @@ export default function PinkPong() {
 			ballVY = ballVY * ballSpeed;
 		}
 		else {
+			<Navigate to="/" replace={true} />
 			//end the game
 			//	https://reactrouter.com/docs/en/v6/components/navigate
 		}
