@@ -1,1 +1,10 @@
 once nestjs/config has updated its dependencies, maybe we can upgrade to nestjs 9.0.0
+
+check where entries are saved
+127.0.0.1:5000/users does show them, so they must be saved somewhere?
+
+Iris
+[V] uitzoeken: async, await, promises asynchronous programming how does it work?
+https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
+[ ] start met de user account pagina
+[V] aantekingen frontend

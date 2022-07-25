@@ -1,44 +1,56 @@
-volumes:
-  react:
-    name: react
-    driver_opts:
-      type: none
-      device: src/
-      o: bind
-  nestjs:
-    name: nestjs
-    driver_opts:
-      type: none
-      device: src_nestjs/
-      o: bind
+# volumes:
+#   react:
+#     name: react
+#     driver_opts:
+#       type: none
+#       device: src/
+#       o: bind
+#   nestjs:
+#     name: nestjs
+#     driver_opts:
+#       type: none
+#       device: src_nestjs/
+#       o: bind
 
 services:
   react:
+    container_name: react
     image: react
     build: dockerfiles/react
     ports:
       - "3000:3000"
     volumes:
-      - react:/home/root/transcendence/src
-    restart: on-failure
-  nestjs:
-    image: nestjs
-    build: dockerfiles/nestjs
-    ports:
-      - "5000:5000"
-    volumes:
-      - nestjs:/home/root/transcendence_backend/src
+      - ./react:/home/root/transcendence/
     restart: on-failure
     networks:
       - transcendence
   postgres:
+    container_name: postgres
     image: postgres
-    build: dockerfiles/postgres
+    # build: dockerfiles/postgres
     ports:
       - "5432:5432"
+    env_file:
+      - ./dockerfiles/postgres/.env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
     restart: on-failure
     networks:
       - transcendence
+  nestjs:
+    container_name: nestjs
+    image: nestjs
+    build: dockerfiles/nestjs
+    # depends_on:
+    #   - postgres
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./nestjs:/home/root/transcendence_backend/
+    restart: on-failure
+    networks:
+      - transcendence
+
     
 networks: 
   transcendence:

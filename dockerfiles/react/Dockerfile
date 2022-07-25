@@ -1,19 +1,11 @@
 from debian:buster
 
+RUN echo bla
 RUN apt-get update && apt-get -y install curl
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get -y install nodejs yarn
 
-WORKDIR /home/root
-
-RUN npx create-react-app transcendence --template typescript
-
 WORKDIR /home/root/transcendence
-RUN npm install react-router-dom@6
-
-RUN sed -i '2 i "  proxy": "http://nestjs:5000",' package.json
-
-#ENTRYPOINT sleep infinity
-ENTRYPOINT npm start
+ENTRYPOINT ./start
 
 
