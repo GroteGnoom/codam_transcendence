@@ -5,8 +5,8 @@ export default function PinkPong() {
 	const paddleWidth = 100;
 	const paddleHeight = 25;
 	const ballWidth = 25;
-	const ballSpeed = 3;
-	const paddleSpeed = 10;
+	const ballSpeed = 4;
+	const paddleSpeed = 7;
 	const maxScore = 3;
 
 	var canvas: any;
@@ -21,6 +21,11 @@ export default function PinkPong() {
 	var ballY: number;
 	var ballVX: number;
 	var ballVY: number;
+
+	var leftKeyPressedP1: boolean;
+	var rightKeyPressedP1: boolean;
+	var leftKeyPressedP2: boolean;
+	var rightKeyPressedP2: boolean;
 
 	var gameEnd: boolean = false;
 	var scoreP1: number = 0;
@@ -52,6 +57,10 @@ export default function PinkPong() {
 			paddleP2Y = 1000;
 			ballX = 625;
 			ballY = 500;
+			leftKeyPressedP1 = false;
+			rightKeyPressedP1 = false;
+			leftKeyPressedP2 = false;
+			rightKeyPressedP2 = false;
 			var up = Math.random() - 0.5;
 			if (up > 0)
 				ballVY = 1;
@@ -71,29 +80,32 @@ export default function PinkPong() {
 
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
-		setInterval(handleKeyPress, 1);
+		document.addEventListener("keyup", handleKeyRelease, false);
+	}
+
+	function handleKeyRelease() {
+		leftKeyPressedP1 = false;
+		rightKeyPressedP1 = false;
+		leftKeyPressedP2 = false;
+		rightKeyPressedP2 = false;
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
 		if (event.key === "k") {
-			if (paddleP1X < canvas.width) {
-				paddleP1X = paddleP1X + paddleSpeed;
-			}
+			leftKeyPressedP1 = false;
+			rightKeyPressedP1 = true;
 		}
 		if (event.key === "j") {
-			if (paddleP1X > 0) {
-				paddleP1X = paddleP1X - paddleSpeed;
-			}
+			rightKeyPressedP1 = false;
+			leftKeyPressedP1 = true;
 		}
 		if (event.key === "x") {
-			if (paddleP2X < canvas.width) {
-				paddleP2X = paddleP2X + paddleSpeed;
-			}
+			leftKeyPressedP2 = false;
+			rightKeyPressedP2 = true;
 		}
 		if (event.key === "z") {
-			if (paddleP2X > 0) {
-				paddleP2X = paddleP2X - paddleSpeed;
-			}
+			rightKeyPressedP2 = false;
+			leftKeyPressedP2 = true;
 		}
 	}
 
@@ -137,6 +149,15 @@ export default function PinkPong() {
 			/*	calculate next position */
 			ballY = ballY + ballVY;
 			ballX = ballX + ballVX;
+			/*	calculate paddle positions */
+			if (leftKeyPressedP1 == true)
+				paddleP1X = paddleP1X - paddleSpeed;
+			if (rightKeyPressedP1 == true)
+				paddleP1X = paddleP1X + paddleSpeed;
+			if (leftKeyPressedP2 == true)
+				paddleP2X = paddleP2X - paddleSpeed;
+			if (rightKeyPressedP2 == true)
+				paddleP2X = paddleP2X + paddleSpeed;
 			draw();
 		}
 	}
