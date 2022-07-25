@@ -28,19 +28,6 @@ export default function PinkPong() {
 
 	let navigate = useNavigate();
 
-	(async () => { 
-        // Do something before delay
-        console.log('before delay')
-
-        await delay(1000);
-
-        // Do something after
-        console.log('after delay')
-    })();
-	function delay(ms: number) {
-		return new Promise( resolve => setTimeout(resolve, ms) );
-	}
-
 	useEffect(() => {
 		canvas = document.getElementById("myCanvas");
 		if (!canvas)
@@ -85,9 +72,6 @@ export default function PinkPong() {
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
 		setInterval(handleKeyPress, 1);
-	}
-	function componentWillUnmount(){
-		document.removeEventListener("keydown", handleKeyPress, false);
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
@@ -230,12 +214,47 @@ export default function PinkPong() {
 		ctx.closePath();
 		ctx.restore();
 		if (gameEnd == true)
-		{
-			setTimeout(() => {
-				navigate("/chat", { replace: true });}, 3000);
-		}
+			endGame();
 		else
 			requestAnimationFrame(update);
+	}
+
+	function endGame() {
+		setTimeout(() => {
+			navigate("/", { replace: true });}, 5000); //Reroute to home page after 5 seconds
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		//background
+		ctx.save();
+		ctx.beginPath();
+		{
+			ctx.fillStyle = 'pink';
+			ctx.rect(0, 0, canvas.width, canvas.height);
+			ctx.fill();
+		}
+		ctx.closePath();
+		ctx.restore();
+		//Show winner
+		ctx.save();
+		ctx.beginPath();
+		{
+			ctx.font = '64px serif';
+			if (scoreP1 == maxScore)
+				ctx.fillText("Player 1 has won!", 440, 400);
+			else
+				ctx.fillText("Player 2 has won!", 440, 400);
+		}
+		ctx.closePath();
+		ctx.restore();
+		//Show score
+		ctx.save();
+		ctx.beginPath();
+		{
+			ctx.font = '48px serif';
+			ctx.fillText(scoreP1.toString() + " - " + scoreP2.toString(), 600, 600);
+		}
+		ctx.closePath();
+		ctx.restore();
 	}
 
 
