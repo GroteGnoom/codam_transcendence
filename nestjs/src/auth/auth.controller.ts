@@ -12,7 +12,6 @@ import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { SessionData } from '../sessionInterface';
 
 import "express-session";
 declare module "express-session" {
