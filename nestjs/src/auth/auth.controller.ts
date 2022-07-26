@@ -40,11 +40,14 @@ export class AuthController
 		const user = req.user;
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
+
+		const userID = await this.authService.login(user);
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
 		//response.cookie('user', req.user);
 		//response.cookie('token', jwt.access_token);
 		req.session.logged_in = true;
-		req.session.user = req.user.toString(); //from String to string
+		//req.session.user = req.user.toString(); //from String to string
+		req.session.user = userID;
 		//see also https://stackoverflow.com/questions/14727044/what-is-the-difference-between-types-string-and-string
 		return {url:'http://127.0.0.1:3000/'};
 		//return user;

@@ -5,7 +5,7 @@ import { MessageDto } from './message.dtos';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 @Controller('channels')
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
@@ -23,7 +23,7 @@ export class ChannelsController {
     @Post()
 	@UsePipes(ValidationPipe)
 	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
-        const userID = req.user.userID;
+        const userID = req.session.user;
         console.log("user id: ", userID);
 		return this.channelsService.createChannel(createChannelDto, userID);
 	}
