@@ -22,15 +22,15 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         this.state = {
             users: [],
             username: "",
-            intraName: "lbisscho",
+            intraName: "default",
             isActive: true,
             error: ""
         }
         this.keyPress = this.keyPress.bind(this);
-        this.getIntraName();
     }
 
     async createUser() {
+        this.getIntraName();
         console.log("try create user...");
         console.log("current users");
         console.log(this.getUsers());
@@ -51,7 +51,6 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
                 throw new Error(json.message)
             }
         })
-        .then((response) => response.json())
         .then((response) => {
             this.setState({ users: response })
         })
@@ -62,7 +61,14 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         // return await fetch(`http://127.0.0.1:5000/users/id/${this.state.user.id}`, {
         return await fetch("http://127.0.0.1:5000/users/id/1", {
             method: "GET" })
-        .then((response) => response.json())
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
         .catch((err: Error) => this.setState({error: err.message}))
     }
 
@@ -79,7 +85,14 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     async getUsers () {
         return await fetch("http://127.0.0.1:5000/users", {
             method: "GET"} )
-        .then((response) => response.json())
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
         .catch((err: Error) => this.setState({error: err.message}))
     }
 
@@ -90,10 +103,18 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         }
     }
 
-    async getIntraName () { //TODO: doesnt work yet: Unexpected token h in JSON at position 0
-        return await fetch("http://127.0.0.1:5000/auth/ft/profile", {
-            method: "GET"} )
-        .then((response) => response.json())
+    async getIntraName () { //TODO: doesnt work yet: 401 error
+        return await fetch("http://127.0.0.1:5000/auth/profile", {
+            method: "GET",
+            credentials: 'include',} )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
         .then((response) => {
             this.setState({ intraName: response })
         })
@@ -102,41 +123,37 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
 
     render(){ // holds the HTML code
         console.log(this.state.username);
-        // console.log(this.state.intraName);
+        console.log(this.state.intraName);
 
         return (
             // render user etc. when database is updated!
-            <html>
-                <body>
-                    <ThemeProvider theme={pinkTheme}>
-                        <div className="menu">
-                                <TextField className="item"
-                                    disabled defaultValue={this.state.intraName} id="filled-basic" label="Intraname" variant="filled" />
-                                <TextField className="item"
-                                    helperText="Please enter your username" id="filled-basic" label="Username" variant="filled" required
-                                    onKeyDown={this.keyPress}
-                                    onChange={(e) => this.setState({username: e.target.value})} />
-                                <Button className="item"
-                                    variant="contained"
-                                    startIcon={<PersonOutlineSharpIcon />}
-                                    onClick={(e) => this.createUser()}
-                                > SIGN UP </Button>
+            <ThemeProvider theme={pinkTheme}>
+                <div className="menu">
+                        <TextField className="item"
+                            disabled defaultValue={this.state.intraName} id="filled-basic" label="Intraname" variant="filled" />
+                        <TextField className="item"
+                            helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
+                            onKeyDown={this.keyPress}
+                            onChange={(e) => this.setState({username: e.target.value})} />
+                        <Button className="item"
+                            variant="contained"
+                            startIcon={<PersonOutlineSharpIcon />}
+                            onClick={(e) => this.createUser()}
+                        > SIGN UP </Button>
 
-                        </div>
-                        <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
-                        <DialogTitle>Error</DialogTitle>
-                        <DialogContent>
-                            <Alert severity="error">
-                                {this.state.error}
-                            </Alert>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button>
-                        </DialogActions>
-                        </Dialog>
-                    </ThemeProvider>
-                </body>
-            </html>
+                </div>
+                <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
+                <DialogTitle>Error</DialogTitle>
+                <DialogContent>
+                    <Alert severity="error">
+                        {this.state.error}
+                    </Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button> {/* TODO: enter to get out of dialog */}
+                </DialogActions>
+                </Dialog>
+            </ThemeProvider>
         )
     }
 }

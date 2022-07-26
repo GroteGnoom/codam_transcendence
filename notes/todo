@@ -7,9 +7,12 @@ Iris----
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] aantekingen frontend
-[ ] user account pagina:
-[ ] set username
-[ ] check ERR_EMPTY_RESPONSE; send custom response when username not unique?
+[V] user account pagina:
+[V] set username
+[V] check ERR_EMPTY_RESPONSE; send custom response when username not unique?
+[ ] show intraName; fix 401 error request
+[ ] better unique username checker; custom validator
 
+flow:
 user authentication -> set username page -> create user
 when clicked on my account -> user already exists -> set account properties

@@ -54,7 +54,7 @@ export class AuthController
 	//}
 
 
-	//this will reauire a JWT token
+	//this will require a JWT token
 	@Get('test')
 	auth_callback() {
 		this.logger.log('auth callbackft\n');

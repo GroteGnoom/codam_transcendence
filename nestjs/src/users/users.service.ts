@@ -23,7 +23,7 @@ export class UsersService {
 
 	createUser(createUserDto: CreateUserDto) {
 		const newUser = this.userRepository.create(createUserDto);
-		return this.userRepository.save(newUser).catch((e) => { // TODO: this works, but postgres will trow an error; we probably want to validation uniqueness of username upfront
+		return this.userRepository.save(newUser).catch((e) => { // TODO: this works, but postgres will trow an error; we probably want to validation uniqueness of username upfront; besides, id plusses?
 			if (/(username)[\s\S]+(already exists)/.test(e.detail)) {
 				throw new BadRequestException(
 					'Account with this username already exists',
