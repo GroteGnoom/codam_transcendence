@@ -55,9 +55,9 @@ export default function PinkPong() {
 	function setGame() {
 		if (scoreP1 < maxScore && scoreP2 < maxScore) {
 			paddleP1RelX = fieldWidth / 2 - paddleWidth / 2;
-			paddleP1Y = getFieldY() + 10;
+			paddleP1RelY = 10;
 			paddleP2RelX = fieldWidth / 2 - paddleWidth / 2;
-			paddleP2Y = getFieldY() + fieldHeight - 10 - paddleHeight;
+			paddleP2RelY = fieldHeight - 10 - paddleHeight;
 			ballRelX = fieldWidth / 2 - ballWidth / 2;
 			ballRelY = fieldHeight / 2 - ballWidth / 2;
 			leftKeyPressedP1 = false;
@@ -116,21 +116,21 @@ export default function PinkPong() {
 		if (gameEnd == false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballRelX + ballWidth - 2 > paddleP1RelX && ballRelX + 2 < paddleP1RelX + paddleWidth) && ballY <= paddleP1Y + paddleHeight) {
+			if ((ballRelX + ballWidth - 2 > paddleP1RelX && ballRelX + 2 < paddleP1RelX + paddleWidth) && ballRelY <= paddleP1RelY + paddleHeight) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY < paddleP1Y - 10) {
+			else if (ballRelY < paddleP1RelY - 10) {
 				/*	score a point */
 				scoreP2 = scoreP2 + 1;
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballRelX + ballWidth - 2 >= paddleP2RelX && ballRelX + 2 <= paddleP2RelX + paddleWidth) && ballY + ballWidth >= paddleP2Y) {
+			if ((ballRelX + ballWidth - 2 >= paddleP2RelX && ballRelX + 2 <= paddleP2RelX + paddleWidth) && ballRelY + ballWidth >= paddleP2RelY) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY + ballWidth > paddleP2Y + paddleHeight + 10) {
+			else if (ballRelY + ballWidth > paddleP2RelY + paddleHeight + 10) {
 				/*	score a point */
 				scoreP1 = scoreP1 + 1;
 				setGame();
@@ -154,11 +154,13 @@ export default function PinkPong() {
 			if (rightKeyPressedP1 == true && paddleP1RelX + paddleWidth < fieldWidth)
 				paddleP1RelX = paddleP1RelX + paddleSpeed;
 			paddleP1X = getFieldX() + paddleP1RelX;
+			paddleP1Y = getFieldY() + paddleP1RelY;
 			if (leftKeyPressedP2 == true && paddleP2RelX > 0)
 				paddleP2RelX = paddleP2RelX - paddleSpeed;
 			if (rightKeyPressedP2 == true && paddleP2RelX + paddleWidth < fieldWidth)
 				paddleP2RelX = paddleP2RelX + paddleSpeed;
 			paddleP2X = getFieldX() + paddleP2RelX;
+			paddleP2Y = getFieldY() + paddleP2RelY;
 		
 			draw();
 		}
