@@ -1,7 +1,7 @@
 import react from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Icon from '@mui/material/Icon';
+import Icon from '@mui/material/Icon'; //TODO: add icon
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -10,6 +10,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
 import './Account.css'
+import { InputLabel } from '@mui/material';
+import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
+import { getEffectiveConstraintOfTypeParameter } from 'typescript';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -19,11 +22,12 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         this.state = {
             users: [],
             username: "",
-            intraName: "hi",
+            intraName: "lbisscho",
             isActive: true,
             error: ""
         }
         this.keyPress = this.keyPress.bind(this);
+        this.getIntraName();
     }
 
     async createUser() {
@@ -86,25 +90,38 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         }
     }
 
+    async getIntraName () { //TODO: doesnt work yet: Unexpected token h in JSON at position 0
+        return await fetch("http://127.0.0.1:5000/auth/ft/profile", {
+            method: "GET"} )
+        .then((response) => response.json())
+        .then((response) => {
+            this.setState({ intraName: response })
+        })
+        .catch((err: Error) => this.setState({error: err.message}))
+    }
+
     render(){ // holds the HTML code
         console.log(this.state.username);
+        // console.log(this.state.intraName);
 
         return (
             // render user etc. when database is updated!
             <html>
                 <body>
                     <ThemeProvider theme={pinkTheme}>
-                        <div className="center-screen">
-                            <div>
-                                <TextField id="filled-basic" label="Username" variant="filled" required onKeyDown={this.keyPress} onChange={(e) => this.setState({username: e.target.value})} />
-                            </div>
-                            <div>
-                                <Button
+                        <div className="menu">
+                                <TextField className="item"
+                                    disabled defaultValue={this.state.intraName} id="filled-basic" label="Intraname" variant="filled" />
+                                <TextField className="item"
+                                    helperText="Please enter your username" id="filled-basic" label="Username" variant="filled" required
+                                    onKeyDown={this.keyPress}
+                                    onChange={(e) => this.setState({username: e.target.value})} />
+                                <Button className="item"
                                     variant="contained"
-                                    startIcon={<Icon />}
+                                    startIcon={<PersonOutlineSharpIcon />}
                                     onClick={(e) => this.createUser()}
                                 > SIGN UP </Button>
-                            </div>
+
                         </div>
                         <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
                         <DialogTitle>Error</DialogTitle>

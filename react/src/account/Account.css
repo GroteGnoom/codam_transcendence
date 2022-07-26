@@ -8,12 +8,17 @@ body {
     align-items: center;
 }
 
-.center-screen {
+.menu {
     display: flex;
+    flex-direction: column; /* */
     justify-content: center;
     align-items: center;
     text-align: center;
     min-height: 100vh;
+}
+
+.menu .item{
+    margin: 10px;
 }
 
 .Account {
@@ -24,3 +29,21 @@ body {
 .form .form__custom-button {
     margin-top: 50px;
 }
+
+/* 
+BEM
+.header {
+
+}
+
+.header__button {
+
+}
+
+.header__button--disabled {
+
+} */
+
+/* input wrong
+add class to input element
+// .false_input { border: red} */
