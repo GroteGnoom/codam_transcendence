@@ -43,8 +43,19 @@ export class UsersService {
 	findUsersById(id: number) {
 		return this.userRepository.findOneBy({id: id});
 	}
-
 	findUsersByName(username: string) {
 		return this.userRepository.findOneBy({ username : username });
+	}
+  
+	async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+		return this.userRepository.update(userId, {
+			twoFactorAuthenticationSecret: secret
+		});
+	}
+
+	async turnOnTwoFactorAuthentication(userId: number) {
+		return this.userRepository.update(userId, {
+			isTwoFactorAuthenticationEnabled: true
+		});
 	}
 }
