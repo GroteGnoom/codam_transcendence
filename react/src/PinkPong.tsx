@@ -114,21 +114,21 @@ export default function PinkPong() {
 		if (gameEnd == false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - 0 <= paddleP1Y + paddleHeight) {
+			if ((ballRelX + ballWidth - 2 > paddleP1RelX && ballRelX + 2 < paddleP1RelX + paddleWidth) && ballY <= paddleP1Y + paddleHeight) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY < paddleP1Y) {
+			else if (ballY < paddleP1Y - 10) {
 				/*	score a point */
 				scoreP2 = scoreP2 + 1;
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballX + ballWidth > paddleP2X && ballX <= paddleP2X + paddleWidth) && ballY + ballWidth >= paddleP2Y) {
+			if ((ballRelX + ballWidth - 2 >= paddleP2RelX && ballRelX + 2 <= paddleP2RelX + paddleWidth) && ballY + ballWidth >= paddleP2Y) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY > paddleP2Y) {
+			else if (ballY + ballWidth > paddleP2Y + paddleHeight + 10) {
 				/*	score a point */
 				scoreP1 = scoreP1 + 1;
 				setGame();
@@ -147,14 +147,14 @@ export default function PinkPong() {
 			ballX = getFieldX() + ballRelX;
 			ballY = getFieldY() + ballRelY;
 			/*	calculate paddle positions */
-			if (leftKeyPressedP1 == true)
+			if (leftKeyPressedP1 == true && paddleP1RelX > 0)
 				paddleP1RelX = paddleP1RelX - paddleSpeed;
-			if (rightKeyPressedP1 == true)
+			if (rightKeyPressedP1 == true && paddleP1RelX + paddleWidth < fieldWidth)
 				paddleP1RelX = paddleP1RelX + paddleSpeed;
 			paddleP1X = getFieldX() + paddleP1RelX;
-			if (leftKeyPressedP2 == true)
+			if (leftKeyPressedP2 == true && paddleP2RelX > 0)
 				paddleP2RelX = paddleP2RelX - paddleSpeed;
-			if (rightKeyPressedP2 == true)
+			if (rightKeyPressedP2 == true && paddleP2RelX + paddleWidth < fieldWidth)
 				paddleP2RelX = paddleP2RelX + paddleSpeed;
 			paddleP2X = getFieldX() + paddleP2RelX;
 			draw();
