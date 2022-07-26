@@ -17,9 +17,11 @@ export default function PinkPong() {
 	var paddleP1X: number;
 	var paddleP1RelX: number;
 	var paddleP1Y: number;
+	var paddleP1RelY: number;
 	var paddleP2X: number;
 	var paddleP2RelX: number;
 	var paddleP2Y: number;
+	var paddleP2RelY: number;
 
 	var ballX: number;
 	var ballRelX: number;
@@ -157,6 +159,7 @@ export default function PinkPong() {
 			if (rightKeyPressedP2 == true && paddleP2RelX + paddleWidth < fieldWidth)
 				paddleP2RelX = paddleP2RelX + paddleSpeed;
 			paddleP2X = getFieldX() + paddleP2RelX;
+		
 			draw();
 		}
 	}
@@ -204,9 +207,9 @@ export default function PinkPong() {
 		//field
 		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', 'darkpink');
 		//score P1
-		drawText(scoreP1.toString(), 600, 300, '48px serif');
+		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, '48px serif');
 		//score P2
-		drawText(scoreP2.toString(), 600, 800, '48px serif');
+		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, '48px serif');
 		//paddle P1
 		drawRectangle(paddleP1X, paddleP1Y, paddleWidth, paddleHeight, 'black', 'yellow');
 		//paddle P2
