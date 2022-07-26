@@ -1,4 +1,3 @@
-import { error } from 'console';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +13,7 @@ export default function PinkPong() {
 
 	var canvas: any;
 	var ctx: any;
-
+	
 	var paddleP1X: number;
 	var paddleP1RelX: number;
 	var paddleP1Y: number;
@@ -23,29 +22,31 @@ export default function PinkPong() {
 	var paddleP2RelX: number;
 	var paddleP2Y: number;
 	var paddleP2RelY: number;
-
+	
 	var ballX: number;
 	var ballRelX: number;
 	var ballY: number;
 	var ballRelY: number;
 	var ballVX: number;
 	var ballVY: number;
-
+	
 	var leftKeyPressedP1: boolean;
 	var rightKeyPressedP1: boolean;
 	var leftKeyPressedP2: boolean;
 	var rightKeyPressedP2: boolean;
-
+	
 	var gameEnd: boolean = false;
 	var scoreP1: number = 0;
 	var scoreP2: number = 0;
-
+	
 	let navigate = useNavigate();
-
+	
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		canvas = document.getElementById("myCanvas");
 		if (!canvas)
 			console.log("error");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		ctx = canvas.getContext("2d");
 		
 		setGame();
@@ -115,9 +116,8 @@ export default function PinkPong() {
 
 	function update(){
 		if (gameEnd === false){
-			// var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
+			if ((ballRelX + ballWidth > paddleP1RelX && ballRelX < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 15 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
@@ -127,7 +127,7 @@ export default function PinkPong() {
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballRelX + ballWidth + 1 >= paddleP2RelX && ballRelX - 1 <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 2) && ballVY > 0) {
+			if ((ballRelX + ballWidth >= paddleP2RelX && ballRelX <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 15) && ballVY > 0) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}

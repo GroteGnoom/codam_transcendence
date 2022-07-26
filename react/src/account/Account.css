@@ -5,22 +5,20 @@
 
 body {
     background-color: #fcc6ff;
+    align-items: center;
+}
+
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
 }
 
 .Account {
     font-family: sans-serif;
     text-align: center;
-    align-items: center;
-}
-
-.div {
-    max-width: 330px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    padding: 20px;
-    margin-top: 30px;
 }
 
 .form .form__custom-button {
