@@ -78,7 +78,10 @@ export class ChannelsService {
     }
 
     async addMemberToChannel(name: string, id: number) {
-        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: name},
+            relations: ['members']
+        });
         if (!channel) {
             return undefined;
         }
@@ -86,7 +89,8 @@ export class ChannelsService {
             return channel;
         }
         const members = [...channel.members, {id: id}];
-        return this.channelRepository.update(name, {members: members});
+        // return this.channelRepository.update(name, {members: members});
+        return this.channelRepository.save({name: name, members: members});
     }
 
     async removeMemberFromChannel(channelName: string, id: number) {
