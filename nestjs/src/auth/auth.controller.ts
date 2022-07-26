@@ -43,7 +43,7 @@ export class AuthController
 		this.logger.log('type of  user:', user.constructor.name);
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
 		//response.cookie('user', req.user);
-		response.cookie('token', jwt.access_token);
+		//response.cookie('token', jwt.access_token);
 		req.session.logged_in = true;
 		req.session.user = req.user.toString(); //from String to string
 		//see also https://stackoverflow.com/questions/14727044/what-is-the-difference-between-types-string-and-string
