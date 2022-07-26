@@ -13,7 +13,7 @@ import './Account.css'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
-class Account extends react.Component<{}, {users:[], username: string, intraName: string, isActive: boolean, error: string}> { //set the props to empty object, and set the state to {name: string}
+class Account extends react.Component<{}, { users:[], username: string, intraName: string, isActive: boolean, error: string }> { //set the props to empty object, and set the state to {vars and types}
     constructor(props: any) {
         super(props);
         this.state = {
@@ -23,6 +23,7 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
             isActive: true,
             error: ""
         }
+        this.keyPress = this.keyPress.bind(this);
     }
 
     async createUser() {
@@ -78,39 +79,47 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
         .catch((err: Error) => this.setState({error: err.message}))
     }
 
+    keyPress(e: any){
+        if(e.keyCode == 13){
+            console.log('enter pressed');
+            this.createUser()
+        }
+    }
+
     render(){ // holds the HTML code
         console.log(this.state.username);
 
         return (
             // render user etc. when database is updated!
-            <ThemeProvider theme={pinkTheme}>
-                <div>
-                    <TextField id="filled-basic" label="Username" variant="filled" onChange={(e) => this.setState({username: e.target.value})} />
-                    <Button
-                        variant="contained"
-                        startIcon={<Icon />}
-                        onClick={(e) => this.changeUsername()}
-                    />
-                </div>
-                <div>
-                    <Button
-                        variant="contained"
-                        startIcon={<Icon />}
-                        onClick={(e) => this.createUser()}
-                    > Create new user! </Button>
-                </div>
-                <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
-                <DialogTitle>Erreur</DialogTitle>
-                <DialogContent>
-                    <Alert severity="error">
-                        {this.state.error}
-                    </Alert>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button>
-                </DialogActions>
-            </Dialog>
-            </ThemeProvider>
+            <html>
+                <body>
+                    <ThemeProvider theme={pinkTheme}>
+                        <div className="center-screen">
+                            <div>
+                                <TextField id="filled-basic" label="Username" variant="filled" required onKeyDown={this.keyPress} onChange={(e) => this.setState({username: e.target.value})} />
+                            </div>
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Icon />}
+                                    onClick={(e) => this.createUser()}
+                                > SIGN UP </Button>
+                            </div>
+                        </div>
+                        <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
+                        <DialogTitle>Error</DialogTitle>
+                        <DialogContent>
+                            <Alert severity="error">
+                                {this.state.error}
+                            </Alert>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button>
+                        </DialogActions>
+                        </Dialog>
+                    </ThemeProvider>
+                </body>
+            </html>
         )
     }
 }
