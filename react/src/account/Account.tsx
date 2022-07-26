@@ -9,6 +9,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
+import './Account.css'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -18,7 +19,7 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
         this.state = {
             users: [],
             username: "",
-            intraName: "",
+            intraName: "hi",
             isActive: true,
             error: ""
         }
@@ -70,16 +71,6 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
         })
 	}
 
-    async changeIntraName () {
-        return await fetch("http://127.0.0.1:5000/users/setusername", {
-            method: "POST",
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                "username": this.state.username
-            })
-        })
-	}
-
     async getUsers () {
         return await fetch("http://127.0.0.1:5000/users", {
             method: "GET"} )
@@ -99,14 +90,6 @@ class Account extends react.Component<{}, {users:[], username: string, intraName
                         variant="contained"
                         startIcon={<Icon />}
                         onClick={(e) => this.changeUsername()}
-                    />
-                </div>
-                <div>
-                    <TextField id="filled-basic" label="IntraName" variant="filled" onChange={(e) => this.setState({intraName: e.target.value})} />
-                    <Button
-                        variant="contained"
-                        startIcon={<Icon />}
-                        onClick={(e) => this.changeIntraName()}
                     />
                 </div>
                 <div>
