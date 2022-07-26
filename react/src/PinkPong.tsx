@@ -94,19 +94,19 @@ export default function PinkPong() {
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key === "k") {
+		if (event.key == "k") {
 			leftKeyPressedP1 = false;
 			rightKeyPressedP1 = true;
 		}
-		if (event.key === "j") {
+		if (event.key == "j") {
 			rightKeyPressedP1 = false;
 			leftKeyPressedP1 = true;
 		}
-		if (event.key === "x") {
+		if (event.key == "x") {
 			leftKeyPressedP2 = false;
 			rightKeyPressedP2 = true;
 		}
-		if (event.key === "z") {
+		if (event.key == "z") {
 			rightKeyPressedP2 = false;
 			leftKeyPressedP2 = true;
 		}
@@ -116,7 +116,7 @@ export default function PinkPong() {
 		if (gameEnd == false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballRelX + ballWidth - 2 > paddleP1RelX && ballRelX + 2 < paddleP1RelX + paddleWidth) && ballRelY <= paddleP1RelY + paddleHeight) {
+			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
@@ -126,7 +126,7 @@ export default function PinkPong() {
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballRelX + ballWidth - 2 >= paddleP2RelX && ballRelX + 2 <= paddleP2RelX + paddleWidth) && ballRelY + ballWidth >= paddleP2RelY) {
+			if ((ballRelX + ballWidth + 1 >= paddleP2RelX && ballRelX - 1 <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 2) && ballVY > 0) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}
