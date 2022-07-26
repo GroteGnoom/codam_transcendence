@@ -1,4 +1,3 @@
-import { error } from 'console';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -117,7 +116,7 @@ export default function PinkPong() {
 		if (gameEnd === false){
 			// var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
+			if ((ballRelX + ballWidth > paddleP1RelX && ballRelX < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 15 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
@@ -127,7 +126,7 @@ export default function PinkPong() {
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballRelX + ballWidth + 1 >= paddleP2RelX && ballRelX - 1 <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 2) && ballVY > 0) {
+			if ((ballRelX + ballWidth >= paddleP2RelX && ballRelX <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 15) && ballVY > 0) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}
