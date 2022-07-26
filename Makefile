@@ -6,6 +6,10 @@ all:
 fg:
 	docker-compose up --build
 
+fgre:
+	docker-compose kill
+	docker-compose up --build
+
 clean:
 	docker-compose down
 
