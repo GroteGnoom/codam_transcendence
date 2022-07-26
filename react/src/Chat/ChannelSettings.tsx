@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { AppBar, IconButton, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, IconButton, ListItem, List, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,7 +10,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { Box } from "@mui/system";
 import * as React from 'react';
 import { Channel } from './Chat.types';
-
 
 
 interface ChannelSettingsProps {
@@ -63,11 +62,25 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
 
-
-
     componentDidMount() {
         this.getSettings()
     }
+
+    renderMembers = () => {
+        const members = this.state.settings.members.map((el) => (
+            <ListItem key={el.id}> 
+                <ListItemText 
+                    primary={`${el.username}`} 
+                    />                
+            </ListItem>
+        ))  
+        return (
+        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+            {members}
+        </List>
+        );
+    }
+    
 
     render() {
         return (
@@ -138,7 +151,12 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                                     </IconButton>
                                 ),
                             }}/>
+                        
                         }
+                        <Typography sx={{ flex: 1 }} variant="h6" component="div">
+                            Members
+                        </Typography>
+                        {this.renderMembers()}
                     </DialogContent>
                 </Box>}
             </Dialog>

@@ -67,7 +67,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                 "name": this.state.newChannel,
                 "channelType": this.state.newChannelType,
                 "password": this.state.newChannelPassword,
-                "owner": 7
+                "owner": 1
 			})  
         })
 		.then(async (response) => {

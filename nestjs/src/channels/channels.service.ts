@@ -27,7 +27,10 @@ export class ChannelsService {
     };
 
     getChannelByName(name: string) {
-        return this.channelRepository.findOneBy({name: name});
+        return this.channelRepository.findOne({
+            where: {name: name},
+            relations: ['members']
+        });
     }
 
     createChannel(createChannelDto: CreateChannelDto) {
