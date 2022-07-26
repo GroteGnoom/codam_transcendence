@@ -34,7 +34,10 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async getSettings() {
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}`, { method: 'GET' })
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
             .then((response) => response.json())
             .then((response) => {
                 this.setState({ settings: response });
@@ -44,6 +47,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     async saveSettings() {
         return await fetch("http://127.0.0.1:5000/channels", { // todo make update endpoint
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.state.settings)
             })

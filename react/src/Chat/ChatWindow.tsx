@@ -35,7 +35,10 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async getMessages(){
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { method: 'GET'})
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
 		.then((response) => response.json())
         .then((response) => {
             if (response.length !== this.state.messages.length) {

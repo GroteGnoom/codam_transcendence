@@ -33,7 +33,7 @@ export class ChannelsService {
         });
     }
 
-    createChannel(createChannelDto: CreateChannelDto) {
+    createChannel(createChannelDto: CreateChannelDto, userID: number) {
         if (createChannelDto.channelType == ChannelType.Protected &&
                 !createChannelDto.password) {
             throw new BadRequestException('Must provide a password for a protected channel');
@@ -41,9 +41,9 @@ export class ChannelsService {
 
         return this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
-            owner: createChannelDto.owner,
-            admins: [createChannelDto.owner],
-            members: [{id: createChannelDto.owner}],
+            owner: userID,
+            admins: [userID],
+            members: [{id: userID}],
             password: createChannelDto.password,
             channelType: createChannelDto.channelType,
         });

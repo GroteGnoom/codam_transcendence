@@ -52,7 +52,10 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     // Backend calls
     async getChannels() {
-		return await fetch("http://127.0.0.1:5000/channels", { method: 'GET'})
+		return await fetch("http://127.0.0.1:5000/channels", { 
+            method: 'GET',
+            credentials: 'include',
+        })
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ channels: response });
@@ -62,12 +65,12 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     async newchannel() {
 		return await fetch("http://127.0.0.1:5000/channels", { 
             method: 'POST',
+            credentials: 'include',
             headers: {'Content-Type':'application/json'},
 			body: JSON.stringify({
                 "name": this.state.newChannel,
                 "channelType": this.state.newChannelType,
                 "password": this.state.newChannelPassword,
-                "owner": 1
 			})  
         })
 		.then(async (response) => {
