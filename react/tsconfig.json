@@ -18,8 +18,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
-	"types": ["@material-ui/styles"]
+    "jsx": "react-jsx",
+	  "types": ["@material-ui/styles"]
   },
   "include": [
     "src"
