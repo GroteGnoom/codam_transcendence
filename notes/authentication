@@ -1,0 +1,11 @@
+how to test 2fa?
+
+first do normal authentication. 
+
+add 2fa to frontend
+get a nice view of the database
+
+add username endpoint
+
+
+should the 2fa code, like 534867, be base 32 encoded and only then used s a secret?

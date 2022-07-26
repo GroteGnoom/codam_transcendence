@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 @ValidatorConstraint({ name: 'UserExists', async: true })
 @Injectable()
 export class UsersService {
+	private readonly logger = new Logger(UsersService.name);
 	constructor(
 		@InjectRepository(User) private readonly userRepository: Repository<User>,
 	) {}
@@ -48,6 +49,16 @@ export class UsersService {
 	}
   
 	async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+		this.logger.log("called setTwoFactorAuthenticationSecret");
+		/*
+		const user = {
+			username: "testName",
+			intraName: "testIntra",
+			isActive: true,
+		}
+		const newUser = this.userRepository.create(user);
+		this.userRepository.save(newUser);
+	   */
 		return this.userRepository.update(userId, {
 			twoFactorAuthenticationSecret: secret
 		});
