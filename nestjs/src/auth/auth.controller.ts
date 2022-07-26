@@ -12,12 +12,17 @@ import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { SessionData } from '../sessionInterface';
+
 import "express-session";
 declare module "express-session" {
-  interface SessionData {
-    logged_in: boolean;
-  }
+	export interface SessionData {
+		logged_in: boolean;
+		user: string;
+		tfa_validated: boolean;
+	}
 }
+
 
 @Controller('auth')
 export class AuthController
@@ -37,11 +42,11 @@ export class AuthController
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
 		//req.login.then(resp => {this.logger.log("in getLoginName:", resp.data.login);});
-		const jwt= await this.authService.login(req.user);
-		this.logger.log(jwt );
 		//response.cookie('user', req.user);
 		//response.cookie('token', jwt.access_token);
 		req.session.logged_in = true;
+		req.session.user = req.user.toString(); //from String to string
+		//see also https://stackoverflow.com/questions/14727044/what-is-the-difference-between-types-string-and-string
 		return {url:'http://127.0.0.1:3000/'};
 		//return user;
 	}
@@ -56,9 +61,10 @@ export class AuthController
 		this.logger.log('auth callbackft\n');
 	}
   
-	@UseGuards(JwtAuthGuard)
+	@UseGuards(JwtAuthGuard) // guards checks for jwt
 	@Get('profile')
 	getProfile(@Req() req) {
+		console.log(req.user);
 		return req.user;
 	}
 
@@ -96,4 +102,13 @@ export class AuthController
 			return true;
 		return false;
 	}
+
+	@Get('username')
+	getUserName(@Req() request: Request) {
+		this.logger.log("getting user name", request.session.user);
+		if (request.session.user)
+			return request.session.user; 
+		return "";
+	}
+
 }
