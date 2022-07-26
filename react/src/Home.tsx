@@ -34,6 +34,11 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 		console.log("bla:", bla); 
 		console.log("li:", li); 
 		this.setState({li: bla});
+		await fetch("http://127.0.0.1:5000/auth/profile", { 
+			method: 'GET',
+			credentials: 'include',
+			// mode: 'no-cors',
+		})
 	}
 	render() {
 		return (<div>"You are {this.getBla()} logged in"</div>);

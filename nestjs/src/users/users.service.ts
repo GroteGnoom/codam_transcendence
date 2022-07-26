@@ -58,4 +58,16 @@ export class UsersService {
 			isTwoFactorAuthenticationEnabled: true
 		});
 	}
+
+	// adds user logged in through intra
+	async findOrCreateUser(intraName: string) {
+		const user = await this.userRepository.findOneBy({ intraName : intraName });
+		if (user)
+			return user;
+		const dto = new CreateUserDto;
+		dto.intraName = intraName;
+		dto.username = intraName;
+		dto.isActive = true;
+		return this.createUser(dto);
+	}
 }

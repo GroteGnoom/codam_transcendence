@@ -3,7 +3,9 @@ import { CreateChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
 import { MessageDto } from './message.dtos';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
 
+@UseGuards(JwtAuthGuard)
 @Controller('channels')
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
@@ -20,8 +22,10 @@ export class ChannelsController {
 
     @Post()
 	@UsePipes(ValidationPipe)
-	createChannel(@Body() createChannelDto: CreateChannelDto) {
-		return this.channelsService.createChannel(createChannelDto);
+	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
+        const userID = req.user.userID;
+        console.log("user id: ", userID);
+		return this.channelsService.createChannel(createChannelDto, userID);
 	}
 
     @Delete(':name')
