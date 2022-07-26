@@ -1,3 +1,4 @@
+import { error } from 'console';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,14 +45,14 @@ export default function PinkPong() {
 	useEffect(() => {
 		canvas = document.getElementById("myCanvas");
 		if (!canvas)
-			throw ("error");
+			console.log("error");
 		ctx = canvas.getContext("2d");
 		
 		setGame();
 		componentDidMount();
 		update();
 	}, []);
-	
+
 	function setGame() {
 		if (scoreP1 < maxScore && scoreP2 < maxScore) {
 			paddleP1RelX = fieldWidth / 2 - paddleWidth / 2;
@@ -114,7 +115,7 @@ export default function PinkPong() {
 
 	function update(){
 		if (gameEnd === false){
-			var scrollBarWidth: number = 42;
+			// var scrollBarWidth: number = 42;
 			/*	handle top side */
 			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
 				/*	bounce top paddle */
