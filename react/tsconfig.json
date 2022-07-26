@@ -19,7 +19,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-	  "types": ["@material-ui/styles"]
+	  "types": ["@mui/material/styles"]
   },
   "include": [
     "src"
