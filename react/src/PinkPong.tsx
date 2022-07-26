@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function PinkPong() {
+	const fieldWidth = 1500;
+	const fieldHeight = 1000;
 	const paddleWidth = 100;
 	const paddleHeight = 25;
 	const ballWidth = 25;
@@ -13,12 +15,18 @@ export default function PinkPong() {
 	var ctx: any;
 
 	var paddleP1X: number;
+	var paddleP1RelX: number;
 	var paddleP1Y: number;
+	var paddleP1RelY: number;
 	var paddleP2X: number;
+	var paddleP2RelX: number;
 	var paddleP2Y: number;
+	var paddleP2RelY: number;
 
 	var ballX: number;
+	var ballRelX: number;
 	var ballY: number;
+	var ballRelY: number;
 	var ballVX: number;
 	var ballVY: number;
 
@@ -39,22 +47,19 @@ export default function PinkPong() {
 			throw ("error");
 		ctx = canvas.getContext("2d");
 		
-		if (gameEnd === false)
-		{
-			setGame();
-			componentDidMount();
-			update();
-		}
+		setGame();
+		componentDidMount();
+		update();
 	}, []);
 	
 	function setGame() {
 		if (scoreP1 < maxScore && scoreP2 < maxScore) {
-			paddleP1X = 600;
-			paddleP1Y = 100;
-			paddleP2X = 600;
-			paddleP2Y = 1000;
-			ballX = 625;
-			ballY = 500;
+			paddleP1RelX = fieldWidth / 2 - paddleWidth / 2;
+			paddleP1RelY = 10;
+			paddleP2RelX = fieldWidth / 2 - paddleWidth / 2;
+			paddleP2RelY = fieldHeight - 10 - paddleHeight;
+			ballRelX = fieldWidth / 2 - ballWidth / 2;
+			ballRelY = fieldHeight / 2 - ballWidth / 2;
 			leftKeyPressedP1 = false;
 			rightKeyPressedP1 = false;
 			leftKeyPressedP2 = false;
@@ -108,54 +113,55 @@ export default function PinkPong() {
 	}
 
 	function update(){
-		if (gameEnd == false){
+		if (gameEnd === false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
-			if ((ballX + ballWidth > paddleP1X && ballX <= paddleP1X + paddleWidth) && ballY - 0 <= paddleP1Y + paddleHeight)
-			{
+			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
 				/*	bounce top paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY < paddleP1Y)
-			{
+			else if (ballRelY < paddleP1RelY - 10) {
 				/*	score a point */
 				scoreP2 = scoreP2 + 1;
 				setGame();
 			}
 			/*	handle bottom side */
-			if ((ballX + ballWidth > paddleP2X && ballX <= paddleP2X + paddleWidth) && ballY + ballWidth >= paddleP2Y)
-			{
+			if ((ballRelX + ballWidth + 1 >= paddleP2RelX && ballRelX - 1 <= paddleP2RelX + paddleWidth) && (ballRelY + ballWidth >= paddleP2RelY && ballRelY + ballWidth <= paddleP2RelY + 2) && ballVY > 0) {
 				/*	bounce bottom paddle */
 				ballVY = ballVY * -1;
 			}
-			else if (ballY > paddleP2Y)
-			{
+			else if (ballRelY + ballWidth > paddleP2RelY + paddleHeight + 10) {
 				/*	score a point */
 				scoreP1 = scoreP1 + 1;
 				setGame();
 			}
 			/*	bounce east wall */
-			if (ballX + scrollBarWidth > canvas.width && ballVX > 0)
-			{
+			if (ballX + ballWidth > getFieldX() + fieldWidth && ballVX > 0) {
 				ballVX = ballVX * -1;
 			}
 			/*	bounce west wall */
-			else if (ballX - 0 <= 0 && ballVX < 0)
-			{
+			else if (ballX - getFieldX() <= 0 && ballVX < 0) {
 				ballVX = ballVX * -1;
 			}
 			/*	calculate next position */
-			ballY = ballY + ballVY;
-			ballX = ballX + ballVX;
+			ballRelX = ballRelX + ballVX;
+			ballRelY = ballRelY + ballVY;
+			ballX = getFieldX() + ballRelX;
+			ballY = getFieldY() + ballRelY;
 			/*	calculate paddle positions */
-			if (leftKeyPressedP1 == true)
-				paddleP1X = paddleP1X - paddleSpeed;
-			if (rightKeyPressedP1 == true)
-				paddleP1X = paddleP1X + paddleSpeed;
-			if (leftKeyPressedP2 == true)
-				paddleP2X = paddleP2X - paddleSpeed;
-			if (rightKeyPressedP2 == true)
-				paddleP2X = paddleP2X + paddleSpeed;
+			if (leftKeyPressedP1 === true && paddleP1RelX > 0)
+				paddleP1RelX = paddleP1RelX - paddleSpeed;
+			if (rightKeyPressedP1 === true && paddleP1RelX + paddleWidth < fieldWidth)
+				paddleP1RelX = paddleP1RelX + paddleSpeed;
+			paddleP1X = getFieldX() + paddleP1RelX;
+			paddleP1Y = getFieldY() + paddleP1RelY;
+			if (leftKeyPressedP2 === true && paddleP2RelX > 0)
+				paddleP2RelX = paddleP2RelX - paddleSpeed;
+			if (rightKeyPressedP2 === true && paddleP2RelX + paddleWidth < fieldWidth)
+				paddleP2RelX = paddleP2RelX + paddleSpeed;
+			paddleP2X = getFieldX() + paddleP2RelX;
+			paddleP2Y = getFieldY() + paddleP2RelY;
+		
 			draw();
 		}
 	}
@@ -185,24 +191,34 @@ export default function PinkPong() {
 		ctx.restore();
 	}
 
+	function getFieldX() {
+		return (canvas.width / 2 - fieldWidth / 2);
+	}
+
+	function getFieldY() {
+		return (canvas.height / 2 - fieldHeight / 2);
+	}
+
 	function draw(){
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
-		// //background
-		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
+		//background
+		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
+		//field
+		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', 'darkpink');
 		//score P1
-		drawText(scoreP1.toString(), 600, 300, '48px serif');
+		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, '48px serif');
 		//score P2
-		drawText(scoreP2.toString(), 600, 800, '48px serif');
+		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, '48px serif');
 		//paddle P1
 		drawRectangle(paddleP1X, paddleP1Y, paddleWidth, paddleHeight, 'black', 'yellow');
 		//paddle P2
 		drawRectangle(paddleP2X, paddleP2Y, paddleWidth, paddleHeight, 'white', 'yellow');
 		//ball
 		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
-		if (gameEnd == true)
+		if (gameEnd === true)
 			endGame();
 		else
 			requestAnimationFrame(update);
@@ -225,14 +241,14 @@ export default function PinkPong() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
 		//background
-		drawRectangle(0, 0, canvas.width, canvas.height, 'pink', 'pink');
+		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//Show winner
-		if (scoreP1 == maxScore)
-			drawText("Player 1 has won!", 440, 400, '64px serif');
+		if (scoreP1 === maxScore)
+			drawText("Player 1 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
 		else
-			drawText("Player 2 has won!", 440, 400, '64px serif');
+			drawText("Player 2 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
 		//Show score
-		drawText(scoreP1.toString() + " - " + scoreP2.toString(), 600, 600, '48px serif');
+		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600, getFieldY() + 600, '48px serif');
 		requestAnimationFrame(getWindowSize);
 	}
 

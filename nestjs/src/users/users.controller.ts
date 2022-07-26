@@ -31,7 +31,7 @@ export class UsersController {
 	@Post('create')
 	@UsePipes(ValidationPipe)
 	createUsers(@Body() createUserDto: CreateUserDto) {
-		this.logger.log('Created user')
+		this.logger.log('Creating user...')
 		return this.userService.createUser(createUserDto);
 	}
 

@@ -63,3 +63,12 @@ componentDidMount(): when component is mounted, then execute function f.e.
 
 3. postgres - database
 There is not a lot of code around the database, only the dockerfiles that set up the database.
+
+links
+https://codersera.com/blog/typeorm-with-nest-js-tutorial/
+https://docs.nestjs.com/controllers
+Overview class-validators:
+https://github.com/typestack/class-validator
+Mui docs:
+https://mui.com/material-ui/
+https://typeorm.io/

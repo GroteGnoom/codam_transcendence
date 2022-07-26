@@ -8,12 +8,13 @@ const pinkTheme = createTheme({ palette: { primary: pink } })
 
 interface LoginState {
 	li: boolean;
-	lis: any;
 }
 
-class ShowLogin extends React.Component<LoginState> {
-	constructor() {
-		super();
+interface LoginProps {
+}
+class ShowLogin extends React.Component<LoginProps, LoginState> {
+	constructor(props: LoginProps) {
+		super(props);
 		this.state = {
 			li: false,
 		}
@@ -32,9 +33,7 @@ class ShowLogin extends React.Component<LoginState> {
 		const bla = await li;
 		console.log("bla:", bla); 
 		console.log("li:", li); 
-		console.log("lis:", this.state.lis); 
 		this.setState({li: bla});
-		this.setState({lis: bla});
 		await fetch("http://127.0.0.1:5000/auth/profile", { 
 			method: 'GET',
 			credentials: 'include',
