@@ -62,9 +62,6 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             })
     }
 
-
-
-
     componentDidMount() {
         this.getSettings()
     }
@@ -110,13 +107,13 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             aria-labelledby="demo-row-radio-buttons-group-label"
                             name="row-radio-buttons-group">
                             <FormControlLabel
-                                checked={this.state.settings.channelType == "public"}
+                                checked={this.state.settings.channelType === "public"}
                                 value="public" control={<Radio />} label="public" />
                             <FormControlLabel
-                                checked={this.state.settings.channelType == "private"}
+                                checked={this.state.settings.channelType === "private"}
                                 value="private" control={<Radio />} label="private" />
                             <FormControlLabel
-                                checked={this.state.settings.channelType == "protected"}
+                                checked={this.state.settings.channelType === "protected"}
                                 value="protected" control={<Radio />} label="protected" />
                         </RadioGroup>
                         {this.state.settings.channelType === 'protected' && <TextField

@@ -94,26 +94,26 @@ export default function PinkPong() {
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key == "k") {
+		if (event.key === "k") {
 			leftKeyPressedP1 = false;
 			rightKeyPressedP1 = true;
 		}
-		if (event.key == "j") {
+		if (event.key === "j") {
 			rightKeyPressedP1 = false;
 			leftKeyPressedP1 = true;
 		}
-		if (event.key == "x") {
+		if (event.key === "x") {
 			leftKeyPressedP2 = false;
 			rightKeyPressedP2 = true;
 		}
-		if (event.key == "z") {
+		if (event.key === "z") {
 			rightKeyPressedP2 = false;
 			leftKeyPressedP2 = true;
 		}
 	}
 
 	function update(){
-		if (gameEnd == false){
+		if (gameEnd === false){
 			var scrollBarWidth: number = 42;
 			/*	handle top side */
 			if ((ballRelX + ballWidth + 1 > paddleP1RelX && ballRelX - 1 < paddleP1RelX + paddleWidth) && (ballRelY >= paddleP1RelY + paddleHeight - 2 && ballRelY <= paddleP1RelY + paddleHeight) && ballVY < 0) {
@@ -149,15 +149,15 @@ export default function PinkPong() {
 			ballX = getFieldX() + ballRelX;
 			ballY = getFieldY() + ballRelY;
 			/*	calculate paddle positions */
-			if (leftKeyPressedP1 == true && paddleP1RelX > 0)
+			if (leftKeyPressedP1 === true && paddleP1RelX > 0)
 				paddleP1RelX = paddleP1RelX - paddleSpeed;
-			if (rightKeyPressedP1 == true && paddleP1RelX + paddleWidth < fieldWidth)
+			if (rightKeyPressedP1 === true && paddleP1RelX + paddleWidth < fieldWidth)
 				paddleP1RelX = paddleP1RelX + paddleSpeed;
 			paddleP1X = getFieldX() + paddleP1RelX;
 			paddleP1Y = getFieldY() + paddleP1RelY;
-			if (leftKeyPressedP2 == true && paddleP2RelX > 0)
+			if (leftKeyPressedP2 === true && paddleP2RelX > 0)
 				paddleP2RelX = paddleP2RelX - paddleSpeed;
-			if (rightKeyPressedP2 == true && paddleP2RelX + paddleWidth < fieldWidth)
+			if (rightKeyPressedP2 === true && paddleP2RelX + paddleWidth < fieldWidth)
 				paddleP2RelX = paddleP2RelX + paddleSpeed;
 			paddleP2X = getFieldX() + paddleP2RelX;
 			paddleP2Y = getFieldY() + paddleP2RelY;
@@ -218,7 +218,7 @@ export default function PinkPong() {
 		drawRectangle(paddleP2X, paddleP2Y, paddleWidth, paddleHeight, 'white', 'yellow');
 		//ball
 		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
-		if (gameEnd == true)
+		if (gameEnd === true)
 			endGame();
 		else
 			requestAnimationFrame(update);
@@ -243,7 +243,7 @@ export default function PinkPong() {
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//Show winner
-		if (scoreP1 == maxScore)
+		if (scoreP1 === maxScore)
 			drawText("Player 1 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
 		else
 			drawText("Player 2 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
