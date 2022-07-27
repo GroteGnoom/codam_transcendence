@@ -55,7 +55,7 @@ const Home = () =>
             <div className="App">
             <header className="App-header">
                   <ShowLogin/>
-                  <Link to= {{pathname:"/login"}}><Button className="button" variant="contained">Login</Button></Link>
+                  <Link to= {{pathname:"/show_qr"}}><Button className="button" variant="contained">Show QR</Button></Link>
                   <Link to= {{pathname:"/pinkpong"}}><Button className="button" variant="contained">PinkPong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button className="button" variant="contained">Chat</Button></Link>
                   <Link to= {{pathname:"/account"}}><Button className="button" variant="contained">My account</Button></Link>
