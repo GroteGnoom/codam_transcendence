@@ -9,8 +9,8 @@ export default function PinkPong() {
 	const paddleHeight = 25;
 	const ballWidth = 25;
 	
-	let canvas: any;
-	let ctx: any;
+	let canvas: HTMLCanvasElement;
+	let ctx: CanvasRenderingContext2D;
 	
 	let paddleP1X: number;
 	let paddleP1Y: number;
@@ -32,11 +32,13 @@ export default function PinkPong() {
 
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		canvas = document.getElementById("myCanvas");
+		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 		if (!canvas)
 			console.log("error");
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		ctx = canvas.getContext("2d");
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+			if (!ctx)
+				console.log("error");
 		
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,6 +71,14 @@ export default function PinkPong() {
 		rightKeyPressedP1 = false;
 		leftKeyPressedP2 = false;
 		rightKeyPressedP2 = false;
+
+		webSocket.current.emit("keyPressed", {
+			"leftKeyPressedP1": leftKeyPressedP1,
+			"rightKeyPressedP1": rightKeyPressedP1,
+			"leftKeyPressedP2": leftKeyPressedP2,
+			"rightKeyPressedP2": rightKeyPressedP2,
+			"reset": false
+		})
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
