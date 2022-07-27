@@ -11,4 +11,6 @@ export class CreateUserDto {
 	intraName: string;
 
 	isActive: boolean;
+
+	isTfaEnabled: boolean;
 }
