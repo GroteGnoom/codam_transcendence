@@ -6,7 +6,7 @@ export default function PinkPong() {
 	const fieldWidth = 1500;
 	const fieldHeight = 1000;
 	const paddleWidth = 100;
-	const paddleHeight = 25;
+	const paddleHeight = 15;
 	const ballWidth = 25;
 	
 	let canvas: HTMLCanvasElement;
@@ -26,6 +26,10 @@ export default function PinkPong() {
 	let rightKeyPressedP2: boolean;
 
 	let setTimeOut: boolean;
+
+	/*	powerups */
+	let paddleSizeMultiplierP1: number = 1;
+    let paddleSizeMultiplierP2: number = 1;
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
@@ -71,14 +75,6 @@ export default function PinkPong() {
 		rightKeyPressedP1 = false;
 		leftKeyPressedP2 = false;
 		rightKeyPressedP2 = false;
-
-		// webSocket.current.emit("keyPressed", {
-		// 	"leftKeyPressedP1": leftKeyPressedP1,
-		// 	"rightKeyPressedP1": rightKeyPressedP1,
-		// 	"leftKeyPressedP2": leftKeyPressedP2,
-		// 	"rightKeyPressedP2": rightKeyPressedP2,
-		// 	"reset": false
-		// })
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
@@ -98,13 +94,6 @@ export default function PinkPong() {
 			rightKeyPressedP2 = false;
 			leftKeyPressedP2 = true;
 		}
-		// webSocket.current.emit("keyPressed", {
-		// 	"leftKeyPressedP1": leftKeyPressedP1,
-		// 	"rightKeyPressedP1": rightKeyPressedP1,
-		// 	"leftKeyPressedP2": leftKeyPressedP2,
-		// 	"rightKeyPressedP2": rightKeyPressedP2,
-		// 	"reset": false
-		// })
 	}
 	
 	function getCoordinates(payload: any) {
@@ -119,6 +108,8 @@ export default function PinkPong() {
 			paddleP1Y = getFieldY() + payload.paddleP1RelY;
 			paddleP2X = getFieldX() + payload.paddleP2RelX;
 			paddleP2Y = getFieldY() + payload.paddleP2RelY;
+			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
+			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
 		}
 	}
@@ -138,9 +129,9 @@ export default function PinkPong() {
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, '48px serif');
 		//paddle P1
-		drawRectangle(paddleP1X, paddleP1Y, paddleWidth, paddleHeight, 'black', 'yellow');
+		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'black', 'yellow');
 		//paddle P2
-		drawRectangle(paddleP2X, paddleP2Y, paddleWidth, paddleHeight, 'white', 'yellow');
+		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'white', 'yellow');
 		//ball
 		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
 

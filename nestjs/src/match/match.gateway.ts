@@ -12,9 +12,10 @@ import { Server, Socket } from 'socket.io';
 })
 
 export class MatchGateway {
+    PinkPong: boolean = true;  //pinkpong (true) or original pong (false) version
     ballSpeed = 4;
     paddleSpeed = 7;
-    maxScore = 3;
+    maxScore = 11;
     
     paddleP1RelX: number;
     paddleP1RelY: number;
@@ -35,18 +36,70 @@ export class MatchGateway {
     paddleWidth = 100;
     paddleHeight = 15;
     ballWidth = 25;
-
+    
     @WebSocketServer()
     server: Server;
   
     @SubscribeMessage('keyPressed')
     async handleSendMessage(client: Socket, payload: any): Promise<void> {
         // console.log("Got a board update, emitting to listeners")
+        if (this.PinkPong)
+          this.handlePowerups();
         this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
+        }
+  
+        /* powerups are only available in PinkPong, not in the original */
+        paddleSpeedMultiplierP1: number = 1;
+        paddleSpeedMultiplierP2: number = 1;
+        paddleSizeMultiplierP1: number = 1;
+        paddleSizeMultiplierP2: number = 1;
+        ballSpeedMultiplier: number = 1;
+    
+        /*  ball speed */
+        powerUpBall() {
+          this.ballSpeedMultiplier = 2;
+        }
+        powerDownBall() {
+            this.ballSpeedMultiplier = 1;
+        }
+        /*  paddle speed */
+        powerUpPaddleSpeed(playerID: number) {
+            if (playerID === 1)
+              this.paddleSpeedMultiplierP1 = 2;
+            else if (playerID === 2)
+              this.paddleSpeedMultiplierP2 = 2;
+        }
+        powerDownPaddleSpeed(playerID: number) {
+            if (playerID === 1)
+              this.paddleSpeedMultiplierP1 = 1;
+            else if (playerID === 2)
+              this.paddleSpeedMultiplierP2 = 1;
+        }
+        /*  paddle size */
+        powerUpPaddleSize(playerID: number) {
+            if (playerID === 1)
+              this.paddleSizeMultiplierP1 = 2;
+            else if (playerID === 2)
+              this.paddleSizeMultiplierP2 = 2;
+        }
+        powerDownPaddleSize(playerID: number) {
+            if (playerID === 1)
+              this.paddleSizeMultiplierP1 = 1;
+            else if (playerID === 2)
+              this.paddleSizeMultiplierP2 = 1;
+        }
+
+    handlePowerups() {
+        this.powerDownPaddleSize(1);
+        this.powerDownPaddleSize(2);
+      if (this.scoreP1 < this.scoreP2)
+        this.powerUpPaddleSize(1);
+      else if (this.scoreP2 < this.scoreP1)
+        this.powerUpPaddleSize(2);
     }
 
     ballIsBetweenPaddleP1X() {
-      if (this.ballRelX + this.ballWidth > this.paddleP1RelX && this.ballRelX < this.paddleP1RelX + this.paddleWidth)
+      if (this.ballRelX + this.ballWidth > this.paddleP1RelX && this.ballRelX < this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1))
         return true;
       return false;
     }
@@ -56,7 +109,7 @@ export class MatchGateway {
       return false;
     }
     ballIsBetweenPaddleP2X() {
-      if (this.ballRelX + this.ballWidth >= this.paddleP2RelX && this.ballRelX <= this.paddleP2RelX + this.paddleWidth)
+      if (this.ballRelX + this.ballWidth >= this.paddleP2RelX && this.ballRelX <= this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2))
         return true;
       return false;
     }
@@ -102,11 +155,11 @@ export class MatchGateway {
         /*	calculate paddle positions */
         if (leftKeyPressedP1 === true && this.paddleP1RelX > 1)
           this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-        if (rightKeyPressedP1 === true && this.paddleP1RelX + this.paddleWidth < this.fieldWidth - 1)
+        if (rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 1)
           this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
         if (leftKeyPressedP2 === true && this.paddleP2RelX > 1)
           this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-        if (rightKeyPressedP2 === true && this.paddleP2RelX + this.paddleWidth < this.fieldWidth - 1)
+        if (rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 1)
           this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
         }
         else if (this.winner === -1) {
@@ -128,7 +181,9 @@ export class MatchGateway {
             "paddleP2RelY": this.paddleP2RelY, 
             "scoreP1": this.scoreP1, 
             "scoreP2": this.scoreP2,
-            "winner": this.winner
+            "winner": this.winner,
+            "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
+            "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
           })
           }, 4);
 
