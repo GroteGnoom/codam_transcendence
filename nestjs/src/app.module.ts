@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { TwoFactorAuthenticationModule } from './auth/twoFactorAuthentication.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MatchModule } from './match/match.module';
 
 @Module({
 	imports: [
@@ -39,6 +40,7 @@ import { join } from 'path';
 		AuthModule,
 		TwoFactorAuthenticationModule,
 		UsersModule,
+		MatchModule,
 		ChannelsModule,
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname, '..', 'test_homepage'), 
