@@ -1,21 +1,13 @@
 import {
-  MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Socket, Server } from 'socket.io';
 import { ChannelsService } from './channels.service';
-import { MessageDto, SocketMessage } from './message.dtos';
+import { SocketMessage } from './message.dtos';
 
-@WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
-})
+@WebSocketGateway({ cors: { origin: '*', }, })
 export class ChannelsGateway {
   constructor(private channelsService: ChannelsService) {}
 

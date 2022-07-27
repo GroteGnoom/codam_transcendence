@@ -9,8 +9,8 @@ export class Channel {
     @Column()
     owner: number;
 
-    @Column("int", { array: true })
-    admins: number[];
+    // @Column("int", { array: true })
+    // admins: number[];
 
     // @Column("int", { array: true })
     // members: number[];
@@ -24,4 +24,8 @@ export class Channel {
     @ManyToMany(() => User)
     @JoinTable()
     members: User[]
+
+    @ManyToMany(() => User)
+    @JoinTable()
+    admins: User[]
 } 

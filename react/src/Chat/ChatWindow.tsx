@@ -144,7 +144,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                 </Grid>
                             </Grid>
                             <Dialog open={this.state.open} onClose={this.handleClose}>  {/*pop window to add user to channel */}
-                                <DialogTitle>Add User</DialogTitle>
+                                <DialogTitle>Add Member</DialogTitle>
                                 <DialogContent>
                                     <TextField
                                     autoFocus

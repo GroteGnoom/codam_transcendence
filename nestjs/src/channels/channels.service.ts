@@ -5,16 +5,6 @@ import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { MessageDto } from './message.dtos';
 
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    OnGatewayInit,
-    WebSocketServer,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-   } from '@nestjs/websockets';
-   import { Socket, Server } from 'socket.io';
-
 @Injectable()
 export class ChannelsService {
     constructor(
@@ -29,7 +19,7 @@ export class ChannelsService {
     getChannelByName(name: string) {
         return this.channelRepository.findOne({
             where: {name: name},
-            relations: ['members']
+            relations: ['members', 'admins']
         });
     }
 
@@ -42,7 +32,7 @@ export class ChannelsService {
         return this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
             owner: userID,
-            admins: [userID],
+            admins: [{id: userID}],
             members: [{id: userID}],
             password: createChannelDto.password,
             channelType: createChannelDto.channelType,
@@ -53,33 +43,39 @@ export class ChannelsService {
         return this.channelRepository.delete({name: name});
     }
 
-    async addAdminToChannel(name: string, id: number) {
-        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+    async addAdminToChannel(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['admins']
+        });
         if (!channel) {
             return undefined;
         }
-        if (channel.admins.includes(id)) {
+        if (channel.admins.map((user) => user.id).includes(id)) {
             return channel;
         }
-        const admins = [...channel.admins, id];
-        return this.channelRepository.update(name, {admins: admins});
+        const admins = [...channel.admins, {id: id}];
+        return this.channelRepository.save({name: channelName, admins: admins});
     }
 
-    async demoteAdmin(name: string, id: number) {
-        const channel: Channel = await this.channelRepository.findOneBy({name: name});
+    async demoteAdmin(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['admins']
+        });
         if (!channel) {
             return undefined;
         }
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from administators');
         }
-        const admins = channel.admins.filter(_id => _id != id)
-        return this.channelRepository.update(name, {admins: admins});  
+        const admins = channel.admins.filter((user) => user.id != id)
+        return this.channelRepository.save({name: channelName, admins: admins}); 
     }
 
-    async addMemberToChannel(name: string, id: number) {
+    async addMemberToChannel(channelName: string, id: number) {
         const channel: Channel = await this.channelRepository.findOne({
-            where: {name: name},
+            where: {name: channelName},
             relations: ['members']
         });
         if (!channel) {
@@ -90,19 +86,22 @@ export class ChannelsService {
         }
         const members = [...channel.members, {id: id}];
         // return this.channelRepository.update(name, {members: members});
-        return this.channelRepository.save({name: name, members: members});
+        return this.channelRepository.save({name: channelName, members: members});
     }
 
     async removeMemberFromChannel(channelName: string, id: number) {
-        const channel: Channel = await this.channelRepository.findOneBy({name: channelName});
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
         if (!channel) {
             return undefined;
         }
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from members');
         }
-        const members = channel.members.filter(user => user.id != id)
-        return this.channelRepository.update(channelName, {members: members});  
+        const members = channel.members.filter((user) => user.id != id)
+        return this.channelRepository.save({name: channelName, members: members}); 
     }
 
     addMessage(channel: string, message: MessageDto) {

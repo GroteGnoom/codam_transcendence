@@ -1,15 +1,10 @@
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import SendIcon from '@mui/icons-material/Send';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, TextField, Typography } from "@mui/material";
+import { ListItem, ListItemText, TextField } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
-import { io } from "socket.io-client";
 
 interface AddUserWindowProps { 
     open: boolean;
@@ -59,7 +54,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
         
         return (
             <Dialog open={this.props.open} onClose={this.handleClose}>  {/*pop window to add user to channel */}
-                <DialogTitle>Add User</DialogTitle>
+                <DialogTitle>Add Member</DialogTitle>
                 <DialogContent>
                     <TextField
                     autoFocus

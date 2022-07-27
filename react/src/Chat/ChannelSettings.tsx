@@ -10,6 +10,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { Box } from "@mui/system";
 import * as React from 'react';
 import { Channel } from './Chat.types';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import ListItemButton from '@mui/material/ListItemButton';
 
 
 interface ChannelSettingsProps {
@@ -69,8 +71,63 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
         this.getSettings()
     }
 
+     
+    renderRow = (props: ListChildComponentProps) => {
+        const { index, style } = props;
+      
+        return (
+          <ListItem style={style} key={index} component="div" disablePadding>
+            <ListItemButton>
+              <ListItemText primary={`${this.state.settings.members[index].username}`} />
+            </ListItemButton>
+          </ListItem>
+        );
+      }
+
     renderMembers = () => {
-        const members = this.state.settings.members.map((el) => (
+        // const members = this.state.settings.members.map((el) => (
+        //     <ListItem key={el.id}> 
+        //         <ListItemText 
+        //             primary={`${el.username}`} 
+        //             />                
+        //     </ListItem>
+        // ))  
+
+        // const members = this.state.settings.members.map((el) => (
+        //     <ListItem key={el.id}> 
+        //       <ListItemButton>
+        //         <ListItemText primary={`${el.username}`}  />
+        //       </ListItemButton>
+        //     </ListItem>
+        // ));
+
+        // return (
+        //     <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+        //         {members}
+        //     </List>
+        // );
+
+        return (
+            <Box
+            sx={{ width: '100%', height: 250, maxWidth: 360, bgcolor: 'background.paper' }}
+            >
+            <FixedSizeList
+                height={250}
+                width={360}
+                itemSize={46}
+                itemCount={this.state.settings.members.length}
+                overscanCount={5}
+            >
+            {/* <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} > */}
+                {this.renderRow}
+            {/* </List> */}
+            </FixedSizeList>
+            </Box>
+        );
+    }
+
+    renderAdmins = () => {
+        const admins = this.state.settings.admins.map((el) => (
             <ListItem key={el.id}> 
                 <ListItemText 
                     primary={`${el.username}`} 
@@ -78,9 +135,17 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             </ListItem>
         ))  
         return (
-        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
-            {members}
-        </List>
+            <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+                {admins}
+            </List>
+        );
+    }
+
+    getOwner = () => {
+        return (
+            <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+                {this.state.settings.owner}
+            </Box>
         );
     }
     
@@ -157,9 +222,17 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         
                         }
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
+                            Owner
+                        </Typography>
+                        {this.getOwner()}
+                        <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Members
                         </Typography>
                         {this.renderMembers()}
+                        <Typography sx={{ flex: 8 }} variant="h6" component="div">
+                            Admins
+                        </Typography>
+                        {this.renderAdmins()}
                     </DialogContent>
                 </Box>}
             </Dialog>

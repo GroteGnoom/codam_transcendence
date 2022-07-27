@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { io } from "socket.io-client";
 
 export default function PinkPong() {
 	const fieldWidth = 1500;
@@ -40,6 +41,7 @@ export default function PinkPong() {
 	var scoreP2: number = 0;
 	
 	let navigate = useNavigate();
+	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property 
 	
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,7 +206,6 @@ export default function PinkPong() {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//field
@@ -214,11 +215,20 @@ export default function PinkPong() {
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, '48px serif');
 		//paddle P1
-		drawRectangle(paddleP1X, paddleP1Y, paddleWidth, paddleHeight, 'black', 'yellow');
+		drawRectangle(paddleP1X, paddleP1Y+ 120, paddleWidth, paddleHeight, 'black', 'yellow');
 		//paddle P2
-		drawRectangle(paddleP2X, paddleP2Y, paddleWidth, paddleHeight, 'white', 'yellow');
+		drawRectangle(paddleP2X, paddleP2Y-120, paddleWidth, paddleHeight, 'white', 'yellow');
 		//ball
 		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
+
+		if (webSocket.current) { // to prevent null pointer errors
+			webSocket.current.emit("updateBoard", 
+				{
+					"ballX": ballX, 
+					"ballY": ballY, 
+				}) // example payload that can be sent as websocket event
+		}
+
 		if (gameEnd === true)
 			endGame();
 		else
@@ -252,6 +262,21 @@ export default function PinkPong() {
 		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600, getFieldY() + 600, '48px serif');
 		requestAnimationFrame(getWindowSize);
 	}
+
+	function updateBoardState(boardState: any) {		
+		console.log("New board", boardState)
+		// handle updated state here
+	}
+
+    useEffect(() => { // makes sure websocket is opened when opening page, and closed when exiting page
+        console.log('Opening WebSocket');
+        webSocket.current = io('ws://localhost:5000'); // open websocket connection with backend
+		webSocket.current.on("boardUpdated", updateBoardState ) // subscribe on backend events
+        return () => {
+            console.log('Closing WebSocket');
+            webSocket.current.close();
+        }
+    });
 
 	return (
 		<div>

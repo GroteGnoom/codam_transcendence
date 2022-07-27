@@ -2,7 +2,7 @@
 export interface Channel { 
     name: string;
     owner: number;
-    admins: number[];
+    admins: any[];
     members: any[];
     password: string;
     channelType: string;
