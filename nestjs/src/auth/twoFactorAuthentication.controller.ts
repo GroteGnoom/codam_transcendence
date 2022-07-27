@@ -44,6 +44,7 @@ export class TwoFactorAuthenticationController {
 		const user = await this.userService.findUsersById(request.session.userId);
 		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(user.intraName);
 
+		await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
 	}
 
@@ -72,7 +73,7 @@ export class TwoFactorAuthenticationController {
 		@Req() request: RequestWithUser,
 		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
 	) {
-		const user = await this.userService.findUsersById(1); //TODO actual user id
+		const user = await this.userService.findUsersById(request.session.userId);
 		this.logger.log("received 2fa code: ", twoFactorAuthenticationCode);
 		const secret = user.twoFactorAuthenticationSecret;
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
