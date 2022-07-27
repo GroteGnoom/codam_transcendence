@@ -41,7 +41,8 @@ export class TwoFactorAuthenticationController {
 	}
 	@Get("generate")
 	async register_current_user(@Res() response: Response, @Req() request: RequestWithUser) {
-		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(request.session.user);
+		const user = await this.userService.findUsersById(request.session.userId);
+		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(user.intraName);
 
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
 	}
