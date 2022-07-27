@@ -23,5 +23,5 @@
   },
   "include": [
     "src"
-  ]
+, "../nestjs/src/PinkPong/PinkPongBackend.tsx"  ]
 }
