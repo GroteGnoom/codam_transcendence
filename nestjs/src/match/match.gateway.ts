@@ -42,7 +42,7 @@ export class MatchGateway {
   
     @SubscribeMessage('keyPressed')
     async handleSendMessage(client: Socket, payload: any): Promise<void> {
-        console.log("Got a board update, emitting to listeners")
+        // console.log("Got a board update, emitting to listeners")
         this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
     }
 
@@ -93,8 +93,10 @@ export class MatchGateway {
           this.winner = 0;
           this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
         }
-        else
+        else {
           this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
+          return;
+        }
         //send relative coordinates of paddles and ball to frontend
         this.server.emit('boardUpdated', { 
           "ballRelX": this.ballRelX, 
@@ -110,8 +112,8 @@ export class MatchGateway {
     }
 
     setGame(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
-      console.log(reset);
       if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
+        console.log("play game");
         this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
         this.paddleP1RelY = 10;
         this.paddleP2RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
@@ -141,6 +143,7 @@ export class MatchGateway {
         this.scoreP2 = 0;
       }
       else {
+        console.log("set winner");
         if (this.scoreP1 === this.maxScore)
           this.winner = 1;
         else
