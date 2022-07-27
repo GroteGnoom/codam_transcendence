@@ -5,7 +5,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -34,9 +33,9 @@ export class MatchGateway {
     fieldWidth = 1500;
     fieldHeight = 1000;
     paddleWidth = 100;
-    paddleHeight = 25;
+    paddleHeight = 15;
     ballWidth = 25;
-  
+
     @WebSocketServer()
     server: Server;
   
@@ -46,10 +45,31 @@ export class MatchGateway {
         this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
     }
 
+    ballIsBetweenPaddleP1X() {
+      if (this.ballRelX + this.ballWidth > this.paddleP1RelX && this.ballRelX < this.paddleP1RelX + this.paddleWidth)
+        return true;
+      return false;
+    }
+    ballIsBetweenPaddleP1Y() {
+      if (this.ballRelY >= this.paddleP1RelY + this.paddleHeight - 10 && this.ballRelY <= this.paddleP1RelY + this.paddleHeight)
+        return true;
+      return false;
+    }
+    ballIsBetweenPaddleP2X() {
+      if (this.ballRelX + this.ballWidth >= this.paddleP2RelX && this.ballRelX <= this.paddleP2RelX + this.paddleWidth)
+        return true;
+      return false;
+    }
+    ballIsBetweenPaddleP2Y() {
+      if (this.ballRelY + this.ballWidth >= this.paddleP2RelY && this.ballRelY + this.ballWidth <= this.paddleP2RelY + 10)
+        return true;
+      return false;
+    }
+
     getPositions(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
       if (this.winner === 0){
         /*	handle top side */
-        if ((this.ballRelX + this.ballWidth > this.paddleP1RelX && this.ballRelX < this.paddleP1RelX + this.paddleWidth) && (this.ballRelY >= this.paddleP1RelY + this.paddleHeight - 10 && this.ballRelY <= this.paddleP1RelY + this.paddleHeight) && this.ballVY < 0) {
+        if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
           /*	bounce top paddle */
           this.ballVY = this.ballVY * -1;
         }
@@ -59,7 +79,7 @@ export class MatchGateway {
           this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
         }
         /*	handle bottom side */
-        if ((this.ballRelX + this.ballWidth >= this.paddleP2RelX && this.ballRelX <= this.paddleP2RelX + this.paddleWidth) && (this.ballRelY + this.ballWidth >= this.paddleP2RelY && this.ballRelY + this.ballWidth <= this.paddleP2RelY + 10) && this.ballVY > 0) {
+        if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
           /*	bounce bottom paddle */
           this.ballVY = this.ballVY * -1;
         }
@@ -81,13 +101,13 @@ export class MatchGateway {
         this.ballRelY = this.ballRelY + this.ballVY;
         /*	calculate paddle positions */
         if (leftKeyPressedP1 === true && this.paddleP1RelX > 1)
-          this.paddleP1RelX = this.paddleP1RelX - this.paddleSpeed;
+          this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
         if (rightKeyPressedP1 === true && this.paddleP1RelX + this.paddleWidth < this.fieldWidth - 1)
-          this.paddleP1RelX = this.paddleP1RelX + this.paddleSpeed;
+          this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
         if (leftKeyPressedP2 === true && this.paddleP2RelX > 1)
-          this.paddleP2RelX = this.paddleP2RelX - this.paddleSpeed;
+          this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
         if (rightKeyPressedP2 === true && this.paddleP2RelX + this.paddleWidth < this.fieldWidth - 1)
-          this.paddleP2RelX = this.paddleP2RelX + this.paddleSpeed;
+          this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
         }
         else if (this.winner === -1) {
           this.winner = 0;
@@ -97,18 +117,35 @@ export class MatchGateway {
           this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
           return;
         }
-        //send relative coordinates of paddles and ball to frontend
-        this.server.emit('boardUpdated', { 
-          "ballRelX": this.ballRelX, 
-          "ballRelY": this.ballRelY, 
-          "paddleP1RelX": this.paddleP1RelX, 
-          "paddleP1RelY": this.paddleP1RelY, 
-          "paddleP2RelX": this.paddleP2RelX, 
-          "paddleP2RelY": this.paddleP2RelY, 
-          "scoreP1": this.scoreP1, 
-          "scoreP2": this.scoreP2,
-          "winner": this.winner
-        });
+
+        setTimeout(() => {
+            this.server.emit('boardUpdated', { 
+            "ballRelX": this.ballRelX, 
+            "ballRelY": this.ballRelY, 
+            "paddleP1RelX": this.paddleP1RelX, 
+            "paddleP1RelY": this.paddleP1RelY, 
+            "paddleP2RelX": this.paddleP2RelX, 
+            "paddleP2RelY": this.paddleP2RelY, 
+            "scoreP1": this.scoreP1, 
+            "scoreP2": this.scoreP2,
+            "winner": this.winner
+          })
+          }, 4);
+
+
+        // //send relative coordinates of paddles and ball to frontend
+        // console.log("send game stats");
+        // this.server.emit('boardUpdated', { 
+        //   "ballRelX": this.ballRelX, 
+        //   "ballRelY": this.ballRelY, 
+        //   "paddleP1RelX": this.paddleP1RelX, 
+        //   "paddleP1RelY": this.paddleP1RelY, 
+        //   "paddleP2RelX": this.paddleP2RelX, 
+        //   "paddleP2RelY": this.paddleP2RelY, 
+        //   "scoreP1": this.scoreP1, 
+        //   "scoreP2": this.scoreP2,
+        //   "winner": this.winner
+        // });
     }
 
     setGame(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
@@ -143,7 +180,7 @@ export class MatchGateway {
         this.scoreP2 = 0;
       }
       else {
-        console.log("set winner");
+        // console.log("set winner");
         if (this.scoreP1 === this.maxScore)
           this.winner = 1;
         else

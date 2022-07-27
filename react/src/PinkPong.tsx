@@ -72,13 +72,13 @@ export default function PinkPong() {
 		leftKeyPressedP2 = false;
 		rightKeyPressedP2 = false;
 
-		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
-			"reset": false
-		})
+		// webSocket.current.emit("keyPressed", {
+		// 	"leftKeyPressedP1": leftKeyPressedP1,
+		// 	"rightKeyPressedP1": rightKeyPressedP1,
+		// 	"leftKeyPressedP2": leftKeyPressedP2,
+		// 	"rightKeyPressedP2": rightKeyPressedP2,
+		// 	"reset": false
+		// })
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
@@ -98,17 +98,18 @@ export default function PinkPong() {
 			rightKeyPressedP2 = false;
 			leftKeyPressedP2 = true;
 		}
-		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
-			"reset": false
-		})
+		// webSocket.current.emit("keyPressed", {
+		// 	"leftKeyPressedP1": leftKeyPressedP1,
+		// 	"rightKeyPressedP1": rightKeyPressedP1,
+		// 	"leftKeyPressedP2": leftKeyPressedP2,
+		// 	"rightKeyPressedP2": rightKeyPressedP2,
+		// 	"reset": false
+		// })
 	}
 	
 	function getCoordinates(payload: any) {
 		if (payload.winner !== 0 && payload.winner !== -1) {
+			console.log("EndGame");
 			EndGame(payload.winner, payload.scoreP1, payload.scoreP2);
 		}
 		else if (payload.winner === 0) {
@@ -186,33 +187,29 @@ export default function PinkPong() {
 	}
 
 	function EndGame (winner: number, scoreP1: number, scoreP2: number) {
-		let stopReset = false;
+		getWindowSize(winner, scoreP1, scoreP2);
 		if (setTimeOut === false) {
 			setTimeOut = true;
 			setTimeout(() => {
-				stopReset = true;
 				webSocket.current.emit("keyPressed", {
-					"leftKeyPressedP1": leftKeyPressedP1,
-					"rightKeyPressedP1": rightKeyPressedP1,
-					"leftKeyPressedP2": leftKeyPressedP2,
-					"rightKeyPressedP2": rightKeyPressedP2,
-					"reset": true
-				})
-				console.log('Closing WebSocket EndGame');
-				webSocket.current.close();
-				navigate("/", { replace: true });
-				}, 5000); //Reroute to home page after 5 seconds
-			}
-		if (stopReset === false) {
-			getWindowSize(winner, scoreP1, scoreP2);
-			webSocket.current.emit("keyPressed", {
 				"leftKeyPressedP1": leftKeyPressedP1,
 				"rightKeyPressedP1": rightKeyPressedP1,
 				"leftKeyPressedP2": leftKeyPressedP2,
 				"rightKeyPressedP2": rightKeyPressedP2,
-				"reset": false
+				"reset": true
 				})
+				setTimeout(() => {
+				console.log('Closing WebSocket EndGame');
+				webSocket.current.close();
+				navigate("/", { replace: true });}, 100)}, 5000); //Reroute to home page after 5 seconds
 		}
+		webSocket.current.emit("keyPressed", {
+			"leftKeyPressedP1": leftKeyPressedP1,
+			"rightKeyPressedP1": rightKeyPressedP1,
+			"leftKeyPressedP2": leftKeyPressedP2,
+			"rightKeyPressedP2": rightKeyPressedP2,
+			"reset": false
+			})
 	};
 
 	function getWindowSize(winner: number, scoreP1: number, scoreP2: number) {
