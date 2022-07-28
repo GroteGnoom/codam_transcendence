@@ -6,7 +6,7 @@ import ChannelSettings from './ChannelSettings';
 import ChatWindow from './ChatWindow';
 
 const Chat = () => {
-    const [activeChannel, setActiveChannel] = useState();// return prop and setter
+    const [activeChannel, setActiveChannel] = useState("");// return prop and setter
 	const [settingsOpen, openSettings] = useState(false);
 	const [error, setError] = useState("");
 

@@ -15,7 +15,7 @@ clean:
 
 fclean:
 	docker-compose down --rmi all --volumes
-	rm -r postgres_data
+	rm -r postgres_data || true
 
 superclean: fclean
 	docker rmi $(docker images -a) || true
