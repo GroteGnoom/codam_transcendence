@@ -30,7 +30,7 @@ export class MatchGateway {
     winner: number = -1;
     scoreP1: number = 0;
     scoreP2: number = 0;
-    
+
     fieldWidth = 1500;
     fieldHeight = 1000;
     paddleWidth = 100;

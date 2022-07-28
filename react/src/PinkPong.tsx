@@ -143,7 +143,7 @@ export default function PinkPong() {
 			"reset": false
 		})
 	}
-		
+
 	function getFieldX() {
 		return (window.innerWidth / 2 - fieldWidth / 2);
 	}
@@ -177,6 +177,10 @@ export default function PinkPong() {
 		ctx.restore();
 	}
 
+	async function delay(ms: number) {
+		await new Promise(resolve => setTimeout(()=>resolve(ms), ms)).then(()=>console.log("waited"));
+	}
+
 	function EndGame (winner: number, scoreP1: number, scoreP2: number) {
 		getWindowSize(winner, scoreP1, scoreP2);
 		if (setTimeOut === false) {
@@ -189,10 +193,10 @@ export default function PinkPong() {
 				"rightKeyPressedP2": rightKeyPressedP2,
 				"reset": true
 				})
-				setTimeout(() => {
+				delay(100);
 				console.log('Closing WebSocket EndGame');
 				webSocket.current.close();
-				navigate("/", { replace: true });}, 100)}, 5000); //Reroute to home page after 5 seconds
+				navigate("/", { replace: true });}, 5000); //Reroute to home page after 5 seconds
 		}
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressedP1": leftKeyPressedP1,
