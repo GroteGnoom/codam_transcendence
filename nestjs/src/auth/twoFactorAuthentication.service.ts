@@ -17,10 +17,8 @@ export class TwoFactorAuthenticationService {
 	public async generateTwoFactorAuthenticationSecret(user: string) {
 		const secret = authenticator.generateSecret();
 
-		//const otpauthUrl = authenticator.keyuri(user.email, this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'), secret);
-		const otpauthUrl = authenticator.keyuri("TODO", this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'), secret);
+		const otpauthUrl = authenticator.keyuri(user, this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'), secret);
 
-		//await this.usersService.setTwoFactorAuthenticationSecret(secret, user.id);
 		await this.usersService.setTwoFactorAuthenticationSecret(secret, 1); //TODO actual user id
 
 		return {
@@ -36,7 +34,6 @@ export class TwoFactorAuthenticationService {
 		this.logger.log("token", twoFactorAuthenticationCode, "secret", secret);
 		return authenticator.verify({
 			token: twoFactorAuthenticationCode,
-			//secret: user.twoFactorAuthenticationSecret
 			secret
 		})
 	}

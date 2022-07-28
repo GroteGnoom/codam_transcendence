@@ -66,8 +66,14 @@ export class UsersService {
 
 	async turnOnTwoFactorAuthentication(userId: number) {
 		return this.userRepository.update(userId, {
-			isTwoFactorAuthenticationEnabled: true
+			isTfaEnabled: true
 		});
+	}
+
+	async generateName() {
+		return fetch("http://names.drycodes.com/1")
+		.then(response => response.json())
+		.then((response) => response[0]);
 	}
 
 	// adds user logged in through intra
@@ -77,7 +83,7 @@ export class UsersService {
 			return user;
 		const dto = new CreateUserDto;
 		dto.intraName = intraName;
-		dto.username = intraName;
+		dto.username = await this.generateName();
 		dto.isActive = true;
 		return this.createUser(dto);
 	}

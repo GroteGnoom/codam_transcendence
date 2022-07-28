@@ -41,8 +41,10 @@ export class TwoFactorAuthenticationController {
 	}
 	@Get("generate")
 	async register_current_user(@Res() response: Response, @Req() request: RequestWithUser) {
-		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(request.session.user);
+		const user = await this.userService.findUsersById(request.session.userId);
+		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(user.intraName);
 
+		await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
 	}
 
@@ -71,24 +73,17 @@ export class TwoFactorAuthenticationController {
 		@Req() request: RequestWithUser,
 		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
 	) {
-		const user = await this.userService.findUsersById(1);
+		const user = await this.userService.findUsersById(request.session.userId);
 		this.logger.log("received 2fa code: ", twoFactorAuthenticationCode);
-		const secret_pre = user.twoFactorAuthenticationSecret;
-		//const secret = base32Encode(secret_pre);
+		const secret = user.twoFactorAuthenticationSecret;
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
-			twoFactorAuthenticationCode, secret_pre
+			twoFactorAuthenticationCode, secret
 		);
 		if (!isCodeValid) {
 			throw new UnauthorizedException('Wrong authentication code');
 		}
 		request.session.tfa_validated = true;
 
-		//const accessTokenCookie = this.authenticationService.getCookieWithJwtAccessToken(request.user.id, true);
-
-		//request.res.setHeader('Set-Cookie', [accessTokenCookie]);
-		//TODO set user to authenticated
-
-		//return request.user;
 		return request.session.tfa_validated;
 	}
 }

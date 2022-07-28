@@ -32,5 +32,5 @@ export class User {
 	password: string;
 
 	@Column({ default: false })
-	public isTwoFactorAuthenticationEnabled: boolean;
+	public isTfaEnabled: boolean;
 }

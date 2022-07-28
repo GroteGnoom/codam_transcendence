@@ -19,7 +19,7 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 			li: false,
 		}
 	}
-	getBla() {
+	getLiString() {
 		if (!this.state.li)
 			return "not";
 		return "";
@@ -28,22 +28,11 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 		const li =  fetch("http://127.0.0.1:5000/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
-			//mode: 'no-cors',
 		}).then(response => response.json());
-		const bla = await li;
-		console.log("bla:", bla); 
-		console.log("li:", li); 
-		this.setState({li: bla});
-		await fetch("http://127.0.0.1:5000/auth/profile", { 
-			method: 'GET',
-			credentials: 'include',
-			// mode: 'no-cors',
-		})
+		this.setState({li: await li});
 	}
 	render() {
-		return (<div>"You are {this.getBla()} logged in"</div>);
-		//return (<div>"You are" + {this.getLi()} + "logged in"</div>);
-		//return (<div>"You are logged in"</div>);
+		return (<div>"You are {this.getLiString()} logged in"</div>);
 	}
 }
 
@@ -55,7 +44,8 @@ const Home = () =>
             <div className="App">
             <header className="App-header">
                   <ShowLogin/>
-                  <Link to= {{pathname:"/login"}}><Button className="button" variant="contained">Login</Button></Link>
+                  <Link to= {{pathname:"/check_2fa"}}><Button className="button" variant="contained">Check 2fa</Button></Link>
+                  <Link to= {{pathname:"/show_qr"}}><Button className="button" variant="contained">Enable 2fa</Button></Link>
                   <Link to= {{pathname:"/pinkpong"}}><Button className="button" variant="contained">PinkPong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button className="button" variant="contained">Chat</Button></Link>
                   <Link to= {{pathname:"/account"}}><Button className="button" variant="contained">My account</Button></Link>

@@ -40,6 +40,7 @@ import { MatchModule } from './match/match.module';
 		AuthModule,
 		TwoFactorAuthenticationModule,
 		UsersModule,
+		MatchModule,
 		ChannelsModule,
 		MatchModule,
 		ServeStaticModule.forRoot({
