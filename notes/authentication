@@ -7,5 +7,11 @@ get a nice view of the database
 
 add username endpoint
 
+when you do
+  app.enableCors({
+	  origin: 'http://localhost:3000',
+    credentials: true,
 
-should the 2fa code, like 534867, be base 32 encoded and only then used s a secret?
+then Access-Control-Allow-Credentials should be set,
+but in the network tab of the browser debugger it doesn't seem to be set, and it says 'CORS No Allow Credentials'
+

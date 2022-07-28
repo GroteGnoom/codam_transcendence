@@ -2,6 +2,26 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 
+/*
+export const useSocketStore = defineStore('socket', {
+	state: () => ({
+		socket: {} as Socket,
+		connected: false,
+	}),
+	actions: {
+		handleConnection() {
+			this.socket = io('http://localhost:3000/', {
+				withCredentials: true,
+			})
+		},
+		isConnected() {
+			return this.socket.connected;
+		},
+
+	},
+});
+
+*/
 export default function PinkPong() {
 	let fieldWidth: number = 1500;		//3
 	let fieldHeight: number = 1000;		//2
@@ -49,7 +69,21 @@ export default function PinkPong() {
 		setTimeOut = false;
 		
 		console.log('Opening WebSocket');
-		webSocket.current = io('ws://localhost:5000'); // open websocket connection with backend
+		webSocket.current = io('http://127.0.0.1:5000', {withCredentials: true, 
+							   extraHeaders: 
+							   {"extraheader":"extra", 
+								Cookie: "name=value; name2=value2",
+								Definitely_not_a_cookie: "name=value; name2=value2",
+	   	}}); // open websocket connection with backend
+		/*
+		webSocket.current = io('ws://localhost:5000', 
+							   {
+			extraHeaders: {
+				"extraheader":"extra"
+			}
+		}); // open websocket connection with backend
+	   */
+		//webSocket.current = io('ws://localhost:5000'); // open websocket connection with backend
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressedP1": false,
 			"rightKeyPressedP1": false,

@@ -4,14 +4,27 @@ import {
   WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import session from "express-session";
+import { ConfigService } from '@nestjs/config';
+import { Session } from '@nestjs/common';
+
+
+declare global {
+    interface IncomingMessage {
+        readonly session: number;
+    }
+}
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: 'http://127.0.0.1:3000',
+    credentials: true,
   },
 })
-
 export class MatchGateway {
+	constructor (
+		private readonly configService: ConfigService
+	) {}
     PinkPong: boolean = true;  //pinkpong (true) or original pong (false) version
     ballSpeed = 4;
     paddleSpeed = 7;
@@ -44,12 +57,66 @@ export class MatchGateway {
     noSizeDownP1: number = 0;
     noSizeDownP2: number = 0;
 
-  @WebSocketServer()
-  server: Server;
-
-  @SubscribeMessage('keyPressed')
-  async handleSendMessage(client: Socket, payload: any): Promise<void> {
-    this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
+    @WebSocketServer()
+    server: Server;
+	handleConnection(client: Socket, @Session() session) {
+		console.log("started");
+		console.log("session:", session);
+		//client.disconnect();
+		/*
+	  const sessionMiddleware = session({
+		  cookie: {
+			  maxAge: 3600 * 24 * 1000,
+		  },
+		  name: 'transcendence',
+		  secret: this.configService.get('SESSION_SECRET'),
+		  resave: false,
+		  saveUninitialized: false,
+	  });
+		
+		const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+		this.server.use(wrap(sessionMiddleware));
+		this.server.use((socket, next) => {
+			const session = socket.request.session;
+			if (session && session.authenticated) {
+				next();
+			} else {
+				next(new Error("unauthorized"));
+			}
+		});
+	   */
+		//console.log(client.handshake.headers);
+		//console.log(client.handshake.headers.cookie);
+	  //console.log(client.request);
+	}
+	afterInit(server: Server) {
+		// convert a connect middleware to a Socket.IO middleware
+		/*
+		const sessionMiddleware = session({
+			secret: "changeit",
+			resave: false,
+			saveUninitialized: false
+		});
+		const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+		server.use(wrap(sessionMiddleware));
+	   */
+		/*
+		server.use((socket, next) => {
+			const session = socket.request.session;
+			if (session && session.userId) {
+				next();
+			} else {
+				next(new Error("unauthorized"));
+			}
+		});
+	   */
+		console.log('Init');
+	}
+    @SubscribeMessage('keyPressed')
+    async handleSendMessage(client: Socket, payload: any): Promise<void> {
+		//const sessionCookie = client.handshake.headers.cookie .split('; ') .find((cookie: string) => cookie.startsWith('session')) .split('=')[1];
+        //console.log("Got a board update, emitting to listeners")
+        this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
     }
 
   /*  paddle size */
@@ -179,7 +246,7 @@ export class MatchGateway {
 
   setGame(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
     if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
-      console.log("play game");
+      //console.log("play game");
       this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
       this.paddleP1RelY = 10;
       this.paddleP2RelX = this.fieldWidth / 2 - this.paddleWidth / 2;

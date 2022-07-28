@@ -50,6 +50,7 @@ export class AuthController
 		//req.session.user = req.user.toString(); //from String to string
 		req.session.userId = userID;
 		//see also https://stackoverflow.com/questions/14727044/what-is-the-difference-between-types-string-and-string
+		console.log("session id:", req.session.id);
 		return {url:'http://127.0.0.1:3000/'};
 		//return user;
 	}

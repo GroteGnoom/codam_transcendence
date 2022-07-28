@@ -13,12 +13,16 @@ async function bootstrap() {
   // useContainer(app.select(AppModule), { fallbackOnErrors: true }); // for custom validation
   app.use(
 	  session({
+		  cookie: {
+			  maxAge: 3600 * 24 * 1000,
+		  },
+		  name: 'transcendence',
 		  secret: configService.get('SESSION_SECRET'),
 		  resave: false,
 		  saveUninitialized: false,
 	  }),
   );
-  // app.enableCors();
+  //app.enableCors();
   app.enableCors({
 	  origin: true,
     "credentials": true,
