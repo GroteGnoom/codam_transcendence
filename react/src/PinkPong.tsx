@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 
 export default function PinkPong() {
-	const fieldWidth = 1500;
-	const fieldHeight = 1000;
-	const paddleWidth = 100;
-	const paddleHeight = 15;
-	const ballWidth = 25;
+	let fieldWidth: number = 1500;		//3
+	let fieldHeight: number = 1000;		//2
+	let paddleWidth = 100;
+	let paddleHeight = 15;
+	let ballWidth = 25;
 	
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
+	let textSize: number = 48;
 	
 	let paddleP1X: number;
 	let paddleP1Y: number;
@@ -97,37 +98,55 @@ export default function PinkPong() {
 	}
 	
 	function getCoordinates(payload: any) {
+		canvas.width = window.innerWidth - getScrollbarWidth();
+		canvas.height = window.innerHeight;
+
+		if (canvas.width / 3 * 2 < canvas.height)
+		{
+			fieldWidth = canvas.width * 0.9;
+			fieldHeight = fieldWidth / 3 * 2;
+		}
+		else
+		{
+			fieldHeight = canvas.height * 0.9;
+			fieldWidth = fieldHeight * 1.5;
+		}
+		paddleWidth = 100 * (fieldWidth / 1500);
+		ballWidth = 25 * (fieldWidth / 1500);
+		paddleHeight = 15 * (fieldHeight / 1000);
+
 		if (payload.winner !== 0 && payload.winner !== -1) {
 			console.log("EndGame");
 			EndGame(payload.winner, payload.scoreP1, payload.scoreP2);
 		}
 		else if (payload.winner === 0) {
-			ballX = getFieldX() + payload.ballRelX;
-			ballY = getFieldY() + payload.ballRelY;
-			paddleP1X = getFieldX() + payload.paddleP1RelX;
-			paddleP1Y = getFieldY() + payload.paddleP1RelY;
-			paddleP2X = getFieldX() + payload.paddleP2RelX;
-			paddleP2Y = getFieldY() + payload.paddleP2RelY;
+			ballX = getFieldX() + payload.ballRelX * (fieldWidth / 1500);
+			ballY = getFieldY() + payload.ballRelY * (fieldHeight / 1000);
+			paddleP1X = getFieldX() + payload.paddleP1RelX * (fieldWidth / 1500);
+			paddleP1Y = getFieldY() + payload.paddleP1RelY * (fieldHeight / 1000);
+			paddleP2X = getFieldX() + payload.paddleP2RelX * (fieldWidth / 1500);
+			paddleP2Y = getFieldY() + payload.paddleP2RelY * (fieldHeight / 1000);
 			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
 			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
 		}
 	}
-	
+	function getScrollbarWidth() {
+		return window.innerWidth - document.documentElement.clientWidth;
+	}
 	function draw(ballX: number, ballY: number, paddleP1X: number, paddleP1Y: number, paddleP2X: number, paddleP2Y: number, scoreP1: number, scoreP2: number){
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
+		document.body.style.overflow = "hidden";
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
-		ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-		
+		textSize = 48 * (fieldHeight / 1000);
 		//background
-		drawRectangle(0, 0, window.innerWidth, window.innerHeight, 'lightpink', 'lightpink');
+		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//field
 		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', 'darkpink');
 		//score P1
-		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, '48px serif');
+		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, textSize.toString() + 'px serif');
 		//score P2
-		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, '48px serif');
+		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
 		//paddle P1
 		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'black', 'yellow');
 		//paddle P2
@@ -145,11 +164,11 @@ export default function PinkPong() {
 	}
 
 	function getFieldX() {
-		return (window.innerWidth / 2 - fieldWidth / 2);
+		return (canvas.width / 2 - fieldWidth / 2);
 	}
 	
 	function getFieldY() {
-		return (window.innerHeight / 2 - fieldHeight / 2);
+		return (canvas.height / 2 - fieldHeight / 2);
 	}
 	
 	function drawRectangle(x:number, y:number, width:number, height:number, fillColour:string, strokeColour:string) {
@@ -208,23 +227,27 @@ export default function PinkPong() {
 	};
 
 	function getWindowSize(winner: number, scoreP1: number, scoreP2: number) {
-		canvas.width = window.innerWidth;
+		canvas.width = window.innerWidth - getScrollbarWidth();
 		canvas.height = window.innerHeight;
+		document.body.style.overflow = "hidden";
 		drawEndScreen(winner, scoreP1, scoreP2);
 	}
 
 	function drawEndScreen(winner: number, scoreP1: number, scoreP2: number) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
+		textSize = 48 * (fieldHeight / 1000);
+		let textSizeLarge: number = 64 * (fieldHeight / 1000);
+
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//Show winner
 		if (winner === 1)
-			drawText("Player 1 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
+			drawText("Player 1 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		else
-			drawText("Player 2 has won!", getFieldX() + 440, getFieldY() + 400, '64px serif');
+			drawText("Player 2 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		//Show score
-		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600, getFieldY() + 600, '48px serif');
+		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600 * (fieldWidth / 1500), getFieldY() + 600 * (fieldHeight / 1000), textSize.toString() + 'px serif');
 	}
 	
 	return (

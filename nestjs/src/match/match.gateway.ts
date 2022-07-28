@@ -15,7 +15,7 @@ export class MatchGateway {
     PinkPong: boolean = true;  //pinkpong (true) or original pong (false) version
     ballSpeed = 4;
     paddleSpeed = 7;
-    maxScore = 11;
+    maxScore = 1;
     
     paddleP1RelX: number;
     paddleP1RelY: number;
@@ -55,13 +55,6 @@ export class MatchGateway {
         paddleSizeMultiplierP2: number = 1;
         ballSpeedMultiplier: number = 1;
     
-        /*  ball speed */
-        powerUpBall() {
-          this.ballSpeedMultiplier = 2;
-        }
-        powerDownBall() {
-            this.ballSpeedMultiplier = 1;
-        }
         /*  paddle speed */
         powerUpPaddleSpeed(playerID: number) {
             if (playerID === 1)
@@ -185,7 +178,7 @@ export class MatchGateway {
             "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
             "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
           })
-          }, 4);
+          }, 2);
 
 
         // //send relative coordinates of paddles and ball to frontend
