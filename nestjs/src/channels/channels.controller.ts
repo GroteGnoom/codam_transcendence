@@ -16,14 +16,15 @@ export class ChannelsController {
     }
 
     @Get(':name')
-    getChannel(@Param('name') name: string) {        
+    getChannel(@Param('name') name: string) {      
+        console.log("retrieving channel", name);  
         return this.channelsService.getChannelByName(name);
     }
 
     @Post()
-	@UsePipes(ValidationPipe)
+	@UsePipes(ValidationPipe)   //validates body (not empty etc)
 	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
-        const userID = req.session.user;
+        const userID = req.session.userId;
         console.log("user id: ", userID);
 		return this.channelsService.createChannel(createChannelDto, userID);
 	}
@@ -47,12 +48,6 @@ export class ChannelsController {
     demoteAdmin(@Param('name') name: string, @Param('id') admin: number) {
         return this.channelsService.demoteAdmin(name, Number(admin));
     }
-
-    @Post(':name/messages')
-    @UsePipes(ValidationPipe)
-	postMessage(@Param('name') channel: string, @Body() message: MessageDto) {
-		return this.channelsService.addMessage(channel, message);
-	}
 
     @Get(':name/messages')
 	getMessages(@Param('name') channel: string) {

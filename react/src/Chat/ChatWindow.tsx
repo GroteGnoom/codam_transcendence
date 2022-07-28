@@ -10,6 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
+import AddUserWindow from './AddUserWindow';
 
 interface ChatWindowProps { 
     channel: string;
@@ -19,7 +20,7 @@ interface ChatWindowProps {
 interface ChatWindowState { 
     messages: any[];
     text: string;
-    open: boolean;
+    addUserOpen: boolean;
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
@@ -30,7 +31,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.state = { 
             messages: [], 
             text: "",
-            open: false,
+            addUserOpen: false,
         }
     }
 
@@ -86,28 +87,13 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.setState({text: ""})
 	}
 
-    // async postMessage() {
-	// 	return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { 
-    //         method: 'POST',
-    //         headers: {'Content-Type':'application/json'},
-	// 		body: JSON.stringify({
-    //             "sender": 7,
-    //             "text": this.state.text
-	// 		})
-    //     })
-	// 	.then((response) => response.json())
-    //     .then(() => this.setState({text: ""}))
-    //     .then(() => this.getMessages())
-
-	// }
-
     formatMessageTime(message: any) {
         const date = new Date(message.date)
         return `${date.toDateString()} ${date.toLocaleTimeString()}`
     }
 
     handleClose = () => {
-        this.setState( {open: false} );
+        this.setState( {addUserOpen: false} );
     };
 
     render() {
@@ -137,30 +123,13 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     </IconButton>
                                 </Grid>
                                 <Grid xs={1} item>
-                                    <IconButton onClick={() => { this.setState( {open: true} ) }}
+                                    <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
                                         color="secondary">
                                             <PersonAddIcon />
                                     </IconButton>
                                 </Grid>
                             </Grid>
-                            <Dialog open={this.state.open} onClose={this.handleClose}>  {/*pop window to add user to channel */}
-                                <DialogTitle>Add Member</DialogTitle>
-                                <DialogContent>
-                                    <TextField
-                                    autoFocus
-                                    margin="dense"
-                                    id="name"
-                                    label="User"
-                                    type="text"
-                                    fullWidth
-                                    variant="standard"
-                                    />
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={this.handleClose}>Cancel</Button>
-                                    {/* <Button variant="contained" onClick={() => this.newchannel()}>Add</Button> */}
-                                </DialogActions>
-                            </Dialog>
+                            <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} activeChannel={this.props.channel}/>
                             <Divider />
                             <Grid container spacing={4} alignItems="center">
                                 <Grid id="chat-window" xs={12} item>
@@ -182,7 +151,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                         color="secondary">
                                             <SendIcon />
                                     </IconButton>
-                                </Grid>                                
+                                </Grid>
                             </Grid>
                         </Box>
                     </Paper>

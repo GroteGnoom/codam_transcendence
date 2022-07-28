@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { AppBar, IconButton, ListItem, List, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, IconButton, ListItem, List, ListItemText, TextField, Toolbar, Typography, Grid } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,17 +12,26 @@ import * as React from 'react';
 import { Channel } from './Chat.types';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import ListItemButton from '@mui/material/ListItemButton';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+
+import DialogActions from '@mui/material/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+
+import ButtonGroup from '@mui/material/ButtonGroup';
+
 
 
 interface ChannelSettingsProps {
     channel?: string;
     openSettings: any;
-    setError: (err: string) => void;
+    setError: (err: string) => void;    
 }
 
 interface ChannelSettingsState {
     settings: Channel;
+    owner: any;
     passwordVisible: boolean;
+    memberSettingsOpen: boolean;
 }
 
 class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSettingsState> {
@@ -31,7 +40,9 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
         super(props);
         this.state = {
             settings: {name: '', owner: 0, admins: [], members: [], password: "", channelType: ""},
+            owner: {username: ''},
             passwordVisible: false,
+            memberSettingsOpen: false,
         }
     }
 
@@ -43,6 +54,18 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             .then((response) => response.json())
             .then((response) => {
                 this.setState({ settings: response });
+                this.getOwner(response.owner)
+            })
+    }
+
+    async getOwner(id: number) {
+        return await fetch(`http://127.0.0.1:5000/users/id/${id}`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then((response) => response.json())
+            .then((response) => {
+                this.setState({ owner: response });
             })
     }
 
@@ -70,7 +93,6 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     componentDidMount() {
         this.getSettings()
     }
-
      
     renderRow = (props: ListChildComponentProps) => {
         const { index, style } = props;
@@ -85,45 +107,43 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
       }
 
     renderMembers = () => {
-        // const members = this.state.settings.members.map((el) => (
-        //     <ListItem key={el.id}> 
-        //         <ListItemText 
-        //             primary={`${el.username}`} 
-        //             />                
-        //     </ListItem>
-        // ))  
-
-        // const members = this.state.settings.members.map((el) => (
-        //     <ListItem key={el.id}> 
-        //       <ListItemButton>
-        //         <ListItemText primary={`${el.username}`}  />
-        //       </ListItemButton>
-        //     </ListItem>
-        // ));
-
         // return (
-        //     <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
-        //         {members}
-        //     </List>
+        //     <Box
+        //     sx={{ width: '100%', height: 250, maxWidth: 360, bgcolor: 'background.paper' }}
+        //     >
+        //     <FixedSizeList
+        //         height={250}
+        //         width={360}
+        //         itemSize={46}
+        //         itemCount={this.state.settings.members.length}
+        //         overscanCount={5}
+        //     >
+        //         {this.renderRow}
+        //     </FixedSizeList>
+        //     </Box>
         // );
 
+        // openMemberSettings = () => {
+        //     return ()
+        // }
+
+        const members = this.state.settings.members.map((el) => (
+            <ListItem key={el.id}> 
+                <ListItemText 
+                    primary={`${el.username}`}
+                />
+                <IconButton onClick={() => { this.setState( {memberSettingsOpen: true} ) }} color="secondary">
+                        <MoreHorizIcon />
+                </IconButton>               
+            </ListItem>
+        ))  
         return (
-            <Box
-            sx={{ width: '100%', height: 250, maxWidth: 360, bgcolor: 'background.paper' }}
-            >
-            <FixedSizeList
-                height={250}
-                width={360}
-                itemSize={46}
-                itemCount={this.state.settings.members.length}
-                overscanCount={5}
-            >
-            {/* <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} > */}
-                {this.renderRow}
-            {/* </List> */}
-            </FixedSizeList>
-            </Box>
+            <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }}>
+                {members}
+            </List>
+            
         );
+
     }
 
     renderAdmins = () => {
@@ -141,10 +161,10 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
         );
     }
 
-    getOwner = () => {
+    renderOwner = () => {
         return (
             <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
-                {this.state.settings.owner}
+                {this.state.owner.username}
             </Box>
         );
     }
@@ -219,17 +239,17 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                                     </IconButton>
                                 ),
                             }}/>
-                        
                         }
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Owner
                         </Typography>
-                        {this.getOwner()}
+                        {this.renderOwner()}
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Members
                         </Typography>
                         {this.renderMembers()}
-                        <Typography sx={{ flex: 8 }} variant="h6" component="div">
+                        <MemberSettings open={this.state.memberSettingsOpen} />
+                        <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Admins
                         </Typography>
                         {this.renderAdmins()}
@@ -241,3 +261,53 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
 }
 
 export default ChannelSettings
+
+
+
+interface MemberSettingsProps { 
+    open: boolean;
+}
+
+interface MemberSettingsState {}
+
+
+class MemberSettings extends React.Component<MemberSettingsProps, MemberSettingsState> {
+
+    constructor(props: MemberSettingsProps) {
+        super(props);
+        this.state = {
+            //settings: {name: '', owner: 0, admins: [], members: [], password: "", channelType: ""},
+        } 
+    }
+
+    componentDidMount() {
+        console.log("member settings")
+    }
+
+    render() {
+
+        const buttons = [
+            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="one">Kick</Button>,
+            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="two">Mute</Button>,
+            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="three">Remove admin rights</Button>,
+          ];
+        
+        return (
+            <Dialog open={this.props.open} >  {/*pop window to add user to channel */}
+                <DialogTitle>Member Settings</DialogTitle>
+                <DialogContent>          
+                <Box>
+                    <ButtonGroup
+                        orientation="vertical">
+                        {buttons}
+                    </ButtonGroup>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    {/* <Button onClick={this.props.handleClose}>Cancel</Button> */}
+                    {/* <Button variant="contained" onClick={() => this.addMember()}>Add</Button> */}
+                </DialogActions>
+            </Dialog>
+        );
+    }
+}
