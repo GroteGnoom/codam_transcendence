@@ -221,7 +221,7 @@ export class MatchGateway {
           this.ballVY = 1;
         else
           this.ballVY = -1;
-        this.ballVX =  Math.random() - 0.5;
+        this.ballVX =  (Math.random() - 0.5) / 1.5;
         var length = Math.sqrt((this.ballVX * this.ballVX) + (this.ballVY * this.ballVY));
         this.ballVX = this.ballVX / length;
         this.ballVY = this.ballVY / length;
