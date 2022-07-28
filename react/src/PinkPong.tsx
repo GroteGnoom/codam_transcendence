@@ -215,7 +215,7 @@ export default function PinkPong() {
 				delay(100);
 				console.log('Closing WebSocket EndGame');
 				webSocket.current.close();
-				navigate("/", { replace: true });}, 5000); //Reroute to home page after 5 seconds
+				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressedP1": leftKeyPressedP1,
