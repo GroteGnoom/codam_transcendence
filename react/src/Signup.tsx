@@ -12,7 +12,6 @@ import { Alert } from "@mui/material";
 import './Signup.css'
 import { InputLabel } from '@mui/material';
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-import { getEffectiveConstraintOfTypeParameter } from 'typescript';
 import { createUnarySpacing } from '@mui/system';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
