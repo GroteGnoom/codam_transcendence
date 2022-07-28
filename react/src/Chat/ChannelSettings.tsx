@@ -22,7 +22,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 
 
 interface ChannelSettingsProps {
-    channel?: string;
+    channel: string;
     openSettings: any;
     setError: (err: string) => void;    
 }
@@ -32,6 +32,7 @@ interface ChannelSettingsState {
     owner: any;
     passwordVisible: boolean;
     memberSettingsOpen: boolean;
+    activeMember: any;
 }
 
 class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSettingsState> {
@@ -43,6 +44,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             owner: {username: ''},
             passwordVisible: false,
             memberSettingsOpen: false,
+            activeMember: undefined,
         }
     }
 
@@ -90,6 +92,11 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             })
     }
 
+    handleClose = () => {
+        this.setState( {memberSettingsOpen: false} );
+        this.getSettings();
+    };
+
     componentDidMount() {
         this.getSettings()
     }
@@ -107,33 +114,16 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
       }
 
     renderMembers = () => {
-        // return (
-        //     <Box
-        //     sx={{ width: '100%', height: 250, maxWidth: 360, bgcolor: 'background.paper' }}
-        //     >
-        //     <FixedSizeList
-        //         height={250}
-        //         width={360}
-        //         itemSize={46}
-        //         itemCount={this.state.settings.members.length}
-        //         overscanCount={5}
-        //     >
-        //         {this.renderRow}
-        //     </FixedSizeList>
-        //     </Box>
-        // );
-
-        // openMemberSettings = () => {
-        //     return ()
-        // }
-
-        const members = this.state.settings.members.map((el) => (
+    const members = this.state.settings.members.map((el) => (
             <ListItem key={el.id}> 
                 <ListItemText 
                     primary={`${el.username}`}
                 />
-                <IconButton onClick={() => { this.setState( {memberSettingsOpen: true} ) }} color="secondary">
-                        <MoreHorizIcon />
+                <IconButton onClick={() => {
+                                this.setState( {memberSettingsOpen: true} ); 
+                                this.setState( {activeMember: el} )}
+                                } color="secondary">
+                    <MoreHorizIcon />
                 </IconButton>               
             </ListItem>
         ))  
@@ -141,9 +131,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }}>
                 {members}
             </List>
-            
         );
-
     }
 
     renderAdmins = () => {
@@ -248,7 +236,10 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             Members
                         </Typography>
                         {this.renderMembers()}
-                        <MemberSettings open={this.state.memberSettingsOpen} />
+                        <MemberSettings open={this.state.memberSettingsOpen}
+                                        handleClose={this.handleClose}
+                                        member={this.state.activeMember}
+                                        activeChannel={this.props.channel}/>
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Admins
                         </Typography>
@@ -264,8 +255,14 @@ export default ChannelSettings
 
 
 
+
+
+
 interface MemberSettingsProps { 
     open: boolean;
+    handleClose: any;
+    member: any;
+    activeChannel: string;
 }
 
 interface MemberSettingsState {}
@@ -280,16 +277,24 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
         } 
     }
 
-    componentDidMount() {
+    async removeMember() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.props.member.id}`, { 
+            method: 'DELETE'
+        })
+		.then((response) => response.json())
+        .then( () => this.props.handleClose() )
+	}
+
+    componentDidMount() { 
         console.log("member settings")
     }
 
     render() {
 
         const buttons = [
-            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="one">Kick</Button>,
+            <Button color="secondary" onClick={() => { this.removeMember() }} key="one">Kick</Button>,
             <Button color="secondary" onClick={() => { console.log('onClick'); }} key="two">Mute</Button>,
-            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="three">Remove admin rights</Button>,
+            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="three">Promote Admin</Button>,
           ];
         
         return (
@@ -304,7 +309,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    {/* <Button onClick={this.props.handleClose}>Cancel</Button> */}
+                    <Button onClick={this.props.handleClose}>Cancel</Button>
                     {/* <Button variant="contained" onClick={() => this.addMember()}>Add</Button> */}
                 </DialogActions>
             </Dialog>

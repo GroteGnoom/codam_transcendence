@@ -9,12 +9,6 @@ export class Channel {
     @Column()
     owner: number;
 
-    // @Column("int", { array: true })
-    // admins: number[];
-
-    // @Column("int", { array: true })
-    // members: number[];
-
     @Column({ nullable: true })
     password: string;
 
