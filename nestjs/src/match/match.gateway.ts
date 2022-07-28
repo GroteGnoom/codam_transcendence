@@ -7,7 +7,9 @@ import { Server, Socket } from 'socket.io';
 import session from "express-session";
 import { ConfigService } from '@nestjs/config';
 import { Session } from '@nestjs/common';
-
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
+import { GlobalService } from '../global.service';
 
 declare global {
     interface IncomingMessage {
@@ -62,7 +64,16 @@ export class MatchGateway {
 	handleConnection(client: Socket, @Session() session) {
 		console.log("started");
 		console.log("session:", session);
-		//client.disconnect();
+		console.log(client.handshake.headers.cookie);
+		const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+		console.log("session id from webscoketserver:", SID);
+		if (GlobalService.sessionId != SID) {
+			console.log("session id's don't match, disconnecting");
+			client.disconnect();
+		}
 		/*
 	  const sessionMiddleware = session({
 		  cookie: {
@@ -86,7 +97,6 @@ export class MatchGateway {
 		});
 	   */
 		//console.log(client.handshake.headers);
-		//console.log(client.handshake.headers.cookie);
 	  //console.log(client.request);
 	}
 	afterInit(server: Server) {

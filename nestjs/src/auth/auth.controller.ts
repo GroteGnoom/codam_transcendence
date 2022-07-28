@@ -13,6 +13,7 @@ const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UsersService } from '../users/users.service';
+import { GlobalService } from '../global.service';
 
 import "express-session";
 declare module "express-session" {
@@ -50,7 +51,8 @@ export class AuthController
 		//req.session.user = req.user.toString(); //from String to string
 		req.session.userId = userID;
 		//see also https://stackoverflow.com/questions/14727044/what-is-the-difference-between-types-string-and-string
-		console.log("session id:", req.session.id);
+		console.log("session id in authcontroller:", req.session.id);
+		GlobalService.sessionId = req.session.id;
 		return {url:'http://127.0.0.1:3000/'};
 		//return user;
 	}
