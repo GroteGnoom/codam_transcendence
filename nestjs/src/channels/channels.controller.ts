@@ -23,7 +23,7 @@ export class ChannelsController {
     @Post()
 	@UsePipes(ValidationPipe)
 	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
-        const userID = req.session.user;
+        const userID = req.session.userId;
         console.log("user id: ", userID);
 		return this.channelsService.createChannel(createChannelDto, userID);
 	}

@@ -4,6 +4,7 @@ import { User } from 'src/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/users/users.dtos';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import { userStatus } from './users.dtos'
 
 @ValidatorConstraint({ name: 'UserExists', async: true })
 @Injectable()
@@ -44,10 +45,15 @@ export class UsersService {
 	findUsersById(id: number) {
 		return this.userRepository.findOneBy({id: id});
 	}
+
 	findUsersByName(username: string) {
 		return this.userRepository.findOneBy({ username : username });
 	}
-  
+
+	getIntraname(userId: number) {
+		return this.findUsersById(userId);
+	}
+
 	async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
 		this.logger.log("called setTwoFactorAuthenticationSecret");
 		/*
@@ -84,7 +90,7 @@ export class UsersService {
 		const dto = new CreateUserDto;
 		dto.intraName = intraName;
 		dto.username = await this.generateName();
-		dto.isActive = true;
+		dto.status = userStatus.Online;
 		return this.createUser(dto);
 	}
 }

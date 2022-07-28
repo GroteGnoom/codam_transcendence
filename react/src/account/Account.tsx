@@ -1,7 +1,7 @@
 import react from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Icon from '@mui/material/Icon'; //TODO: add icon
+import Icon from '@mui/material/Icon';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -13,24 +13,30 @@ import './Account.css'
 import { InputLabel } from '@mui/material';
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
 import { getEffectiveConstraintOfTypeParameter } from 'typescript';
+// import { userStatus } from '../../../nestjs/src/users/users.dtos'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
-class Account extends react.Component<{}, { users:[], username: string, intraName: string, isActive: boolean, error: string }> { //set the props to empty object, and set the state to {vars and types}
+enum userStatus {
+	Online = "online",
+	Offline = "offline",
+	InGame = "inGame",
+}
+
+class Account extends react.Component<{}, { users:[], username: string, intraName: any, status: userStatus, error: string }> { //set the props to empty object, and set the state to {vars and types}
     constructor(props: any) {
         super(props);
         this.state = {
             users: [],
             username: "",
-            intraName: "default",
-            isActive: true,
+            intraName: "",
+            status: userStatus.Online,
             error: ""
         }
         this.keyPress = this.keyPress.bind(this);
     }
 
     async createUser() {
-        this.getIntraName();
         console.log("try create user...");
         console.log("current users");
         console.log(this.getUsers());
@@ -40,7 +46,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
             body: JSON.stringify({
                 "username": this.state.username,
                 "intraName": this.state.intraName,
-                "isActive": this.state.isActive
+                "status": this.state.status
             })
         })
         .then(async (response) => {
@@ -104,9 +110,10 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     }
 
     async getIntraName () { //TODO: doesnt work yet: 401 error
-        return await fetch("http://127.0.0.1:5000/auth/profile", {
+        return await fetch("http://127.0.0.1:5000/users/intraname/", { 
             method: "GET",
-            credentials: 'include',} )
+            credentials: 'include',
+        })
         .then(async (response) => {
             const json = await response.json();
             if (response.ok) {
@@ -116,10 +123,25 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
             }
         })
         .then((response) => {
-            this.setState({ intraName: response })
+            this.setState({ intraName: response.intraName })
         })
         .catch((err: Error) => this.setState({error: err.message}))
     }
+
+    componentDidMount() {
+        this.getIntraName();
+    }
+
+    // TODO: instead of class use new react method => just functions + useState and not componentDidMount etc.
+    // https://reactjs.org/docs/hooks-effect.html
+    // Initial mount
+    // useEffect(() => {
+    //     getChannels()
+    // }, []);
+
+    // useEffect(() => {
+
+    // }, [channels])
 
     render(){ // holds the HTML code
         console.log(this.state.username);

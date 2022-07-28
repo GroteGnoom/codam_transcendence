@@ -8,6 +8,7 @@ import {
 	UsePipes,
 	ValidationPipe,
 	Logger,
+	Req,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/users.dtos';
 import { UsersService } from 'src/users/users.service';
@@ -23,9 +24,10 @@ export class UsersController {
 		return this.userService.getUsers();
 	}
 
-	@Get('id/:id')
-	findUsersById(@Param('id', ParseIntPipe) id: number) {
-		return this.userService.findUsersById(id);
+	@Get('id')
+	findUsersById(@Req() req: any) {
+		const userID = req.session.userId;
+		return this.userService.findUsersById(userID);
 	}
 
 	@Post('create')
@@ -40,5 +42,11 @@ export class UsersController {
 	setUsername(username: string) {
 		this.logger.log("setUsername called");
 		return this.userService.setUsername(username);
+	}
+
+	@Get('intraname')
+	getIntraname(@Req() req: any) {
+		const userId = req.session.userId;
+		return this.userService.getIntraname(userId);
 	}
 }

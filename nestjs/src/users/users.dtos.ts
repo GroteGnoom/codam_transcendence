@@ -1,6 +1,11 @@
 import { IsNotEmpty } from "class-validator";
 import { uniqueUser } from './uniqueUser';
 
+export enum userStatus {
+	Online = "online",
+	Offline = "offline",
+	InGame = "inGame",
+}
 export class CreateUserDto {
 	@IsNotEmpty()
 	// @uniqueUser({message: 'Username already exists. Choose another name.'})
@@ -10,7 +15,7 @@ export class CreateUserDto {
 	@IsNotEmpty()
 	intraName: string;
 
-	isActive: boolean;
+	status: userStatus;
 
 	isTfaEnabled: boolean;
 }
