@@ -79,3 +79,21 @@ http://getbem.com/introduction/
 Display:
 -grid: https://css-tricks.com/snippets/css/complete-guide-grid/
 -flex: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+/* 
+BEM
+.header {
+
+}
+
+.header__button {
+
+}
+
+.header__button--disabled {
+
+} */
+
+/* input wrong
+add class to input element
+// .false_input { border: red} */

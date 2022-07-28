@@ -103,7 +103,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     }
 
     keyPress(e: any){
-        if(e.keyCode == 13){
+        if(e.keyCode === 13){
             console.log('enter pressed');
             this.createUser()
         }
