@@ -17,72 +17,96 @@ declare global {
     }
 }
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://127.0.0.1:3000',
-    credentials: true,
-  },
-})
+// @WebSocketGateway({
+//   cors: {
+//     origin: 'http://127.0.0.1:3000',
+//     credentials: true,
+//   },
+// })
 export class MatchGateway {
 	constructor (
-		private readonly configService: ConfigService
+		private readonly configService: ConfigService, private server: Server
 	) {}
-    PinkPong: boolean = true;  //pinkpong (true) or original pong (false) version
-    ballSpeed = 4;
-    paddleSpeed = 7;
-    maxScore = 11;
-    
-    paddleP1RelX: number;
-    paddleP1RelY: number;
-    paddleP2RelX: number;
-    paddleP2RelY: number;
-    
-    ballRelX: number;
-    ballRelY: number;
-    ballVX: number;
-    ballVY: number;
-    
-    winner: number = -1;
-    scoreP1: number = 0;
-    scoreP2: number = 0;
 
-    fieldWidth = 1500;
-    fieldHeight = 1000;
-    paddleWidth = 100;
-    paddleHeight = 15;
-    ballWidth = 25;
+  PinkPong: boolean = false;  //pinkpong (true) or original pong (false) version
+  ballSpeed = 9;
+  paddleSpeed = 15;
+  maxScore = 3;
+  
+  paddleP1RelX: number;
+  paddleP1RelY: number;
+  paddleP2RelX: number;
+  paddleP2RelY: number;
 
-    /* powerups are only available in PinkPong, not in the original */
-    paddleSizeMultiplierP1: number = 1;
-    paddleSizeMultiplierP2: number = 1;
-    powerupStrength: number = 0.3;
-    noSizeDownP1: number = 0;
-    noSizeDownP2: number = 0;
+  leftKeyPressedP1 = false;
+  rightKeyPressedP1 = false;
+  leftKeyPressedP2 = false;
+  rightKeyPressedP2 = false;
+  reset = false;
+  
+  ballRelX: number;
+  ballRelY: number;
+  ballVX: number;
+  ballVY: number;
+  
+  winner: number = -1;
+  scoreP1: number = 0;
+  scoreP2: number = 0;
 
-    @WebSocketServer()
-    server: Server;
-	handleConnection(client: Socket, @Session() session) {
-		console.log("started");
-		console.log("session:", session);
-		console.log(client.handshake.headers.cookie);
-		const cookie = parse(String(client.handshake.headers.cookie))
-		const name = 'transcendence'
-		const secret = this.configService.get('SESSION_SECRET');
-		const SID = cookieParser.signedCookie(cookie[name], secret)
-		console.log("session id from webscoketserver:", SID);
-		if (GlobalService.sessionId != SID) {
-			console.log("session id's don't match, disconnecting");
-			client.disconnect();
-		}
-	}
-	afterInit(server: Server) {
-		console.log('Init');
-	}
-    @SubscribeMessage('keyPressed')
-    async handleSendMessage(client: Socket, payload: any): Promise<void> {
-        //console.log("Got a board update, emitting to listeners")
-        this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
-    }
+  fieldWidth = 1500;
+  fieldHeight = 1000;
+  paddleWidth = 100;
+  paddleHeight = 15;
+  ballWidth = 25;
+
+  /* powerups are only available in PinkPong, not in the original */
+  paddleSizeMultiplierP1: number = 1;
+  paddleSizeMultiplierP2: number = 1;
+  powerupStrength: number = 0.3;
+  noSizeDownP1: number = 0;
+  noSizeDownP2: number = 0;
+
+  client;
+
+  // @WebSocketServer()
+  // server: Server;
+  
+	// handleConnection(client: Socket, @Session() session) {
+  //   console.log("started game server");
+	// 	// console.log("session:", session);
+	// 	// console.log(client.handshake.headers.cookie);
+  //   this.client = client;
+	// 	const cookie = parse(String(client.handshake.headers.cookie))
+	// 	const name = 'transcendence'
+	// 	const secret = this.configService.get('SESSION_SECRET');
+	// 	const SID = cookieParser.signedCookie(cookie[name], secret)
+	// 	// console.log("session id from webscoketserver:", SID);
+	// 	if (GlobalService.sessionId != SID) {
+  //     console.log("session id's don't match, disconnecting");
+	// 		client.disconnect();
+	// 	}
+  //   this.loop();
+	// }
+
+	// afterInit(server: Server) {
+	// 	console.log('Init');
+	// }
+
+  @SubscribeMessage('keyPressed')
+  async handleSendMessage(client: Socket, payload: any): Promise<void> {
+      //console.log("Got a board update, emitting to listeners")
+      this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
+  }
+
+  setKeyPresses(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
+    this.leftKeyPressedP1 = leftKeyPressedP1;
+    this.leftKeyPressedP2 = leftKeyPressedP2;
+    this.rightKeyPressedP1 = rightKeyPressedP1;
+    this.rightKeyPressedP2 = rightKeyPressedP2;
+    this.reset = reset;
+    if (reset === true)
+      this.setGame();
+  }
 
   /*  paddle size */
   powerUpPaddleSize(playerID: number) {
@@ -138,7 +162,11 @@ export class MatchGateway {
     return false;
   }
 
-  getPositions(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
+  loop() {
+      this.getPositions();
+    }
+  
+    getPositions() {
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
@@ -148,8 +176,9 @@ export class MatchGateway {
       else if (this.ballRelY < this.paddleP1RelY - 10) {
         /*	score a point */
         this.scoreP2 = this.scoreP2 + 1;
+        if (this.PinkPong)
         this.handlePowerups(1);
-        this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
+        this.setGame();
       }
       /*	handle bottom side */
       if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
@@ -159,8 +188,9 @@ export class MatchGateway {
       else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
         /*	score a point */
         this.scoreP1 = this.scoreP1 + 1;
-        this.handlePowerups(2);
-        this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
+        if (this.PinkPong)
+          this.handlePowerups(2);
+        this.setGame();
       }
       /*	bounce east wall */
       if (this.ballRelX + this.ballWidth > this.fieldWidth && this.ballVX > 0) {
@@ -174,21 +204,21 @@ export class MatchGateway {
       this.ballRelX = this.ballRelX + this.ballVX;
       this.ballRelY = this.ballRelY + this.ballVY;
       /*	calculate paddle positions */
-      if (leftKeyPressedP1 === true && this.paddleP1RelX > 1)
+      if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 1)
         this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-      if (rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 1)
+      if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 1)
         this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
-      if (leftKeyPressedP2 === true && this.paddleP2RelX > 1)
+      if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 1)
         this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-      if (rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 1)
+      if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 1)
         this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
     }
     else if (this.winner === -1) {
       this.winner = 0;
-      this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
+      this.setGame();
     }
     else {
-      this.setGame(leftKeyPressedP1, leftKeyPressedP2, rightKeyPressedP1, rightKeyPressedP2, reset);
+      this.setGame();
       return;
     }
 
@@ -205,11 +235,12 @@ export class MatchGateway {
         "winner": this.winner,
         "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
         "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
-      })
-    }, 2);
+      });
+      this.loop();
+    }, 1000 / 60);
   }
 
-  setGame(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
+  setGame() {
     if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
       //console.log("play game");
       this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
@@ -218,10 +249,10 @@ export class MatchGateway {
       this.paddleP2RelY = this.fieldHeight - 10 - this.paddleHeight;
       this.ballRelX = this.fieldWidth / 2 - this.ballWidth / 2;
       this.ballRelY = this.fieldHeight / 2 - this.ballWidth / 2;
-      leftKeyPressedP1 = false;
-      rightKeyPressedP1 = false;
-      leftKeyPressedP2 = false;
-      rightKeyPressedP2 = false;
+      this.leftKeyPressedP1 = false;
+      this.rightKeyPressedP1 = false;
+      this.leftKeyPressedP2 = false;
+      this.rightKeyPressedP2 = false;
       var up = Math.random() - 0.5;
       if (up > 0)
         this.ballVY = 1;
@@ -234,7 +265,7 @@ export class MatchGateway {
       this.ballVX = this.ballVX * this.ballSpeed;
       this.ballVY = this.ballVY * this.ballSpeed;
     }
-    else if (reset === true) {
+    else if (this.reset === true) {
       console.log("reset");
       this.winner = -1;
       this.scoreP1 = 0;
@@ -243,6 +274,7 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
+      this.client.disconnect();
     }
     else {
       // console.log("set winner");

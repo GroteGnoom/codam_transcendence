@@ -8,6 +8,7 @@ import Chat from './Chat/Chat';
 import Account from './account/Account';
 import LoggedIn from './LoggedIn';
 import { Signup } from './Signup';
+import WaitingRoom from './WaitingRoom';
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 			<Route path={"/check_2fa"} element={<CheckTfa />} />
 			<Route path={"/show_qr"} element={<QR />} />
 			<Route path={"/pinkpong"} element={<PinkPong />} />
+			<Route path={"/waitingroom"} element={<WaitingRoom />} />
 			<Route path={"/chat"} element={<Chat />} />
 			<Route path={"/account"} element={<Account />} />
 			<Route path={"/logged_in/:token"} element={<LoggedIn />} />
