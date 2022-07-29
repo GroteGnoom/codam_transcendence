@@ -118,7 +118,7 @@ export function Signup() {
     }
 
     function keyPress(e: any) {
-        if(e.key == 13){
+        if(e.key === 13){
             console.log('enter pressed');
             createUser();
         }
