@@ -109,6 +109,14 @@ export default function PinkPong() {
 		rightKeyPressedP1 = false;
 		leftKeyPressedP2 = false;
 		rightKeyPressedP2 = false;
+
+		webSocket.current.emit("keyPressed", {
+			"leftKeyPressedP1": leftKeyPressedP1,
+			"rightKeyPressedP1": rightKeyPressedP1,
+			"leftKeyPressedP2": leftKeyPressedP2,
+			"rightKeyPressedP2": rightKeyPressedP2,
+			"reset": false
+		})
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
@@ -128,6 +136,14 @@ export default function PinkPong() {
 			rightKeyPressedP2 = false;
 			leftKeyPressedP2 = true;
 		}
+		
+		webSocket.current.emit("keyPressed", {
+			"leftKeyPressedP1": leftKeyPressedP1,
+			"rightKeyPressedP1": rightKeyPressedP1,
+			"leftKeyPressedP2": leftKeyPressedP2,
+			"rightKeyPressedP2": rightKeyPressedP2,
+			"reset": false
+		})
 	}
 	
 	function getCoordinates(payload: any) {
@@ -186,14 +202,6 @@ export default function PinkPong() {
 		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'white', 'yellow');
 		//ball
 		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
-
-		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
-			"reset": false
-		})
 	}
 
 	function getFieldX() {
@@ -250,13 +258,13 @@ export default function PinkPong() {
 				webSocket.current.close();
 				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}
-		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
-			"reset": false
-			})
+		// webSocket.current.emit("keyPressed", {
+		// 	"leftKeyPressedP1": leftKeyPressedP1,
+		// 	"rightKeyPressedP1": rightKeyPressedP1,
+		// 	"leftKeyPressedP2": leftKeyPressedP2,
+		// 	"rightKeyPressedP2": rightKeyPressedP2,
+		// 	"reset": false
+		// 	})
 	};
 
 	function getWindowSize(winner: number, scoreP1: number, scoreP2: number) {
