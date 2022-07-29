@@ -66,14 +66,16 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
+  client;
+
   @WebSocketServer()
   server: Server;
-  
   
 	handleConnection(client: Socket, @Session() session) {
     console.log("started");
 		console.log("session:", session);
 		console.log(client.handshake.headers.cookie);
+    this.client = client;
 		const cookie = parse(String(client.handshake.headers.cookie))
 		const name = 'transcendence'
 		const secret = this.configService.get('SESSION_SECRET');
@@ -102,6 +104,8 @@ export class MatchGateway {
     this.rightKeyPressedP1 = rightKeyPressedP1;
     this.rightKeyPressedP2 = rightKeyPressedP2;
     this.reset = reset;
+    if (reset === true)
+      this.setGame();
   }
 
   /*  paddle size */
@@ -268,6 +272,7 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
+      this.client.disconnect();
     }
     else {
       // console.log("set winner");
