@@ -29,18 +29,25 @@ export function Signup() {
     const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
 
-    // combination of componentDidMount and componentDidUpdate
-    useEffect(() => { // will be called after the DOM update (after render)
-        
-    });
-
-    useEffect(() => {
-        
-    }, [intraName]); // will only be called when intraName changes
-
-    useEffect(() => {
-        
-    }, []); // will only be called on initial mount and unmount
+    //backend calls
+    async function getIntraName () { //TODO: doesnt work yet: 401 error
+        return await fetch("http://127.0.0.1:5000/users/intraname/", { 
+            method: "GET",
+            credentials: 'include',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then((response) => {
+            setIntraName(response.intraName)
+        })
+        .catch((err: Error) => setError(err.message))
+    }
 
     async function getUsers () {
         return await fetch("http://127.0.0.1:5000/users", {
@@ -64,9 +71,36 @@ export function Signup() {
             method: "POST",
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
-                "username": {username},
-                "intraName": {intraName},
-                "status": {status}
+                "username": username,
+                "intraName": intraName,
+                "status": status
+            })
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then((response) => {
+            setUsers(response)
+        })
+        .catch((err: Error) => setError(err.message))
+    }
+
+    async function saveUser() {
+        console.log("try save user...");
+        console.log("current users");
+        console.log(getUsers());
+        return await fetch("http://127.0.0.1:5000/users/signupuser", {
+            method: "PUT",
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                "username": username,
+                "intraName": intraName,
+                "status": status
             })
         })
         .then(async (response) => {
@@ -90,8 +124,21 @@ export function Signup() {
         }
     }
 
-    return (
+    //
+    // combination of componentDidMount and componentDidUpdate
+    useEffect(() => { // will be called after the DOM update (after render)
+        
+    });
 
+    useEffect(() => {
+        
+    }, [intraName]); // will only be called when intraName changes
+
+    useEffect(() => {
+        getIntraName();
+    }, []); // will only be called on initial mount and unmount
+
+    return (
         <ThemeProvider theme={pinkTheme}>
                 <div className="menu">
                         <TextField className="item"
@@ -103,7 +150,7 @@ export function Signup() {
                         <Button className="item"
                             variant="contained"
                             startIcon={<PersonOutlineSharpIcon />}
-                            onClick={() => createUser()}
+                            onClick={() => saveUser()}
                         > SIGN UP </Button>
 
                 </div>

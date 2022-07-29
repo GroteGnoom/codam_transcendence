@@ -97,3 +97,6 @@ BEM
 /* input wrong
 add class to input element
 // .false_input { border: red} */
+
+SQLectron delete database:
+DELETE FROM "public"."user"

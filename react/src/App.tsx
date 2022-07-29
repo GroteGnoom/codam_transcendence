@@ -7,6 +7,7 @@ import PinkPong from './PinkPong';
 import Chat from './Chat/Chat';
 import Account from './account/Account';
 import LoggedIn from './LoggedIn';
+import { Signup } from './Signup';
 
 function App() {
 	return (
@@ -18,8 +19,9 @@ function App() {
 			<Route path={"/chat"} element={<Chat />} />
 			<Route path={"/account"} element={<Account />} />
 			<Route path={"/logged_in/:token"} element={<LoggedIn />} />
-      	</Routes>
-		);
-	}
+			<Route path={"/signup"} element={<Signup />} />
+		</Routes>
+	);
+}
 
 export default App;

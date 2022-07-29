@@ -12,7 +12,6 @@ import { Alert } from "@mui/material";
 import './Account.css'
 import { InputLabel } from '@mui/material';
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-import { getEffectiveConstraintOfTypeParameter } from 'typescript';
 // import { userStatus } from '../../../nestjs/src/users/users.dtos'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
