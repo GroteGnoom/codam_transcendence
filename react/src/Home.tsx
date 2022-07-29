@@ -50,7 +50,6 @@ const Home = () =>
                   <Link to= {{pathname:"/pinkpong"}}><Button className="button" variant="contained">PinkPong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button className="button" variant="contained">Chat</Button></Link>
                   <Link to= {{pathname:"/account"}}><Button className="button" variant="contained">My account</Button></Link>
-				  <a href="http://127.0.0.1:5000/auth/ft"><Button className="button" variant="contained">Log in</Button></a>
             </header>
             </div>
 		</main>

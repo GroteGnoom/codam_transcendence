@@ -12,7 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
-import {CreateUserDto} from 'src/users/users.dtos';
+import {UserDto} from 'src/users/users.dtos';
 import {UsersService} from 'src/users/users.service';
 
 @Controller('users')
@@ -28,23 +28,22 @@ export class UsersController {
 
   @Get('id')
   findUsersById(@Req() req: any) {
-    const userID = req.session.userId;
-    return this.userService.findUsersById(userID);
+    const userId = req.session.userId;
+    return this.userService.findUsersById(userId);
   }
 
   @Post('create')
   @UsePipes(ValidationPipe)
-  createUsers(@Body() createUserDto: CreateUserDto) {
+  createUsers(@Body() body: UserDto) {
     this.logger.log('Creating user...')
-    return this.userService.createUser(createUserDto);
+    return this.userService.createUser(body);
   }
 
   @Put('signupuser')
   @UsePipes(ValidationPipe)
-  signUpUser(username: string, intraName: string) {
-    this.logger.log('Signup user...');
-    this.logger.log(intraName, username);
-    return this.userService.signUpUser(username, intraName);
+  signUpUser(@Req() req: any, @Body() body: UserDto) {
+    const userId = req.session.userId;
+    return this.userService.signUpUser(userId, body.username);
   }
 
   @Post('setusername')
@@ -57,6 +56,7 @@ export class UsersController {
   @Get('intraname')
   getIntraname(@Req() req: any) {
     const userId = req.session.userId;
-    return this.userService.getIntraname(userId);
+    this.logger.log("userId: " + userId);
+    return this.userService.findUsersById(userId);
   }
 }

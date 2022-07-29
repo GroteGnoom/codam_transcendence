@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface
 } from 'class-validator';
 import {User} from 'src/typeorm';
-import {CreateUserDto} from 'src/users/users.dtos';
+import {UserDto} from 'src/users/users.dtos';
 import {Repository} from 'typeorm';
 
 import {userStatus} from '../typeorm/user.entity';
@@ -27,8 +27,8 @@ export class UsersService {
     return User;
   }
 
-  createUser(createUserDto: CreateUserDto) {
-    const newUser = this.userRepository.create(createUserDto);
+  createUser(body: UserDto) {
+    const newUser = this.userRepository.create(body);
     return this.userRepository.save(newUser).catch(
         (e) => { // TODO: this works, but postgres will trow an error; we
                  // probably want to validation uniqueness of username upfront;
@@ -62,11 +62,8 @@ export class UsersService {
     return this.userRepository.findOneBy({intraName : intraName});
   }
 
-  getIntraname(userId: number) { return this.findUsersById(userId); }
-
-  signUpUser(username: string, intraName: string) {
-    return this.userRepository.save(
-        {intraName : intraName, username : username});
+  signUpUser(userId: number, username: string) {
+    return this.userRepository.update(userId, {username : username});
   }
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
@@ -99,7 +96,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({intraName : intraName});
     if (user)
       return user;
-    const dto = new CreateUserDto;
+    const dto = new UserDto;
     dto.intraName = intraName;
     dto.username = await this.generateName();
     dto.status = userStatus.Online;
