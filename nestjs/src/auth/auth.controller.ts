@@ -45,7 +45,7 @@ export class AuthController
 		req.session.userId = userID;
 		console.log("session id in authcontroller:", req.session.id);
 		GlobalService.sessionId = req.session.id;
-		return {url:'http://127.0.0.1:3000/'};
+		return {url:'http://127.0.0.1:3000/signup'};
 		//return user;
 	}
 
