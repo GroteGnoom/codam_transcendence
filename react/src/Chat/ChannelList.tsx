@@ -106,7 +106,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                 </ListItemButton>    
             </ListItem>
         ))  
-        channel.push (            
+        channel.push (
             <ListItem key="NEW">
             <ListItemButton onClick={this.handleClickOpen}>
                 <ListItemText primary="add channel" />
@@ -180,9 +180,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                                 </IconButton>
                                 ),
                             }}
-                        />                            
-                    } 
-
+                        />
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>

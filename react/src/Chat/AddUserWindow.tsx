@@ -1,75 +1,98 @@
-import { ListItem, ListItemText, TextField } from "@mui/material";
+import { ListItem, ListItemText, TextField, List, MenuItem } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import React, { Fragment } from 'react';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 interface AddUserWindowProps { 
     open: boolean;
-    setOpen: (open: boolean) => void
+    handleClose: () => void;
+    activeChannel: string;
 }
 
 interface AddUserWindowState { 
     users: any[];
+    currentMembers: number[];
+    selectedMember: number;
 }
 
 class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowState> {
-    private webSocket: any = undefined;
-
     constructor(props: AddUserWindowProps){
         super(props);
         this.state = { 
-            users: [], 
+            users: [], // array of user entities
+            currentMembers: [],
+            selectedMember: 0,
         }
     }
 
     async getUsers(){
-        return await fetch(`http://127.0.0.1:5000/users`, { method: 'GET'})
+        fetch(`http://127.0.0.1:5000/users`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ users: response });            
         })
     }
+
+    async getCurrentMembers(){
+        fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}`, { method: 'GET'})
+		.then((response) => response.json())
+        .then((response) => {
+            this.setState({ currentMembers: response.members.map((user: any) => user.id) });            
+        })
+    }
+
+    async addMember() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.state.selectedMember}`, { 
+            method: 'PUT'
+        })
+		.then((response) => response.json())
+        .then(() => this.props.handleClose())
+	}
+
+    handleChange = (event: SelectChangeEvent) => {
+        this.setState({selectedMember: Number(event.target.value)});
+    };
   
     componentDidMount() {
         console.log("updating")
         this.getUsers()
+        this.getCurrentMembers()
     }
 
-
-    handleClose = () => {
-        this.props.setOpen(false);
-    };
-
     render() {
-        const listUsers = this.state.users.map((user, index) => 
-            <ListItem key={index}>
-                <ListItemText 
-                    primary={`${user.username}`} 
-                    />
-            </ListItem>
+
+        const nonMembers = this.state.users.filter((user) => 
+            !this.state.currentMembers.includes(user.id)
+        );
+
+        const listUsers = nonMembers.map((user, index) => 
+            <MenuItem value={user.id}>{user.username}</MenuItem>
         );
         
         return (
-            <Dialog open={this.props.open} onClose={this.handleClose}>  {/*pop window to add user to channel */}
+            <Dialog open={this.props.open} onClose={this.props.handleClose}>  {/*pop window to add user to channel */}
                 <DialogTitle>Add Member</DialogTitle>
-                <DialogContent>
-                    <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="User"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    />
-                    {listUsers}
+                <DialogContent>          
+                    <FormControl fullWidth>
+                        <InputLabel></InputLabel>
+                        <Select
+                            label="Member"
+                            onChange={this.handleChange}
+                            >
+                            {listUsers}
+                        </Select>
+                    </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.handleClose}>Cancel</Button>
-                    {/* <Button variant="contained" onClick={() => this.newchannel()}>Add</Button> */}
+                    <Button onClick={this.props.handleClose}>Cancel</Button>
+                    <Button variant="contained" onClick={() => this.addMember()}>Add</Button>
                 </DialogActions>
             </Dialog>
         );

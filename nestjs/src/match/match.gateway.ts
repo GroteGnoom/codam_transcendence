@@ -7,7 +7,9 @@ import { Server, Socket } from 'socket.io';
 import session from "express-session";
 import { ConfigService } from '@nestjs/config';
 import { Session } from '@nestjs/common';
-
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
+import { GlobalService } from '../global.service';
 
 declare global {
     interface IncomingMessage {
@@ -62,59 +64,22 @@ export class MatchGateway {
 	handleConnection(client: Socket, @Session() session) {
 		console.log("started");
 		console.log("session:", session);
-		//client.disconnect();
-		/*
-	  const sessionMiddleware = session({
-		  cookie: {
-			  maxAge: 3600 * 24 * 1000,
-		  },
-		  name: 'transcendence',
-		  secret: this.configService.get('SESSION_SECRET'),
-		  resave: false,
-		  saveUninitialized: false,
-	  });
-		
-		const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
-		this.server.use(wrap(sessionMiddleware));
-		this.server.use((socket, next) => {
-			const session = socket.request.session;
-			if (session && session.authenticated) {
-				next();
-			} else {
-				next(new Error("unauthorized"));
-			}
-		});
-	   */
-		//console.log(client.handshake.headers);
-		//console.log(client.handshake.headers.cookie);
-	  //console.log(client.request);
+		console.log(client.handshake.headers.cookie);
+		const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+		console.log("session id from webscoketserver:", SID);
+		if (GlobalService.sessionId != SID) {
+			console.log("session id's don't match, disconnecting");
+			client.disconnect();
+		}
 	}
 	afterInit(server: Server) {
-		// convert a connect middleware to a Socket.IO middleware
-		/*
-		const sessionMiddleware = session({
-			secret: "changeit",
-			resave: false,
-			saveUninitialized: false
-		});
-		const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
-		server.use(wrap(sessionMiddleware));
-	   */
-		/*
-		server.use((socket, next) => {
-			const session = socket.request.session;
-			if (session && session.userId) {
-				next();
-			} else {
-				next(new Error("unauthorized"));
-			}
-		});
-	   */
 		console.log('Init');
 	}
     @SubscribeMessage('keyPressed')
     async handleSendMessage(client: Socket, payload: any): Promise<void> {
-		//const sessionCookie = client.handshake.headers.cookie .split('; ') .find((cookie: string) => cookie.startsWith('session')) .split('=')[1];
         //console.log("Got a board update, emitting to listeners")
         this.getPositions(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
     }
