@@ -1,21 +1,20 @@
-import { IsNotEmpty } from "class-validator";
-import { uniqueUser } from './uniqueUser';
+import {IsNotEmpty} from "class-validator";
 
-export enum userStatus {
-	Online = "online",
-	Offline = "offline",
-	InGame = "inGame",
-}
-export class CreateUserDto {
-	@IsNotEmpty()
-	// @uniqueUser({message: 'Username already exists. Choose another name.'})
-	// TODO: add more validation: no special characters etc.
-	username: string;
+import {userStatus} from '../typeorm/user.entity'
 
-	@IsNotEmpty()
-	intraName: string;
+import {uniqueUser} from './uniqueUser';
 
-	status: userStatus;
+export class UserDto { // Nestjs Data Transfer Object = a class that
+                             // defines the values of the body from the request
+  @IsNotEmpty()
+  // @uniqueUser({message: 'Username already exists. Choose another name.'})
+  // TODO: add more validation: no special characters etc.
+  username: string;
 
-	isTfaEnabled: boolean;
+  @IsNotEmpty()
+  intraName: string;
+
+  status: userStatus;
+
+  isTfaEnabled: boolean;
 }

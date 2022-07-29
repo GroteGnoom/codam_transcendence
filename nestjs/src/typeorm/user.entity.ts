@@ -1,5 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+export enum userStatus {
+	Online = "online",
+	Offline = "offline",
+	InGame = "inGame",
+}
 @Entity()
 export class User {
 	@PrimaryGeneratedColumn({ // primary column will be auto-generated key
@@ -16,12 +21,15 @@ export class User {
 
 	@Column({
 		nullable: false,
-		default: '',
+		unique: true
 	})
 	intraName: string;
 
-	@Column({ default: true })
-  	isActive: boolean;
+	@Column({
+		default: true
+	})
+  	status: userStatus;
+
 	@Column({
 		nullable: false,
 		default: '',

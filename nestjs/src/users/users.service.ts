@@ -1,96 +1,105 @@
-import { Injectable, BadRequestException, Logger} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/typeorm';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from 'src/users/users.dtos';
-import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { userStatus } from './users.dtos'
+import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface
+} from 'class-validator';
+import {User} from 'src/typeorm';
+import {UserDto} from 'src/users/users.dtos';
+import {Repository} from 'typeorm';
 
-@ValidatorConstraint({ name: 'UserExists', async: true })
+import {userStatus} from '../typeorm/user.entity';
+
+@ValidatorConstraint({name : 'UserExists', async : true})
 @Injectable()
 export class UsersService {
-	private readonly logger = new Logger(UsersService.name);
-	constructor(
-		@InjectRepository(User) private readonly userRepository: Repository<User>,
-	) {}
+  private readonly logger = new Logger(UsersService.name);
+  constructor(
+      @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
 
-	async getOneOrFail(username: string): Promise<User> {
-		// some code which fetch user entity or throw exception
-		const User = await this.userRepository.findOneBy({ username : username })
-		// if (!User)
-		// 	throw new Error("erreur")
-		return User;
-	}
+  async getOneOrFail(username: string): Promise<User> {
+    // some code which fetch user entity or throw exception
+    const User = await this.userRepository.findOneBy({username : username})
+    // if (!User)
+    // 	throw new Error("erreur")
+    return User;
+  }
 
-	createUser(createUserDto: CreateUserDto) {
-		const newUser = this.userRepository.create(createUserDto);
-		return this.userRepository.save(newUser).catch((e) => { // TODO: this works, but postgres will trow an error; we probably want to validation uniqueness of username upfront; besides, id plusses?
-			if (/(username)[\s\S]+(already exists)/.test(e.detail)) {
-				throw new BadRequestException(
-					'Account with this username already exists',
-				);
-			}
-			return e;
-		});
-	}
+  createUser(body: UserDto) {
+    const newUser = this.userRepository.create(body);
+    return this.userRepository.save(newUser).catch(
+        (e) => { // TODO: this works, but postgres will trow an error; we
+                 // probably want to validation uniqueness of username upfront;
+                 // besides, id plusses?
+          if (/(intraName)[\s\S]+(already exists)/.test(e.detail)) {
+            throw new BadRequestException(
+                'Account with this intraName already exists',
+            );
+          } else if (/(username)[\s\S]+(already exists)/.test(e.detail)) {
+            throw new BadRequestException(
+                'Account with this username already exists',
+            );
+          }
+          return e;
+        });
+  }
 
-	getUsers() {
-		return this.userRepository.find();
-	}
+  getUsers() { return this.userRepository.find(); }
 
-	setUsername(username: string) {
-		// return this.userRepository.save(username);
-	}
+  setUsername(username: string) {
+    // return this.userRepository.save(username);
+  }
 
-	findUsersById(id: number) {
-		return this.userRepository.findOneBy({id: id});
-	}
+  findUsersById(id: number) { return this.userRepository.findOneBy({id : id}); }
 
-	findUsersByName(username: string) {
-		return this.userRepository.findOneBy({ username : username });
-	}
+  findUsersByName(username: string) {
+    return this.userRepository.findOneBy({username : username});
+  }
 
-	getIntraname(userId: number) {
-		return this.findUsersById(userId);
-	}
+  findUsersByIntraname(intraName: string) {
+    return this.userRepository.findOneBy({intraName : intraName});
+  }
 
-	async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-		this.logger.log("called setTwoFactorAuthenticationSecret");
-		/*
-		const user = {
-			username: "testName",
-			intraName: "testIntra",
-			isActive: true,
-		}
-		const newUser = this.userRepository.create(user);
-		this.userRepository.save(newUser);
-	   */
-		return this.userRepository.update(userId, {
-			twoFactorAuthenticationSecret: secret
-		});
-	}
+  signUpUser(userId: number, username: string) {
+    return this.userRepository.update(userId, {username : username});
+  }
 
-	async turnOnTwoFactorAuthentication(userId: number) {
-		return this.userRepository.update(userId, {
-			isTfaEnabled: true
-		});
-	}
+  async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
+    this.logger.log("called setTwoFactorAuthenticationSecret");
+    /*
+    const user = {
+            username: "testName",
+            intraName: "testIntra",
+            isActive: true,
+    }
+    const newUser = this.userRepository.create(user);
+    this.userRepository.save(newUser);
+*/
+    return this.userRepository.update(userId,
+                                      {twoFactorAuthenticationSecret : secret});
+  }
 
-	async generateName() {
-		return fetch("http://names.drycodes.com/1")
-		.then(response => response.json())
-		.then((response) => response[0]);
-	}
+  async turnOnTwoFactorAuthentication(userId: number) {
+    return this.userRepository.update(userId, {isTfaEnabled : true});
+  }
 
-	// adds user logged in through intra
-	async findOrCreateUser(intraName: string) {
-		const user = await this.userRepository.findOneBy({ intraName : intraName });
-		if (user)
-			return user;
-		const dto = new CreateUserDto;
-		dto.intraName = intraName;
-		dto.username = await this.generateName();
-		dto.status = userStatus.Online;
-		return this.createUser(dto);
-	}
+  async generateName() {
+    return fetch("http://names.drycodes.com/1")
+        .then(response => response.json())
+        .then((response) => response[0]);
+  }
+
+  // adds user logged in through intra
+  async findOrCreateUser(intraName: string) {
+    const user = await this.userRepository.findOneBy({intraName : intraName});
+    if (user)
+      return user;
+    const dto = new UserDto;
+    dto.intraName = intraName;
+    dto.username = await this.generateName();
+    dto.status = userStatus.Online;
+    return this.createUser(dto);
+  }
 }
