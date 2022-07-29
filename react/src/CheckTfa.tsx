@@ -18,18 +18,29 @@ class ShowTfa extends React.Component<TfaProps, TfaState> {
 			code: "",
 			tfaAuthenticated: false,
 		}
+		this.handleChange = this.handleChange.bind(this);
 	}
-	handleSubmit = async (event: React.FormEvent<HTMLInputElement>) => {
-		//post code /2fa/authenticate
+	handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+		const data = new URLSearchParams();
+		data.append("twoFactorAuthenticationCode", this.state.code);
+		console.log('going to post ', this.state.code);
+		event.preventDefault();
 		return await fetch("http://127.0.0.1:5000/2fa/authenticate", {
 			method: "POST",
-			headers: {'Content-Type':'application/json'},
-			body: this.state.code,
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			body: data,
+			mode: 'cors',
 		})
-		.then(async (response) => {
+		.then((response) => {
 			if (response.ok) {
+				console.log('response was OK');
 				this.setState({tfaAuthenticated: true});
+			} else {
+				console.log('response not OK :(');
+				console.log(response);
 			}
+		}).catch((error) => {
+			console.error("there's an error:", error);
 		});
 	}
 	async componentDidMount() {
@@ -44,8 +55,15 @@ class ShowTfa extends React.Component<TfaProps, TfaState> {
 		}).then(response => response.json());
 		this.setState({tfaEnabled: await tfaEnabled});
 	}
+	handleChange(event: any) {
+		console.log("handleChange");
+		this.setState({code: event.target.value});
+	}
 	render() {
-		if (!this.state.li)
+		if (this.state.tfaAuthenticated) {
+			console.log("authenitcated!");
+			return (<div>"You have been authenticated"</div>);
+		} else if (!this.state.li)
 			return (<div>"You are not logged in, so you can't do 2fa"</div>);
 		else if (!this.state.tfaEnabled)
 			return (<div>"You are logged in, but you don't have 2fa enabled"</div>);
@@ -53,13 +71,12 @@ class ShowTfa extends React.Component<TfaProps, TfaState> {
 			{
 				return (
 					<div>
-					<form>
-					<label>Enter your google authenticator code:
-						<input type="text" 
-					onSubmit={this.handleSubmit}
-					value={this.state.code}
-					/>
+					<form onSubmit={this.handleSubmit}>
+					<label>
+					Enter your google authenticator code:
+						<textarea value={this.state.code} onChange={this.handleChange} maxLength={6}/>
 					</label>
+					<input type="submit" value="Submit" />
 					</form>
 					</div>
 				)
