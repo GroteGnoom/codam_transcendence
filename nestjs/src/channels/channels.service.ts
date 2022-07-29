@@ -1,5 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
@@ -9,8 +10,21 @@ import { MessageDto } from './message.dtos';
 export class ChannelsService {
     constructor(
 		@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,// templated with typeorm entity
-        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-	) {}
+        @InjectRepository(Message) private readonly messageRepository: Repository<Message>, 
+        private readonly userService: UsersService ) {
+        this.getChannels()
+        .then( (channels) => {
+            console.log(`Found ${channels.length} channels on startup`)
+            if (channels.length === 0) {
+                userService.findOrCreateUser("root")
+                .then( (user) => {
+                    this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
+                    .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
+                    // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
+                })
+            }
+        })
+    }
 
     getChannels(){
         return this.channelRepository.find();
@@ -85,7 +99,29 @@ export class ChannelsService {
             return channel;
         }
         const members = [...channel.members, {id: id}];
-        // return this.channelRepository.update(name, {members: members});
+        return this.channelRepository.save({name: channelName, members: members});
+    }
+
+    async checkIfMember(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
+        return channel.members.map((user) => user.id).includes(id); // check if userId is in member array
+    }
+
+    async joinChannel(channelName: string, id: number, password?: string) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
+        if (channel.channelType === ChannelType.Protected) {
+            // TODO check password hash with backend value instead of string compare
+            if (password !== channel.password) {
+                throw new BadRequestException("Password is not correct")
+            }
+        }
+        const members = [...channel.members, {id: id}];
         return this.channelRepository.save({name: channelName, members: members});
     }
 

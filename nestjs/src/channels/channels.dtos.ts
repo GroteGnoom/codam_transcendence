@@ -15,3 +15,7 @@ export class CreateChannelDto {
 	@IsNotEmpty()
 	channelType: ChannelType;
 }
+
+export class JoinChannelDto {
+	password?: string;
+}

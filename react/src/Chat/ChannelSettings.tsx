@@ -1,25 +1,21 @@
 import CloseIcon from '@mui/icons-material/Close';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { AppBar, IconButton, ListItem, List, ListItemText, TextField, Toolbar, Typography, Grid } from "@mui/material";
+import { AppBar, IconButton, List, ListItem, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import ListItemButton from '@mui/material/ListItemButton';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import { Box } from "@mui/system";
 import * as React from 'react';
+import { ListChildComponentProps } from 'react-window';
 import { Channel } from './Chat.types';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import ListItemButton from '@mui/material/ListItemButton';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-
 import ButtonGroup from '@mui/material/ButtonGroup';
-
-
 
 interface ChannelSettingsProps {
     channel: string;
@@ -150,9 +146,10 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     renderOwner = () => {
+
         return (
             <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
-                {this.state.owner.username}
+                {this.state.owner.name}
             </Box>
         );
     }
@@ -281,7 +278,15 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.props.member.id}`, { 
             method: 'DELETE'
         })
-		.then((response) => response.json())
+		.then( (response) => response.json() )
+        .then( () => this.props.handleClose() )
+	}
+
+    async createAdmin() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
+            method: 'PUT'
+        })
+		.then( (response) => response.json() )
         .then( () => this.props.handleClose() )
 	}
 
@@ -290,11 +295,10 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
     }
 
     render() {
-
         const buttons = [
-            <Button color="secondary" onClick={() => { this.removeMember() }} key="one">Kick</Button>,
-            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="two">Mute</Button>,
-            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="three">Promote Admin</Button>,
+            <Button color="secondary" onClick={() => { this.removeMember() }} key="kick">Kick</Button>,
+            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="mute">Mute</Button>,
+            <Button color="secondary" onClick={() => { this.createAdmin() }} key="make-admin">Promote Admin</Button>,
           ];
         
         return (
@@ -310,7 +314,6 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.handleClose}>Cancel</Button>
-                    {/* <Button variant="contained" onClick={() => this.addMember()}>Add</Button> */}
                 </DialogActions>
             </Dialog>
         );

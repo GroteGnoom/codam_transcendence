@@ -2,11 +2,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, TextField, Typography } from "@mui/material";
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
@@ -60,7 +55,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     openWebsocket() {
         if (!this.webSocket) {
             console.log('Opening WebSocket');
-            this.webSocket = io("ws://localhost:5000");
+            this.webSocket = io('http://127.0.0.1:5000', {withCredentials: true});
             this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
         }
     }
@@ -147,7 +142,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     </FormControl>
                                 </Grid>
                                 <Grid xs={1} item>
-                                    <IconButton onClick={() => this.postMessage()}
+                                    <IconButton type="submit" onClick={() => this.postMessage()}
                                         color="secondary">
                                             <SendIcon />
                                     </IconButton>

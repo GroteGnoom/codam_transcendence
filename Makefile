@@ -18,7 +18,7 @@ fclean:
 	rm -r postgres_data || true
 
 superclean: fclean
-	docker rmi $(docker images -a) || true
+	docker rmi $(docker images -qa) || true
 	docker volume rm $(docker volume ls) || true
 	docker network rm transcendence_transcendence || true
 	docker system prune -a
