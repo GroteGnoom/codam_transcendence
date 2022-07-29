@@ -1,15 +1,41 @@
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { io } from "socket.io-client";
+import { useEffect, useRef } from 'react';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
 
 const WaitingRoom = () => {
+    const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
-    setTimeout(() => {
-            navigate("/pinkpong", { replace: true });
-        }, 3000);
+
+    useEffect(() => {
+    console.log('Opening WebSocket');
+    webSocket.current = io('http://127.0.0.1:5000', {withCredentials: true, 
+                            extraHeaders: 
+                            {"extraheader":"extra", 
+                            Cookie: "name=value; name2=value2",
+                            Definitely_not_a_cookie: "name=value; name2=value2",
+    }});
+
+    webSocket.current.emit("loggedIn", {
+        "loggedIn": true
+    });
+
+    function startGame() {
+        navigate("/pinkpong", { replace: true });
+    }
+
+    webSocket.current.on("found2Players", startGame ) // subscribe on backend events
+
+    return () => {
+        console.log('Closing WebSocket');
+        webSocket.current.close();
+    }
+    }, []);
+
     return (
         <ThemeProvider theme={pinkTheme}>
             <main>

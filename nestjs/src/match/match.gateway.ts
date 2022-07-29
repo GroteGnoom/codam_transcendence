@@ -17,18 +17,18 @@ declare global {
     }
 }
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://127.0.0.1:3000',
-    credentials: true,
-  },
-})
+// @WebSocketGateway({
+//   cors: {
+//     origin: 'http://127.0.0.1:3000',
+//     credentials: true,
+//   },
+// })
 export class MatchGateway {
 	constructor (
-		private readonly configService: ConfigService
+		private readonly configService: ConfigService, private server: Server
 	) {}
 
-  PinkPong: boolean = true;  //pinkpong (true) or original pong (false) version
+  PinkPong: boolean = false;  //pinkpong (true) or original pong (false) version
   ballSpeed = 9;
   paddleSpeed = 15;
   maxScore = 3;
@@ -68,29 +68,29 @@ export class MatchGateway {
 
   client;
 
-  @WebSocketServer()
-  server: Server;
+  // @WebSocketServer()
+  // server: Server;
   
-	handleConnection(client: Socket, @Session() session) {
-    console.log("started");
-		console.log("session:", session);
-		console.log(client.handshake.headers.cookie);
-    this.client = client;
-		const cookie = parse(String(client.handshake.headers.cookie))
-		const name = 'transcendence'
-		const secret = this.configService.get('SESSION_SECRET');
-		const SID = cookieParser.signedCookie(cookie[name], secret)
-		console.log("session id from webscoketserver:", SID);
-		if (GlobalService.sessionId != SID) {
-      console.log("session id's don't match, disconnecting");
-			client.disconnect();
-		}
-    this.loop();
-	}
+	// handleConnection(client: Socket, @Session() session) {
+  //   console.log("started game server");
+	// 	// console.log("session:", session);
+	// 	// console.log(client.handshake.headers.cookie);
+  //   this.client = client;
+	// 	const cookie = parse(String(client.handshake.headers.cookie))
+	// 	const name = 'transcendence'
+	// 	const secret = this.configService.get('SESSION_SECRET');
+	// 	const SID = cookieParser.signedCookie(cookie[name], secret)
+	// 	// console.log("session id from webscoketserver:", SID);
+	// 	if (GlobalService.sessionId != SID) {
+  //     console.log("session id's don't match, disconnecting");
+	// 		client.disconnect();
+	// 	}
+  //   this.loop();
+	// }
 
-	afterInit(server: Server) {
-		console.log('Init');
-	}
+	// afterInit(server: Server) {
+	// 	console.log('Init');
+	// }
 
   @SubscribeMessage('keyPressed')
   async handleSendMessage(client: Socket, payload: any): Promise<void> {
@@ -164,9 +164,9 @@ export class MatchGateway {
 
   loop() {
       this.getPositions();
-  }
-
-  getPositions() {
+    }
+  
+    getPositions() {
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
@@ -176,6 +176,7 @@ export class MatchGateway {
       else if (this.ballRelY < this.paddleP1RelY - 10) {
         /*	score a point */
         this.scoreP2 = this.scoreP2 + 1;
+        if (this.PinkPong)
         this.handlePowerups(1);
         this.setGame();
       }
@@ -187,7 +188,8 @@ export class MatchGateway {
       else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
         /*	score a point */
         this.scoreP1 = this.scoreP1 + 1;
-        this.handlePowerups(2);
+        if (this.PinkPong)
+          this.handlePowerups(2);
         this.setGame();
       }
       /*	bounce east wall */
