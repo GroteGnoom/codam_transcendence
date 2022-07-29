@@ -54,6 +54,7 @@ export default function PinkPong() {
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
+	
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;

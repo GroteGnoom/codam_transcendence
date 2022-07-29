@@ -10,23 +10,22 @@ import * as cookieParser from 'cookie-parser'
 import { GlobalService } from '../global.service';
 import { ConfigService } from '@nestjs/config';
 
-  @WebSocketGateway({
-    cors: {
-      origin: 'http://127.0.0.1:3000',
-      credentials: true,
-    },
-  })
-
+@WebSocketGateway({
+  cors: {
+    origin: 'http://127.0.0.1:3000',
+    credentials: true
+  },
+})
 export class WaitingRoom {
   constructor (
   private readonly configService: ConfigService
-	) {console.log("In waiting room")}
+	) {}
 
   logins: number = 0;
 
   @WebSocketServer()
   server: Server;
-  
+
 	handleConnection(client: Socket, @Session() session) {
     console.log("started waitingroom server");
 		const cookie = parse(String(client.handshake.headers.cookie))

@@ -11,11 +11,11 @@ import { parse } from 'cookie'
 import * as cookieParser from 'cookie-parser'
 import { GlobalService } from '../global.service';
 
-declare global {
-    interface IncomingMessage {
-        readonly session: number;
-    }
-}
+// declare global {
+//     interface IncomingMessage {
+//         readonly session: number;
+//     }
+// }
 
 // @WebSocketGateway({
 //   cors: {
@@ -26,7 +26,9 @@ declare global {
 export class MatchGateway {
 	constructor (
 		private readonly configService: ConfigService, private server: Server
-	) {}
+	) {
+    this.loop();
+  }
 
   PinkPong: boolean = false;  //pinkpong (true) or original pong (false) version
   ballSpeed = 9;
@@ -223,19 +225,19 @@ export class MatchGateway {
     }
 
     setTimeout(() => {
-        this.server.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner,
-        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
-        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
-      });
+        //this.server.emit('boardUpdated', { 
+      //   "ballRelX": this.ballRelX, 
+      //   "ballRelY": this.ballRelY, 
+      //   "paddleP1RelX": this.paddleP1RelX, 
+      //   "paddleP1RelY": this.paddleP1RelY, 
+      //   "paddleP2RelX": this.paddleP2RelX, 
+      //   "paddleP2RelY": this.paddleP2RelY, 
+      //   "scoreP1": this.scoreP1, 
+      //   "scoreP2": this.scoreP2,
+      //   "winner": this.winner,
+      //   "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
+      //   "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
+      // });
       this.loop();
     }, 1000 / 60);
   }
@@ -282,17 +284,17 @@ export class MatchGateway {
         this.winner = 1;
       else
         this.winner = 2;
-      this.server.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner 
-      });
+      // this.server.emit('boardUpdated', { 
+      //   "ballRelX": this.ballRelX, 
+      //   "ballRelY": this.ballRelY, 
+      //   "paddleP1RelX": this.paddleP1RelX, 
+      //   "paddleP1RelY": this.paddleP1RelY, 
+      //   "paddleP2RelX": this.paddleP2RelX, 
+      //   "paddleP2RelY": this.paddleP2RelY, 
+      //   "scoreP1": this.scoreP1, 
+      //   "scoreP2": this.scoreP2,
+      //   "winner": this.winner 
+      // });
     }
   }
 }
