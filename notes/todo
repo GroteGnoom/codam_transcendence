@@ -10,8 +10,12 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] user account pagina:
 [V] set username
 [V] check ERR_EMPTY_RESPONSE; send custom response when username not unique?
-[ ] show intraName; fix 401 error request
+[V] show intraName; fix 401 error request
 [ ] better unique username checker; custom validator
+[V] add icon for custom avatar upload
+[ ] save custom avatar in db
+[ ] when signed up, redirect to homepage and show buttons
+[ ] make account page
 
 flow:
 user authentication -> set username page -> create user
