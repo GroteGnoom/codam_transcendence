@@ -135,6 +135,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     //Helpers
     async tryToOpenChat(channel: string) {
+        this.props.openChat(undefined);
         const member = await this.isMember(channel);
         console.log("Is member?", member)
         if (member) {

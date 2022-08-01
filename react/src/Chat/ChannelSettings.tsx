@@ -1,7 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { AppBar, IconButton, List, ListItem, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import { AppBar, IconButton, List, ListItem, ListItemAvatar, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -113,11 +114,14 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     const members = this.state.settings.members.map((el) => (
             <ListItem key={el.id}> 
                 <ListItemText 
-                    primary={`${el.username}`}
+                    primary={`${el.user.username}`}
                 />
+                {el.isMuted && <ListItemAvatar>
+                    <VolumeOffIcon/>
+                </ListItemAvatar>}
                 <IconButton onClick={() => {
                                 this.setState( {memberSettingsOpen: true} ); 
-                                this.setState( {activeMember: el} )}
+                                this.setState( {activeMember: el.user} )}
                                 } color="secondary">
                     <MoreHorizIcon />
                 </IconButton>               
@@ -282,6 +286,14 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
         .then( () => this.props.handleClose() )
 	}
 
+    async muteMember() {
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/mute/${this.props.member.id}`, { 
+            method: 'PUT'
+        })
+		.then( (response) => response.json() )
+        .then( () => this.props.handleClose() )
+    }
+
     async createAdmin() {
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
             method: 'PUT'
@@ -297,13 +309,13 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
     render() {
         const buttons = [
             <Button color="secondary" onClick={() => { this.removeMember() }} key="kick">Kick</Button>,
-            <Button color="secondary" onClick={() => { console.log('onClick'); }} key="mute">Mute</Button>,
+            <Button color="secondary" onClick={() => { this.muteMember() }} key="mute">Mute</Button>,
             <Button color="secondary" onClick={() => { this.createAdmin() }} key="make-admin">Promote Admin</Button>,
           ];
         
         return (
             <Dialog open={this.props.open} >  {/*pop window to add user to channel */}
-                <DialogTitle>Member Settings</DialogTitle>
+                <DialogTitle>{this.props.member && this.props.member.username} Settings</DialogTitle>
                 <DialogContent>          
                 <Box>
                     <ButtonGroup

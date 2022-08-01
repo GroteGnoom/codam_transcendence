@@ -16,6 +16,7 @@ interface ChatWindowState {
     messages: any[];
     text: string;
     addUserOpen: boolean;
+    muted: boolean;
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
@@ -27,6 +28,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             messages: [], 
             text: "",
             addUserOpen: false,
+            muted: false,
         }
     }
 
@@ -43,6 +45,15 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         })
     }
 
+    async checkIfMuted() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/is-muted`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
+        .then((response) => response.json())
+        .then((response) => this.setState({muted: response}))
+	}
+
     onReceiveMessage(socketMessage: any){   //subscribed to recMessage events through ws
         if (socketMessage.channel === this.props.channel) {
             console.log("Received a message for this channel")
@@ -52,11 +63,20 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         }        
     }
 
+    onUserMuted(payload: any, muted: boolean) {
+        if (this.props.channel === payload.channel) {
+            console.log("User muted", muted, payload)
+            this.checkIfMuted() // todo find out who current user is in this component to compare
+        }
+    }
+
     openWebsocket() {
         if (!this.webSocket) {
             console.log('Opening WebSocket');
             this.webSocket = io('http://127.0.0.1:5000', {withCredentials: true});
             this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
+            this.webSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
+            this.webSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
         }
     }
 
@@ -64,12 +84,18 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         console.log("Mounting", this.props.channel)
         this.getMessages()
         this.openWebsocket()
+        this.checkIfMuted()
     }
 
-    componentDidUpdate() { // this function shouldnt be necessary, look for solution when switching channels
-        console.log("updating")
-        this.getMessages()
+    componentWillUnmount() {
+        console.log("Closing websocket")
+        this.webSocket.close()
     }
+
+    // componentDidUpdate() { // this function shouldnt be necessary, look for solution when switching channels
+    //     console.log("updating")
+    //     this.getMessages()
+    // }
 
     async postMessage() {
         this.webSocket.emit("sendMessage", { 
@@ -136,6 +162,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                 <Grid xs={9} item>
                                     <FormControl fullWidth>
                                         <TextField onChange={(e) => this.setState({text: e.target.value})}
+                                            disabled={this.state.muted}
                                             value={this.state.text}
                                             label="Type your message..."
                                             variant="outlined"/>
@@ -143,6 +170,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                 </Grid>
                                 <Grid xs={1} item>
                                     <IconButton type="submit" onClick={() => this.postMessage()}
+                                        disabled={this.state.muted}
                                         color="secondary">
                                             <SendIcon />
                                     </IconButton>

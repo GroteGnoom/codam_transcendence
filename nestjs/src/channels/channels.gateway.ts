@@ -6,6 +6,11 @@ import {
 import { Socket, Server } from 'socket.io';
 import { ChannelsService } from './channels.service';
 import { SocketMessage } from './message.dtos';
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
+import { ConfigService } from '@nestjs/config';
+import { GlobalService } from '../global.service';
+import { forwardRef, Inject } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -14,15 +19,48 @@ import { SocketMessage } from './message.dtos';
   },
 })
 export class ChannelsGateway {
-  constructor(private channelsService: ChannelsService) {}
+  constructor(
+    @Inject(forwardRef(() => ChannelsService))
+    private channelsService: ChannelsService,
+    private readonly configService: ConfigService
+  ) {}
+
+  private mutedUsers = []
 
   @WebSocketServer()
   server: Server;
 
+  
+  private getUserFromClient(client: Socket) {
+    const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+    return GlobalService.users.get(SID as string)
+	}
+
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: Socket, payload: SocketMessage): Promise<void> {
-      payload.message = await this.channelsService.addMessage(payload.channel, payload.message);
+      const userId = this.getUserFromClient(client)
+      const userIsMuted = await this.channelsService.checkIfMuted(payload.channel, userId)
+      if (userIsMuted)
+        return;
+      payload.message = await this.channelsService.addMessage(payload.channel, userId, payload.message);
       this.server.emit('recMessage', payload);
+  }
+
+  broadcastMuteUser(channel: string, userId: number) {
+    this.server.emit('userMuted', {
+      channel: channel,
+      userId: userId
+    });
+  }
+
+  broadcastUnmuteUser(channel: string, userId: number) {
+    this.server.emit('userUnmuted', {
+      channel: channel,
+      userId: userId
+    });
   }
 
   afterInit(server: Server) {

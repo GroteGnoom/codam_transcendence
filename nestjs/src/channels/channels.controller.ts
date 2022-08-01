@@ -78,4 +78,15 @@ export class ChannelsController {
     removeMemberFromChannel(@Param('name') name: string, @Param('id') member: number) {
         return this.channelsService.removeMemberFromChannel(name, Number(member));
     }
+
+    @Put(':name/mute/:id')
+    async muteMember(@Param('name') name: string, @Param('id') member: number) {
+        return this.channelsService.muteMemberInChannel(name, Number(member));
+    }
+
+    @Get(':name/is-muted')
+    async checkIfMuted(@Req() req, @Param('name') name: string) {
+        const userID = req.session.userId;
+        return this.channelsService.checkIfMuted(name, userID);
+    }
 }
