@@ -8,8 +8,8 @@ import {
 import {User} from 'src/typeorm';
 import {UserDto} from 'src/users/users.dtos';
 import {Repository} from 'typeorm';
-
 import {userStatus} from '../typeorm/user.entity';
+import {DatabaseFilesService} from './databaseFiles.service';
 
 @ValidatorConstraint({name : 'UserExists', async : true})
 @Injectable()
@@ -17,6 +17,7 @@ export class UsersService {
   private readonly logger = new Logger(UsersService.name);
   constructor(
       @InjectRepository(User) private readonly userRepository: Repository<User>,
+      private readonly databaseFilesService: DatabaseFilesService,
   ) {}
 
   async getOneOrFail(username: string): Promise<User> {
@@ -101,5 +102,12 @@ export class UsersService {
     dto.username = await this.generateName();
     dto.status = userStatus.Online;
     return this.createUser(dto);
+  }
+
+  async addAvatar(id: number, imageBuffer: Buffer, filename: string) {
+    const avatar = await this.databaseFilesService.uploadDatabaseFile(
+        imageBuffer, filename);
+    await this.userRepository.update(id, {avatarId : avatar.id});
+    return avatar;
   }
 }

@@ -1,3 +1,4 @@
+import './Signup.css'
 import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -8,18 +9,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
-import './Signup.css'
-// import { InputLabel } from '@mui/material';
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-// import { createUnarySpacing } from '@mui/system';
 import Avatar from '@mui/material/Avatar';
-// import Menu from '@mui/material/Menu';
-// import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import Snackbar from '@mui/material/Snackbar';
-import Icon from '@mui/material/Icon';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
-import { styled } from '@mui/material/styles';
+import {styled} from '@mui/material/styles';
+import FormData from 'form-data';
+import {createReadStream} from 'fs';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -150,6 +147,57 @@ export function Signup() {
         .catch((err: Error) => setError(err.message))
     }
 
+    async function handleChange(e: any){
+        console.log(e.target.files[0]);
+        console.log(e.target.files[0].name);
+        console.log(e.target.files[0].size);
+        console.log(e.target.files[0].type);
+
+        const file = e.target.files[0];
+        const form = new FormData();
+        form.append('file', file, file.name);
+        console.log(form);
+        console.log(typeof form);
+
+        return await fetch("http://localhost:5000/users/avatar", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            credentials: 'include',
+            body: JSON.stringify({form}),
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then((response) => {
+            setEvent("Avatar stored successfully");
+        })
+        .catch((err: Error) => setError(err.message))
+        // try {
+        //     const response = await fetch('http://localhost:5000/users/avatar', {
+        //         method: 'POST',
+        //         credentials: 'include',
+        //         body: JSON.stringify(form as FormData),
+        //     });
+        //     if (!response.ok) {
+        //         throw new Error(response.statusText);
+        //     }
+        //     console.log(response);
+        // } catch (err) {
+        //     console.log(err);
+        // }
+        // const fileStream = createReadStream(e.target.files[0].name);
+        // form.append('photo', readStream);
+        // form.append('firstName', 'Marcin');
+        // form.append('lastName', 'Wanago');
+    }
+
     function keyPress(e: any) {
         if(e.key === 13){
             console.log('enter pressed');
@@ -198,7 +246,9 @@ export function Signup() {
                                         >
                                             <input
                                                 type="file"
+                                                accept="image/*"
                                                 hidden
+                                                onChange={(e) => handleChange(e)}                                              
                                             />
                                             <ChangeCircleIcon
                                                 fontSize='large'
@@ -209,7 +259,7 @@ export function Signup() {
                             }
                             >
                             <Avatar className="item"
-                                alt={intraName} // first letter of alt text is default avatar if loading src fails
+                                alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
                                 src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Mona_Lisa_bw_square.jpeg"
                                 sx={{ width: 150, height: 150 }}
                             />
