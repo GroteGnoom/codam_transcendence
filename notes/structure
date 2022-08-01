@@ -100,3 +100,6 @@ add class to input element
 
 SQLectron delete database:
 DELETE FROM "public"."user"
+
+React conditional rendering
+https://medium.com/@kavishkafernando/react-conditional-rendering-methods-2f3fe863f546
