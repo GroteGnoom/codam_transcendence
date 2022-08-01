@@ -2,26 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 
-/*
-export const useSocketStore = defineStore('socket', {
-	state: () => ({
-		socket: {} as Socket,
-		connected: false,
-	}),
-	actions: {
-		handleConnection() {
-			this.socket = io('http://localhost:3000/', {
-				withCredentials: true,
-			})
-		},
-		isConnected() {
-			return this.socket.connected;
-		},
-
-	},
-});
-
-*/
 export default function PinkPong() {
 	let fieldWidth: number = 1500;		//3
 	let fieldHeight: number = 1000;		//2
@@ -76,15 +56,6 @@ export default function PinkPong() {
 								Cookie: "name=value; name2=value2",
 								Definitely_not_a_cookie: "name=value; name2=value2",
 	   	}}); // open websocket connection with backend
-		/*
-		webSocket.current = io('ws://localhost:5000', 
-							   {
-			extraHeaders: {
-				"extraheader":"extra"
-			}
-		}); // open websocket connection with backend
-	   */
-		//webSocket.current = io('ws://localhost:5000'); // open websocket connection with backend
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressedP1": false,
 			"rightKeyPressedP1": false,
@@ -181,9 +152,11 @@ export default function PinkPong() {
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
 		}
 	}
+
 	function getScrollbarWidth() {
 		return window.innerWidth - document.documentElement.clientWidth;
 	}
+
 	function draw(ballX: number, ballY: number, paddleP1X: number, paddleP1Y: number, paddleP2X: number, paddleP2Y: number, scoreP1: number, scoreP2: number){
 		document.body.style.overflow = "hidden";
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -259,14 +232,7 @@ export default function PinkPong() {
 				webSocket.current.close();
 				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}
-		// webSocket.current.emit("keyPressed", {
-		// 	"leftKeyPressedP1": leftKeyPressedP1,
-		// 	"rightKeyPressedP1": rightKeyPressedP1,
-		// 	"leftKeyPressedP2": leftKeyPressedP2,
-		// 	"rightKeyPressedP2": rightKeyPressedP2,
-		// 	"reset": false
-		// 	})
-	};
+	}
 
 	function getWindowSize(winner: number, scoreP1: number, scoreP2: number) {
 		canvas.width = window.innerWidth - getScrollbarWidth();
@@ -300,5 +266,5 @@ export default function PinkPong() {
 			Your browser does not support the HTML canvas tag.
 			</canvas>
 		</div>
-	);
+	)
 }
