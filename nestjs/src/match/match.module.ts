@@ -7,7 +7,6 @@ import { MatchGateway } from './match.gateway';
     // UsersModule,
     // AuthModule
   ],
-  controllers: [],
-  providers: [MatchGateway]
+  controllers: []
 })
 export class MatchModule {}
