@@ -56,7 +56,7 @@ export default function PinkPong() {
 								Cookie: "name=value; name2=value2",
 								Definitely_not_a_cookie: "name=value; name2=value2",
 	   	}}); // open websocket connection with backend
-		webSocket.current.emit("keyPressed", {
+		webSocket.current.emit('keyPressed', {
 			"leftKeyPressedP1": false,
 			"rightKeyPressedP1": false,
 			"leftKeyPressedP2": false,
