@@ -25,8 +25,6 @@ export class ChannelsGateway {
     private readonly configService: ConfigService
   ) {}
 
-  private mutedUsers = []
-
   @WebSocketServer()
   server: Server;
 
