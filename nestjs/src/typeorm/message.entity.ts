@@ -1,12 +1,13 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
+import { User } from './user.entity';
     
 @Entity()
 export class Message {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    sender: number;
+    @ManyToOne(() => User, { eager:true })
+    sender: User;
 
     // @ManyToOne(() => Channel, (channel: Channel) => channel.messages)
     // channel: string;
