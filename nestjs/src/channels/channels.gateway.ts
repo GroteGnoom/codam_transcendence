@@ -7,7 +7,12 @@ import { Socket, Server } from 'socket.io';
 import { ChannelsService } from './channels.service';
 import { SocketMessage } from './message.dtos';
 
-@WebSocketGateway({ cors: { origin: '*', }, })
+@WebSocketGateway({
+  cors: {
+    origin: 'http://127.0.0.1:3000',
+    credentials: true
+  },
+})
 export class ChannelsGateway {
   constructor(private channelsService: ChannelsService) {}
 

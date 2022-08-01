@@ -13,12 +13,9 @@ const WaitingRoom = () => {
 
     useEffect(() => {
     console.log('Opening WebSocket');
-    webSocket.current = io('http://127.0.0.1:5000', {withCredentials: true, 
-                            extraHeaders: 
-                            {"extraheader":"extra", 
-                            Cookie: "name=value; name2=value2",
-                            Definitely_not_a_cookie: "name=value; name2=value2",
-    }});
+    webSocket.current = io('http://127.0.0.1:5000', {
+        withCredentials: true
+    });
 
     webSocket.current.emit("loggedIn", {
         "loggedIn": true

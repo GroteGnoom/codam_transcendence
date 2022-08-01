@@ -1,34 +1,26 @@
 import {
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer
-} from '@nestjs/websockets';
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer
+  } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import session from "express-session";
-import { ConfigService } from '@nestjs/config';
-import { Session } from '@nestjs/common';
-import { parse } from 'cookie'
-import * as cookieParser from 'cookie-parser'
-import { GlobalService } from '../global.service';
 
-declare global {
-    interface IncomingMessage {
-        readonly session: number;
-    }
-}
-
-// @WebSocketGateway({
-//   cors: {
-//     origin: 'http://127.0.0.1:3000',
-//     credentials: true,
-//   },
-// })
+@WebSocketGateway({
+  cors: {
+    origin: 'http://127.0.0.1:3000',
+    credentials: true
+  },
+})
 export class MatchGateway {
 	constructor (
-		private readonly configService: ConfigService, private server: Server
-	) {}
+    private Player1: Server,
+    private Player2: Server,
+    private PinkPong: boolean //pinkpong (true) or original pong (false) version
+  ){
+    console.log("Start match");
+    this.loop();
+  }
 
-  PinkPong: boolean = false;  //pinkpong (true) or original pong (false) version
   ballSpeed = 9;
   paddleSpeed = 15;
   maxScore = 3;
@@ -66,35 +58,13 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
-  client;
-
-  // @WebSocketServer()
-  // server: Server;
-  
-	// handleConnection(client: Socket, @Session() session) {
-  //   console.log("started game server");
-	// 	// console.log("session:", session);
-	// 	// console.log(client.handshake.headers.cookie);
-  //   this.client = client;
-	// 	const cookie = parse(String(client.handshake.headers.cookie))
-	// 	const name = 'transcendence'
-	// 	const secret = this.configService.get('SESSION_SECRET');
-	// 	const SID = cookieParser.signedCookie(cookie[name], secret)
-	// 	// console.log("session id from webscoketserver:", SID);
-	// 	if (GlobalService.sessionId != SID) {
-  //     console.log("session id's don't match, disconnecting");
-	// 		client.disconnect();
-	// 	}
-  //   this.loop();
-	// }
-
-	// afterInit(server: Server) {
-	// 	console.log('Init');
-	// }
+  client: Socket;
 
   @SubscribeMessage('keyPressed')
   async handleSendMessage(client: Socket, payload: any): Promise<void> {
-      //console.log("Got a board update, emitting to listeners")
+      // this.client = client;
+      // console.log(client);
+      console.log("Key pressed")
       this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
   }
 
@@ -223,7 +193,21 @@ export class MatchGateway {
     }
 
     setTimeout(() => {
-        this.server.emit('boardUpdated', { 
+        // console.log(this.server.getMaxListeners())
+        this.Player1.emit('boardUpdated', { 
+        "ballRelX": this.ballRelX, 
+        "ballRelY": this.ballRelY, 
+        "paddleP1RelX": this.paddleP1RelX, 
+        "paddleP1RelY": this.paddleP1RelY, 
+        "paddleP2RelX": this.paddleP2RelX, 
+        "paddleP2RelY": this.paddleP2RelY, 
+        "scoreP1": this.scoreP1, 
+        "scoreP2": this.scoreP2,
+        "winner": this.winner,
+        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
+        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
+      });
+      this.Player2.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 
@@ -242,7 +226,6 @@ export class MatchGateway {
 
   setGame() {
     if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
-      //console.log("play game");
       this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
       this.paddleP1RelY = 10;
       this.paddleP2RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
@@ -274,15 +257,26 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
-      this.client.disconnect();
+      this.Player1.sockets.disconnectSockets();
+      this.Player2.sockets.disconnectSockets();
     }
     else {
-      // console.log("set winner");
       if (this.scoreP1 === this.maxScore)
         this.winner = 1;
       else
         this.winner = 2;
-      this.server.emit('boardUpdated', { 
+      this.Player1.emit('boardUpdated', { 
+        "ballRelX": this.ballRelX, 
+        "ballRelY": this.ballRelY, 
+        "paddleP1RelX": this.paddleP1RelX, 
+        "paddleP1RelY": this.paddleP1RelY, 
+        "paddleP2RelX": this.paddleP2RelX, 
+        "paddleP2RelY": this.paddleP2RelY, 
+        "scoreP1": this.scoreP1, 
+        "scoreP2": this.scoreP2,
+        "winner": this.winner 
+      });
+      this.Player2.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 
