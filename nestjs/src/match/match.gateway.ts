@@ -1,16 +1,26 @@
-import { SubscribeMessage } from '@nestjs/websockets';
+import {
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer
+  } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
+@WebSocketGateway({
+  cors: {
+    origin: 'http://127.0.0.1:3000',
+    credentials: true
+  },
+})
 export class MatchGateway {
 	constructor (
     private Player1: Server,
-    private Player2: Server
+    private Player2: Server,
+    private PinkPong: boolean //pinkpong (true) or original pong (false) version
   ){
     console.log("Start match");
     this.loop();
   }
 
-  PinkPong: boolean = false;  //pinkpong (true) or original pong (false) version
   ballSpeed = 9;
   paddleSpeed = 15;
   maxScore = 3;
@@ -52,8 +62,9 @@ export class MatchGateway {
 
   @SubscribeMessage('keyPressed')
   async handleSendMessage(client: Socket, payload: any): Promise<void> {
-      this.client = client;
-      console.log(client);
+      // this.client = client;
+      // console.log(client);
+      console.log("Key pressed")
       this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
   }
 
@@ -246,7 +257,8 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
-      this.client.disconnect();
+      this.Player1.sockets.disconnectSockets();
+      this.Player2.sockets.disconnectSockets();
     }
     else {
       if (this.scoreP1 === this.maxScore)
