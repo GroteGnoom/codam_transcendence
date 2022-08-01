@@ -1,16 +1,35 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChannelMember } from 'src/typeorm/channel.entity';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
+import { ChannelsGateway } from './channels.gateway';
 import { MessageDto } from './message.dtos';
 
 @Injectable()
 export class ChannelsService {
     constructor(
 		@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,// templated with typeorm entity
-        @InjectRepository(Message) private readonly messageRepository: Repository<Message>,
-	) {}
+        @InjectRepository(Message) private readonly messageRepository: Repository<Message>, 
+        @InjectRepository(ChannelMember) private readonly memberRepository: Repository<ChannelMember>,         
+        private readonly channelGateway: ChannelsGateway,
+        private readonly userService: UsersService ) {
+        this.getChannels()
+        .then( (channels) => {
+            console.log(`Found ${channels.length} channels on startup`)
+            if (channels.length === 0) {
+                userService.findOrCreateUser("root")
+                .then( (user) => {
+                    this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
+                    .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
+                    // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
+                })
+            }
+        })
+    }
 
     getChannels(){
         return this.channelRepository.find();
@@ -33,7 +52,7 @@ export class ChannelsService {
             name: createChannelDto.name,
             owner: userID,
             admins: [{id: userID}],
-            members: [{id: userID}],
+            members: [this.newMember(userID)],
             password: createChannelDto.password,
             channelType: createChannelDto.channelType,
         });
@@ -81,11 +100,41 @@ export class ChannelsService {
         if (!channel) {
             return undefined;
         }
-        if (channel.members.map((user) => user.id).includes(id)) {
+        if (channel.members.map((member) => member.user.id).includes(id)) {
             return channel;
         }
-        const members = [...channel.members, {id: id}];
-        // return this.channelRepository.update(name, {members: members});
+        const members = [...channel.members, this.newMember(id)];
+        return this.channelRepository.save({name: channelName, members: members});
+    }
+
+    async checkIfMember(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });        
+        return channel.members.map((member) => member.user.id).includes(id); // check if userId is in member array
+    }
+
+    async checkIfMuted(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
+        return channel.members.find((member) => Number(member.user.id) === Number(id)).isMuted;
+    }
+
+    async joinChannel(channelName: string, id: number, password?: string) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
+        if (channel.channelType === ChannelType.Protected) {
+            // TODO check password hash with backend value instead of string compare
+            if (password !== channel.password) {
+                throw new BadRequestException("Password is not correct")
+            }
+        }
+        const members = [...channel.members, this.newMember(id)];
         return this.channelRepository.save({name: channelName, members: members});
     }
 
@@ -100,17 +149,54 @@ export class ChannelsService {
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from members');
         }
-        const members = channel.members.filter((user) => user.id != id)
+        const members = channel.members.filter((member) => member.user.id != id)
         return this.channelRepository.save({name: channelName, members: members}); 
     }
 
-    addMessage(channel: string, message: MessageDto) {
-        const newMessage: Message = this.messageRepository.create(message); // will create id and date for message
+    async muteMemberInChannel(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members']
+        });
+        channel.members.forEach((member) => {
+            if (member.user.id == id) {
+                member.isMuted = true;
+                member.mutedUntil = new Date(new Date().getTime() + 10 * 1000); // 10 seconds for testing
+                this.channelGateway.broadcastMuteUser(channelName, id);
+            } 
+        })
+        return this.channelRepository.save({name: channelName, members: channel.members}); 
+    }
+
+    @Interval(10000) // every 10 seconds
+    async handleInterval(): Promise<void> {
+        const currentDate: Date = new Date();
+
+        const mutedMembers = await this.memberRepository.find({
+            where: {isMuted: true},
+            relations: ['channel']
+        });
+        mutedMembers.forEach((el) => {
+            if (el.mutedUntil < currentDate) {
+                el.isMuted = false;
+                el.mutedUntil = null;
+                this.memberRepository.save(el)
+                this.channelGateway.broadcastUnmuteUser(el.channel.name, el.user.id);
+            }
+        })
+      }
+
+    addMessage(channel: string, sender: number, message: MessageDto) {
+        const newMessage: Message = this.messageRepository.create({sender: sender, text: message.text}); // will create id and date for message
         newMessage.channel = channel;
 		return this.messageRepository.save(newMessage);        
     }
 
     getMessages(channel: string) {
         return this.messageRepository.findBy({channel: channel});
+    }
+
+    private newMember(userId: number) {
+        return {user: {id: userId}}
     }
 }

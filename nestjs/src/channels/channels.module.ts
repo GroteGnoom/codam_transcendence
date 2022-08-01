@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import { ChannelsController } from './channels.controller';
-import { ChannelsService } from './channels.service';
-import { ChannelsGateway} from './channels.gateway'
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Channel, Message } from "src/typeorm";
-import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { Channel, Message } from "src/typeorm";
+import { ChannelMember } from 'src/typeorm/channel.entity';
+import { UsersModule } from 'src/users/users.module';
+import { ChannelsController } from './channels.controller';
+import { ChannelsGateway } from './channels.gateway';
+import { ChannelsService } from './channels.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Channel, Message]), 
+    TypeOrmModule.forFeature([Channel, ChannelMember, Message]), 
     UsersModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService, ChannelsGateway]

@@ -1,9 +1,6 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, Session, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CreateChannelDto } from 'src/channels/channels.dtos';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
-import { MessageDto } from './message.dtos';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request } from 'express';
 
 //@UseGuards(JwtAuthGuard)
 @Controller('channels')
@@ -64,8 +61,32 @@ export class ChannelsController {
         }
     }
 
+    @Get(':name/is-member')
+    async checkIfMember(@Req() req, @Param('name') name: string) {
+        const userID = req.session.userId;
+        return this.channelsService.checkIfMember(name, userID);
+    }
+
+    @Put(':name/join')
+    async joinChannel(@Req() req, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
+        const userID = req.session.userId;
+        const password = joinChannelDto.password;
+        return this.channelsService.joinChannel(name, userID, password);
+    }
+
     @Delete(':name/member/:id')
     removeMemberFromChannel(@Param('name') name: string, @Param('id') member: number) {
         return this.channelsService.removeMemberFromChannel(name, Number(member));
+    }
+
+    @Put(':name/mute/:id')
+    async muteMember(@Param('name') name: string, @Param('id') member: number) {
+        return this.channelsService.muteMemberInChannel(name, Number(member));
+    }
+
+    @Get(':name/is-muted')
+    async checkIfMuted(@Req() req, @Param('name') name: string) {
+        const userID = req.session.userId;
+        return this.channelsService.checkIfMuted(name, userID);
     }
 }

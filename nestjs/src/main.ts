@@ -23,7 +23,7 @@ async function bootstrap() {
 		  saveUninitialized: false,
 	  }),
   );
-    var allowed = ['http://127.0.0.1:3000', 'https://127.0.0.1:5000']
+    var allowed = ['http://127.0.0.1:3000', 'http://localhost:3000', 'https://127.0.0.1:5000']
     var corsOptions = {
       origin: (origin, callback) => {
 		  if (!origin) {

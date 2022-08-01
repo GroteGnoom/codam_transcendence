@@ -30,7 +30,12 @@ interface ChannelListState {
     newChannelPassword: string;
     open: boolean;
     passwordVisible: boolean;
+
+    openJoinWindow: boolean;
+    channelToJoin: any;
+    passwordToJoin: string;
 }
+
 
 class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
@@ -43,6 +48,10 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             newChannelPassword: "",
             open: false,
             passwordVisible: false,
+
+            openJoinWindow: false,
+            channelToJoin: undefined,
+            passwordToJoin: "",
         };
     }
 
@@ -88,7 +97,58 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         })
 	}
 
+    async isMember(channel: string) {
+		return await fetch(`http://127.0.0.1:5000/channels/${channel}/is-member`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
+        .then((response) => response.json())
+	}
+
+    async joinChannel() {
+        return await fetch(`http://127.0.0.1:5000/channels/${this.state.channelToJoin.name}/join`, { 
+            method: 'PUT',
+            credentials: 'include',
+            headers: {'Content-Type':'application/json'},
+			body: JSON.stringify({
+                "password": this.state.passwordToJoin,
+			})  
+        })
+		.then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)                
+            }
+        })            
+        .then( () => this.getChannels() )
+        .then( () => {
+            this.setState( {openJoinWindow: false} ) 
+            this.props.openChat(this.state.channelToJoin.name)
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
+        
+    }
+
     //Helpers
+    async tryToOpenChat(channel: string) {
+        this.props.openChat(undefined);
+        const member = await this.isMember(channel);
+        console.log("Is member?", member)
+        if (member) {
+            this.props.openChat(channel);
+        } else {
+            const channelToJoin = this.state.channels.find((el) => el.name === channel)
+            this.setState({channelToJoin: channelToJoin})
+            this.setState({openJoinWindow: true})
+        }
+
+        // if (this.state.channels.find((el) => el.members.includes()))
+    }
+
     handleClickOpen = () => {
         this.setState( {open: true} );
     };
@@ -101,7 +161,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         const channel = this.state.channels.map((el) => (
             <ListItem sx={ { height: 40 } } key={el.name}> 
                 <ListItemButton selected={el.name===this.props.activeChannel} 
-                    onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
+                    //</ListItem>onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
+                    onClick={() => this.tryToOpenChat(el.name) }> {/* sets active channel */}
                     <ListItemText primary={el.name} />
                 </ListItemButton>    
             </ListItem>
@@ -186,7 +247,27 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
                     <Button variant="contained" onClick={() => this.newchannel()}>Add</Button>
-                </DialogActions>
+                </DialogActions>                
+                </Box>
+            </Dialog>
+            <Dialog open={this.state.openJoinWindow} onClose={() => this.setState({openJoinWindow: false})} >  {/*pop window for joining channel */}
+                <Box sx={{ bgcolor: '#f48fb1' }}>
+                <DialogTitle>Join {this.state.channelToJoin && this.state.channelToJoin.name}</DialogTitle>
+                {this.state.channelToJoin && this.state.channelToJoin.channelType === 'protected' && <DialogContent>
+                    <TextField
+                        onChange={(event) => { this.setState({passwordToJoin: event.target.value}) }}
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Password"
+                        type="text"
+                        fullWidth
+                        variant="standard"/>
+                </DialogContent>}
+                <DialogActions>
+                    <Button onClick={() => this.setState({openJoinWindow: false})}>Cancel</Button>
+                    <Button variant="contained" onClick={() => this.joinChannel()}>JOIN</Button>
+                </DialogActions>                
                 </Box>
             </Dialog>
         </div>

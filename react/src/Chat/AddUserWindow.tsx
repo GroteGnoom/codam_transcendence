@@ -1,14 +1,13 @@
-import { ListItem, ListItemText, TextField, List, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import React, { Fragment } from 'react';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import React from 'react';
 
 interface AddUserWindowProps { 
     open: boolean;
@@ -67,13 +66,12 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     render() {
-
         const nonMembers = this.state.users.filter((user) => 
             !this.state.currentMembers.includes(user.id)
         );
 
         const listUsers = nonMembers.map((user, index) => 
-            <MenuItem value={user.id}>{user.username}</MenuItem>
+            <MenuItem key={user.id} value={user.id}>{user.username}</MenuItem>
         );
         
         return (
@@ -81,7 +79,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
                 <DialogTitle>Add Member</DialogTitle>
                 <DialogContent>          
                     <FormControl fullWidth>
-                        <InputLabel></InputLabel>
+                        <InputLabel>select</InputLabel>
                         <Select
                             label="Member"
                             onChange={this.handleChange}

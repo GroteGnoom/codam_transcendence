@@ -12,10 +12,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MatchModule } from './match/match.module';
 import { WaitingRoomModule } from './waitingroom/waitingroom.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
+		ScheduleModule.forRoot(),
 		TypeOrmModule.forRootAsync({
 			imports: [ConfigModule],
 			useFactory: (configService: ConfigService) => ({
@@ -28,6 +30,7 @@ import { WaitingRoomModule } from './waitingroom/waitingroom.module';
 				entities: entities,
 				synchronize: true,
 				ssl: false,
+				autoLoadEntities: true
 				// options: {"trustServerCertificate": true},
 				// extra: {
 				// 	ssl: {
