@@ -101,7 +101,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.webSocket.emit("sendMessage", { 
             "channel": this.props.channel,
             "message": {
-                "sender": 7,
                 "text": this.state.text
             }
         }) //There is no need to run JSON.stringify() on objects as it will be done for you by Socket.io

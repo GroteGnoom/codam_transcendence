@@ -187,8 +187,7 @@ export class ChannelsService {
       }
 
     addMessage(channel: string, sender: number, message: MessageDto) {
-        message.sender = sender;
-        const newMessage: Message = this.messageRepository.create(message); // will create id and date for message
+        const newMessage: Message = this.messageRepository.create({sender: sender, text: message.text}); // will create id and date for message
         newMessage.channel = channel;
 		return this.messageRepository.save(newMessage);        
     }
