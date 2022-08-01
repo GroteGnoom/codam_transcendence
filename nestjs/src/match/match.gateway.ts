@@ -3,7 +3,8 @@ import { Server, Socket } from 'socket.io';
 
 export class MatchGateway {
 	constructor (
-    private server: Server
+    private Player1: Server,
+    private Player2: Server
   ){
     console.log("Start match");
     this.loop();
@@ -180,7 +181,20 @@ export class MatchGateway {
 
     setTimeout(() => {
         // console.log(this.server.getMaxListeners())
-        this.server.emit('boardUpdated', { 
+        this.Player1.emit('boardUpdated', { 
+        "ballRelX": this.ballRelX, 
+        "ballRelY": this.ballRelY, 
+        "paddleP1RelX": this.paddleP1RelX, 
+        "paddleP1RelY": this.paddleP1RelY, 
+        "paddleP2RelX": this.paddleP2RelX, 
+        "paddleP2RelY": this.paddleP2RelY, 
+        "scoreP1": this.scoreP1, 
+        "scoreP2": this.scoreP2,
+        "winner": this.winner,
+        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
+        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
+      });
+      this.Player2.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 
@@ -237,7 +251,18 @@ export class MatchGateway {
         this.winner = 1;
       else
         this.winner = 2;
-      this.server.emit('boardUpdated', { 
+      this.Player1.emit('boardUpdated', { 
+        "ballRelX": this.ballRelX, 
+        "ballRelY": this.ballRelY, 
+        "paddleP1RelX": this.paddleP1RelX, 
+        "paddleP1RelY": this.paddleP1RelY, 
+        "paddleP2RelX": this.paddleP2RelX, 
+        "paddleP2RelY": this.paddleP2RelY, 
+        "scoreP1": this.scoreP1, 
+        "scoreP2": this.scoreP2,
+        "winner": this.winner 
+      });
+      this.Player2.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 

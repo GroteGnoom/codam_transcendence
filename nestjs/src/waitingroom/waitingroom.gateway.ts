@@ -57,8 +57,7 @@ export class WaitingRoom {
         this.logins = 0;
         this.Player2 = this.server;
         console.log("2 players");
-        new MatchGateway(this.Player1);
-        new MatchGateway(this.Player2);
+        new MatchGateway(this.Player1, this.Player2);
         this.server.emit("found2Players", {
           "Player1": "P1",
           "Player2": "P2"
