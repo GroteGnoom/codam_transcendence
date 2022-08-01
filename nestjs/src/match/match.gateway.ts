@@ -48,10 +48,12 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
-  client;
+  client: Socket;
 
   @SubscribeMessage('keyPressed')
   async handleSendMessage(client: Socket, payload: any): Promise<void> {
+      this.client = client;
+      console.log(client);
       this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
   }
 
