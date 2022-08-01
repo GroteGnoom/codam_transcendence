@@ -100,3 +100,12 @@ add class to input element
 
 SQLectron delete database:
 DELETE FROM "public"."user"
+
+React conditional rendering
+https://medium.com/@kavishkafernando/react-conditional-rendering-methods-2f3fe863f546
+
+
+File storage---
+https://wanago.io/2021/11/01/api-nestjs-storing-files-postgresql-database/
+https://eliteionic.com/tutorials/handling-file-uploads-in-ionic-web/#1-create-a-new-nodeexpress-server
+

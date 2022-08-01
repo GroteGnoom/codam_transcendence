@@ -8,12 +8,16 @@ import {
   Post,
   Put,
   Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
 import {UserDto} from 'src/users/users.dtos';
 import {UsersService} from 'src/users/users.service';
+import {FileInterceptor} from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -58,5 +62,14 @@ export class UsersController {
     const userId = req.session.userId;
     this.logger.log("userId: " + userId);
     return this.userService.findUsersById(userId);
+  }
+
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async addAvatar(@Req() request: any,
+                  @UploadedFile() file: Express.Multer.File) {
+    this.logger.log(file);
+    return this.userService.addAvatar(request.session.userId, file.buffer,
+                                      file.originalname);
   }
 }

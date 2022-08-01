@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {DatabaseFile} from './databaseFile.entity';
 
 export enum userStatus {
 	Online = "online",
@@ -41,4 +42,16 @@ export class User {
 
 	@Column({ default: false })
 	public isTfaEnabled: boolean;
+
+	@JoinColumn({ name: 'avatarId' })
+	@OneToOne(
+		() => DatabaseFile,
+		{
+		nullable: true
+		}
+	)
+	public avatar?: DatabaseFile;
+	
+	@Column({ nullable: true })
+	public avatarId?: number;
 }
