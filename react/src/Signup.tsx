@@ -193,7 +193,13 @@ export function Signup() {
                                         // border: '2px solid #fcc6ff', // not needed with avatar
                                         backgroundColor: '#fcc6ff'
                                     }}>
-                                        <Button>
+                                        <Button
+                                            component="label"
+                                        >
+                                            <input
+                                                type="file"
+                                                hidden
+                                            />
                                             <ChangeCircleIcon
                                                 fontSize='large'
                                                 onClick={() => chooseAvatar()}
