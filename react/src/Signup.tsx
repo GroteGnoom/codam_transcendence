@@ -165,7 +165,7 @@ export function Signup() {
                 'Content-Type': 'multipart/form-data',
             },
             credentials: 'include',
-            body: JSON.stringify({form}),
+            body: JSON.stringify({form}), //TODO: send raw FormData
         })
         .then(async (response) => {
             const json = await response.json();
