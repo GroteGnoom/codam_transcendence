@@ -12,15 +12,11 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class MatchGateway {
-	constructor (
-    private Player1: Server,
-    private Player2: Server,
-    private PinkPong: boolean //pinkpong (true) or original pong (false) version
-  ){
-    console.log("Start match");
-    this.loop();
-  }
+  @WebSocketServer()
+  server: Server;
 
+  private PinkPong: boolean //pinkpong (true) or original pong (false) version
+    
   ballSpeed = 9;
   paddleSpeed = 15;
   maxScore = 3;
@@ -60,10 +56,14 @@ export class MatchGateway {
 
   client: Socket;
 
+  @SubscribeMessage('startGame')
+  async handleStartGame(client: Socket, payload: any): Promise<void> {
+    console.log("Start game message");
+    this.loop();
+  }
+
   @SubscribeMessage('keyPressed')
-  async handleSendMessage(client: Socket, payload: any): Promise<void> {
-      // this.client = client;
-      // console.log(client);
+  async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       console.log("Key pressed")
       this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
   }
@@ -194,20 +194,7 @@ export class MatchGateway {
 
     setTimeout(() => {
         // console.log(this.server.getMaxListeners())
-        this.Player1.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner,
-        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
-        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
-      });
-      this.Player2.emit('boardUpdated', { 
+        this.server.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 
@@ -257,26 +244,13 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
-      this.Player1.sockets.disconnectSockets();
-      this.Player2.sockets.disconnectSockets();
     }
     else {
       if (this.scoreP1 === this.maxScore)
         this.winner = 1;
       else
         this.winner = 2;
-      this.Player1.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner 
-      });
-      this.Player2.emit('boardUpdated', { 
+      this.server.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 

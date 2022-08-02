@@ -22,6 +22,9 @@ const WaitingRoom = () => {
     });
 
     function startGame() {
+        webSocket.current.emit("startGame", {
+            "startGame": true
+        });
         navigate("/pinkpong", { replace: true });
     }
 

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { WaitingRoom } from './waitingroom.gateway';
+import { MatchGateway } from 'src/match/match.gateway';
+import { WaitingRoomGateway } from './waitingroom.gateway';
 
 @Module({
   imports: [
@@ -8,6 +9,6 @@ import { WaitingRoom } from './waitingroom.gateway';
     // AuthModule
   ],
   controllers: [],
-  providers: [WaitingRoom]
+  providers: [WaitingRoomGateway]
 })
 export class WaitingRoomModule {}
