@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as cors from 'cors'
+const os = require("os");
 
 async function bootstrap() {
 	const configApp = await NestFactory.create(AppModule);
@@ -27,13 +28,29 @@ async function bootstrap() {
     var corsOptions = {
       origin: (origin, callback) => {
 		  if (!origin) {
-			  console.log('origin: ', origin);  // => undefined
-			  callback(null);
+			  console.log('origin not found, allowing cors');
+			  callback(null, true);
 			  return;
 		  }
+		  const url = new URL(origin);
+		  //const host = url.host;
+		  /*
+		  console.log('hostname: ', url.hostname);
+		  console.log('host: ', url.host);
+		  console.log('os hostname: ', os.hostname());
+		 */
           var originIsAllowed = allowed.indexOf(origin) !== -1;
-          console.log('ORIGIN: ', origin);  // => undefined
-          callback(originIsAllowed ? null : 'Bad Request', originIsAllowed)
+		  const match = url.hostname.match('f[01]r[0-9]s[0-9]+.codam.nl');
+		  if (match)
+			  originIsAllowed = true;
+          //console.log('ORIGIN: ', origin);
+		  if (originIsAllowed) {
+			  console.log('cors is allowed');
+			  callback(null, true);
+		  } else {
+			  console.log('cors not allowed');
+			  callback('Bad Request');
+		  }
       },
       credentials:true
     }

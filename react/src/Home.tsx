@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { get_backend_host } from './utils';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -25,7 +26,10 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 		return "";
 	}
 	async componentDidMount() {
-		const li =  fetch("http://127.0.0.1:5000/auth/amiloggedin", { 
+		console.log("hostname:", window.location.hostname);
+		console.log("uri:", window.location.hostname + ":5000/auth/amiloggedin");
+		//const li =  fetch("http://" + window.location.hostname + ":5000/auth/amiloggedin", { 
+		const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
