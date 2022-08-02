@@ -4,6 +4,10 @@ import {
     WebSocketServer
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
+import { ConfigService } from '@nestjs/config';
+import { GlobalService } from '../global.service';
 
 @WebSocketGateway({
   cors: {
@@ -12,6 +16,10 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class MatchGateway {
+  constructor(
+    private readonly configService: ConfigService
+  ) {}
+
   @WebSocketServer()
   server: Server;
 
@@ -31,6 +39,9 @@ export class MatchGateway {
   leftKeyPressedP2 = false;
   rightKeyPressedP2 = false;
   reset = false;
+
+  Player1: number;
+	Player2: number;
   
   ballRelX: number;
   ballRelY: number;
@@ -54,25 +65,38 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
-  client: Socket;
+  private getUserFromClient(client: Socket) {
+    const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+    return GlobalService.users.get(SID as string)
+	}
 
   @SubscribeMessage('startGame')
   async handleStartGame(client: Socket, payload: any): Promise<void> {
+    console.log(client.id);
     console.log("Start game message");
+    this.Player1 = payload.Player1;
+    this.Player2 = payload.Player2;
     this.loop();
   }
 
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       console.log("Key pressed")
-      this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
+      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, this.getUserFromClient(client));
   }
 
-  setKeyPresses(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
-    this.leftKeyPressedP1 = leftKeyPressedP1;
-    this.leftKeyPressedP2 = leftKeyPressedP2;
-    this.rightKeyPressedP1 = rightKeyPressedP1;
-    this.rightKeyPressedP2 = rightKeyPressedP2;
+  setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean, client: number) {
+    if (client === this.Player1) {
+      this.leftKeyPressedP1 = leftKeyPressed;
+      this.rightKeyPressedP1 = rightKeyPressed;
+    }
+    else if (client === this.Player2) {
+      this.leftKeyPressedP2 = leftKeyPressed;
+      this.rightKeyPressedP2 = rightKeyPressed;
+    }
     this.reset = reset;
     if (reset === true)
       this.setGame();

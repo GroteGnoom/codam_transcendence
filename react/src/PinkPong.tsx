@@ -21,10 +21,8 @@ export default function PinkPong() {
 	let ballX: number;
 	let ballY: number;
 	
-	let leftKeyPressedP1: boolean;
-	let rightKeyPressedP1: boolean;
-	let leftKeyPressedP2: boolean;
-	let rightKeyPressedP2: boolean;
+	let leftKeyPressed: boolean;
+	let rightKeyPressed: boolean;
 
 	let setTimeOut: boolean;
 
@@ -57,10 +55,8 @@ export default function PinkPong() {
 								Definitely_not_a_cookie: "name=value; name2=value2",
 	   	}}); // open websocket connection with backend
 		webSocket.current.emit('keyPressed', {
-			"leftKeyPressedP1": false,
-			"rightKeyPressedP1": false,
-			"leftKeyPressedP2": false,
-			"rightKeyPressedP2": false,
+			"leftKeyPressed": false,
+			"rightKeyPressed": false,
 			"reset": false
 		})
 		webSocket.current.on("boardUpdated", getCoordinates ) // subscribe on backend events
@@ -77,43 +73,30 @@ export default function PinkPong() {
 	}
 
 	function handleKeyRelease() {
-		leftKeyPressedP1 = false;
-		rightKeyPressedP1 = false;
-		leftKeyPressedP2 = false;
-		rightKeyPressedP2 = false;
+		leftKeyPressed = false;
+		rightKeyPressed = false;
 
 		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
+			"leftKeyPressed": leftKeyPressed,
+			"rightKeyPressed": rightKeyPressed,
 			"reset": false
 		})
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key === "k") {
-			leftKeyPressedP1 = false;
-			rightKeyPressedP1 = true;
+		console.log(event.key);
+		if (event.key === "ArrowRight") {
+			leftKeyPressed = false;
+			rightKeyPressed = true;
 		}
-		if (event.key === "j") {
-			rightKeyPressedP1 = false;
-			leftKeyPressedP1 = true;
-		}
-		if (event.key === "x") {
-			leftKeyPressedP2 = false;
-			rightKeyPressedP2 = true;
-		}
-		if (event.key === "z") {
-			rightKeyPressedP2 = false;
-			leftKeyPressedP2 = true;
+		if (event.key === "ArrowLeft") {
+			rightKeyPressed = false;
+			leftKeyPressed = true;
 		}
 		
 		webSocket.current.emit("keyPressed", {
-			"leftKeyPressedP1": leftKeyPressedP1,
-			"rightKeyPressedP1": rightKeyPressedP1,
-			"leftKeyPressedP2": leftKeyPressedP2,
-			"rightKeyPressedP2": rightKeyPressedP2,
+			"leftKeyPressed": leftKeyPressed,
+			"rightKeyPressed": rightKeyPressed,
 			"reset": false
 		})
 	}
@@ -221,10 +204,8 @@ export default function PinkPong() {
 			setTimeOut = true;
 			setTimeout(() => {
 				webSocket.current.emit("keyPressed", {
-				"leftKeyPressedP1": leftKeyPressedP1,
-				"rightKeyPressedP1": rightKeyPressedP1,
-				"leftKeyPressedP2": leftKeyPressedP2,
-				"rightKeyPressedP2": rightKeyPressedP2,
+				"leftKeyPressed": leftKeyPressed,
+				"rightKeyPressed": rightKeyPressed,
 				"reset": true
 				})
 				delay(100);
