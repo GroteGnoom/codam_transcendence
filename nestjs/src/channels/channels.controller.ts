@@ -32,8 +32,9 @@ export class ChannelsController {
     }
 
     @Put(':name/admin/:id')
-    async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number) {
-        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin));
+    async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
+        const userID = req.session.userId;
+        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), userID);
         if (!channel) {
             throw new NotFoundException('Channel not found');
         } else {
@@ -88,5 +89,11 @@ export class ChannelsController {
     async checkIfMuted(@Req() req, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMuted(name, userID);
+    }
+
+    @Post('dm/:id')
+    async directMessage(@Req() req, @Param('id') other: number) {
+        const userID = req.session.userId;
+        return this.channelsService.directMessage(userID, other);
     }
 }

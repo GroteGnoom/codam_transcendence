@@ -202,6 +202,16 @@ export class ChannelsService {
         return this.messageRepository.findBy({channel: channel});
     }
 
+    directMessage(user : number , other : number) {
+        return this.channelRepository.save({ // create new Channel object (direct mesage)
+            name: `dm-${user}-${other}`,
+            owner: user,
+            admins: [{id: user}, {id: other}],
+            members: [this.newMember(user), this.newMember(other)],
+            channelType: ChannelType.dm,
+        });
+    }
+
     private newMember(userId: number) {
         return {user: {id: userId}}
     }

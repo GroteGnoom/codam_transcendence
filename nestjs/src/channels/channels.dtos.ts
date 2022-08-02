@@ -4,6 +4,7 @@ export enum ChannelType {
 	Private = "private",
 	Public = "public",
 	Protected = "protected",
+	dm = "direct message",
 }
 
 export class CreateChannelDto {
