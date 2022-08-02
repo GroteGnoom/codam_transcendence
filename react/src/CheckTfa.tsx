@@ -1,4 +1,5 @@
 import React from 'react';
+import { get_backend_host } from './utils';
 
 interface TfaState {
 	li: boolean;
@@ -25,7 +26,7 @@ class ShowTfa extends React.Component<TfaProps, TfaState> {
 		data.append("twoFactorAuthenticationCode", this.state.code);
 		console.log('going to post ', this.state.code);
 		event.preventDefault();
-		return await fetch("http://127.0.0.1:5000/2fa/authenticate", {
+		return await fetch(get_backend_host() + "/2fa/authenticate", {
 			method: "POST",
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			body: data,
@@ -44,12 +45,12 @@ class ShowTfa extends React.Component<TfaProps, TfaState> {
 		});
 	}
 	async componentDidMount() {
-		const li =  fetch("http://127.0.0.1:5000/auth/amiloggedin", { 
+		const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 						  method: 'GET',
 						  credentials: 'include',
 				}).then(response => response.json());
 	this.setState({li: await li});
-	const tfaEnabled =  fetch("http://127.0.0.1:5000/auth/is_tfa_enabled", { 
+	const tfaEnabled =  fetch(get_backend_host() + "/auth/is_tfa_enabled", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());

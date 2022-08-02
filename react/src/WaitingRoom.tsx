@@ -21,7 +21,11 @@ const WaitingRoom = () => {
         "loggedIn": true
     });
 
-    function startGame() {
+    function startGame(payload: any) {
+        webSocket.current.emit("startGame", {
+            "Player1": payload.Player1,
+            "Player2": payload.Player2
+        });
         navigate("/pinkpong", { replace: true });
     }
 

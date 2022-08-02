@@ -17,14 +17,15 @@ import { MatchGateway } from 'src/match/match.gateway';
     credentials: true
   },
 })
-export class WaitingRoom {
+export class WaitingRoomGateway {
   constructor (
   private readonly configService: ConfigService
 	) {}
 
   logins: number = 0;
-  Player1: Server;
-  Player2: Server;
+  Player1: number;
+  Player2: number;
+  client: number;
 
   @WebSocketServer()
   server: Server;
@@ -35,14 +36,11 @@ export class WaitingRoom {
 		const name = 'transcendence'
 		const secret = this.configService.get('SESSION_SECRET');
 		const SID = cookieParser.signedCookie(cookie[name], secret)
-		// if (GlobalService.sessionId != SID) {
-    //         console.log("session id's don't match, disconnecting");
-		// 	client.disconnect();
-		// }
-	}
-
-  afterInit(server: Server) {
-  console.log('Init');
+		if (GlobalService.sessionId != SID) {
+      console.log("session id's don't match, disconnecting");
+			client.disconnect();
+		}
+    this.client = GlobalService.users.get(SID as string);
 	}
 
   @SubscribeMessage('loggedIn')
@@ -55,15 +53,16 @@ export class WaitingRoom {
     console.log(this.logins);
     if (this.logins === 2) {
         this.logins = 0;
-        this.Player2 = this.server;
+        this.Player2 = this.client;
         console.log("2 players");
-        new MatchGateway(this.Player1, this.Player2, true); // false == pong, true == pinkpong
         this.server.emit("found2Players", {
-          "Player1": "P1",
-          "Player2": "P2"
+          "Player1": this.Player1,
+          "Player2": this.Player2
       });
+      this.Player1 = 0;
+      this.Player2 = 0;
     }
     else
-      this.Player1 = this.server;
+      this.Player1 = this.client;
   }
 }

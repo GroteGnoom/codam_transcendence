@@ -1,4 +1,5 @@
 import React from 'react';
+import { get_backend_host } from './utils';
 
 interface QRState {
 	li: boolean;
@@ -14,20 +15,21 @@ class ShowQR extends React.Component<QRProps, QRState> {
 		}
 	}
 	async componentDidMount() {
-		const li =  fetch("http://127.0.0.1:5000/auth/amiloggedin", { 
+		const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
 		this.setState({li: await li});
 	}
 	render() {
+		const url = get_backend_host() + "/2fa/generate"
 		if (this.state.li)
 			return (
 			<div>
 			<div>
 			This is the google authenticator QR:
 				</div>
-			<img src="http://127.0.0.1:5000/2fa/generate" alt="alternatetext"/> 
+			<img src={url} alt="alternatetext"/> 
 			</div>
 			)
 		else
