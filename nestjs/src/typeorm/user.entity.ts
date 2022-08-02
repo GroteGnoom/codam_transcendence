@@ -1,7 +1,11 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {DatabaseFile} from './databaseFile.entity';
-import {userStatus} from '../../../react/src/utils'
 
+export enum userStatus {
+	Online = "online",
+	Offline = "offline",
+	InGame = "inGame",
+}
 @Entity()
 export class User {
 	@PrimaryGeneratedColumn({ // primary column will be auto-generated key

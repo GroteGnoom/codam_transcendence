@@ -8,7 +8,7 @@ import {
 import {User} from 'src/typeorm';
 import {UserDto} from 'src/users/users.dtos';
 import {Repository} from 'typeorm';
-import {userStatus} from '../../../react/src/utils'
+import {userStatus} from '../typeorm/user.entity'
 import {DatabaseFilesService} from './databaseFiles.service';
 
 @ValidatorConstraint({name : 'UserExists', async : true})
