@@ -29,11 +29,11 @@ interface ChannelSettingsState {
     owner: any;
     passwordVisible: boolean;
     memberSettingsOpen: boolean;
+    adminSettingsOpen: boolean;
     activeMember: any;
 }
 
 class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSettingsState> {
-
     constructor(props: ChannelSettingsProps) {
         super(props);
         this.state = {
@@ -41,6 +41,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             owner: {username: ''},
             passwordVisible: false,
             memberSettingsOpen: false,
+            adminSettingsOpen: false,
             activeMember: undefined,
         }
     }
@@ -240,11 +241,17 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         <MemberSettings open={this.state.memberSettingsOpen}
                                         handleClose={this.handleClose}
                                         member={this.state.activeMember}
-                                        activeChannel={this.props.channel}/>
+                                        activeChannel={this.props.channel}
+                                        setError={this.props.setError} />
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Admins
                         </Typography>
                         {this.renderAdmins()}
+                        <AdminSettings  open={this.state.adminSettingsOpen}
+                                        handleClose={this.handleClose}
+                                        member={this.state.activeMember}
+                                        activeChannel={this.props.channel}
+                                        setError={this.props.setError} />
                     </DialogContent>
                 </Box>}
             </Dialog>
@@ -264,6 +271,7 @@ interface MemberSettingsProps {
     handleClose: any;
     member: any;
     activeChannel: string;
+    setError: any;
 }
 
 interface MemberSettingsState {}
@@ -273,9 +281,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 
     constructor(props: MemberSettingsProps) {
         super(props);
-        this.state = {
-            //settings: {name: '', owner: 0, admins: [], members: [], password: "", channelType: ""},
-        } 
+        this.state = {} 
     }
 
     async removeMember() {
@@ -296,9 +302,20 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 
     async createAdmin() {
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
-            method: 'PUT'
+            method: 'PUT',
+            credentials: 'include',
         })
-		.then( (response) => response.json() )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
         .then( () => this.props.handleClose() )
 	}
 
@@ -314,7 +331,62 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
           ];
         
         return (
-            <Dialog open={this.props.open} >  {/*pop window to add user to channel */}
+            <Dialog open={this.props.open} >
+                <DialogTitle>{this.props.member && this.props.member.username} Settings</DialogTitle>
+                <DialogContent>          
+                <Box>
+                    <ButtonGroup
+                        orientation="vertical">
+                        {buttons}
+                    </ButtonGroup>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.props.handleClose}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
+        );
+    }
+}
+
+
+
+
+interface AdminSettingsProps { 
+    open: boolean;
+    handleClose: any;
+    member: any;
+    activeChannel: string;
+    setError: any;
+}
+
+interface AdminSettingsState {}
+
+class AdminSettings extends React.Component<AdminSettingsProps, AdminSettingsState> {
+
+    constructor(props: MemberSettingsProps) {
+        super(props);
+        this.state = {} 
+    }
+
+    async demoteAdmin() {
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
+            method: 'DELETE'})
+		.then( (response) => response.json() )
+        .then( () => this.props.handleClose() )
+	}
+
+    componentDidMount() { 
+        console.log("admin settings")
+    }
+
+    render() {
+        const buttons = [
+            <Button color="secondary" onClick={() => { this.demoteAdmin() }} key="demote-admin">Demote Admin</Button>,
+          ];
+        
+        return (
+            <Dialog open={this.props.open} >
                 <DialogTitle>{this.props.member && this.props.member.username} Settings</DialogTitle>
                 <DialogContent>          
                 <Box>

@@ -33,9 +33,7 @@ export class ChannelMember {
     @Column({ default: false })
     isMuted: boolean;
 
-    @Column({
-        nullable: true
-    })
+    @Column({ nullable: true })
     mutedUntil: Date;
 
     @ManyToOne(() => User, {

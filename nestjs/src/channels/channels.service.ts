@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelMember } from 'src/typeorm/channel.entity';
@@ -17,18 +17,21 @@ export class ChannelsService {
         @InjectRepository(ChannelMember) private readonly memberRepository: Repository<ChannelMember>,         
         private readonly channelGateway: ChannelsGateway,
         private readonly userService: UsersService ) {
-        this.getChannels()
-        .then( (channels) => {
-            console.log(`Found ${channels.length} channels on startup`)
-            if (channels.length === 0) {
-                userService.findOrCreateUser("root")
-                .then( (user) => {
-                    this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
-                    .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
-                    // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
-                })
-            }
-        })
+        // this.getChannels()
+        // .then( (channels) => {
+        //     console.log(`Found ${channels.length} channels on startup`)
+        //     try{
+        //         if (channels.length === 0) {
+        //             userService.findOrCreateUser("root")
+        //             .then( (user) => {
+        //                 this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
+        //                 .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
+        //                 // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
+        //             })
+        //         }
+        //     }
+        //     catch(e){}
+        // })
     }
 
     getChannels(){
@@ -62,13 +65,13 @@ export class ChannelsService {
         return this.channelRepository.delete({name: name});
     }
 
-    async addAdminToChannel(channelName: string, id: number) {
+    async addAdminToChannel(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['admins']
         });
-        if (!channel) {
-            return undefined;
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');
         }
         if (channel.admins.map((user) => user.id).includes(id)) {
             return channel;
@@ -186,14 +189,27 @@ export class ChannelsService {
         })
       }
 
-    addMessage(channel: string, sender: number, message: MessageDto) {
-        const newMessage: Message = this.messageRepository.create({sender: sender, text: message.text}); // will create id and date for message
+    async addMessage(channel: string, sender: number, message: MessageDto) {
+        const newMessage: Message = this.messageRepository.create({sender: {id: sender}, text: message.text}); // will create id and date for message
         newMessage.channel = channel;
-		return this.messageRepository.save(newMessage);        
+		await this.messageRepository.save(newMessage);
+        return this.messageRepository.findOne({
+            where: {id: newMessage.id},
+        });
     }
 
     getMessages(channel: string) {
         return this.messageRepository.findBy({channel: channel});
+    }
+
+    directMessage(user : number , other : number) {
+        return this.channelRepository.save({ // create new Channel object (direct mesage)
+            name: `dm-${user}-${other}`,
+            owner: user,
+            admins: [{id: user}, {id: other}],
+            members: [this.newMember(user), this.newMember(other)],
+            channelType: ChannelType.dm,
+        });
     }
 
     private newMember(userId: number) {

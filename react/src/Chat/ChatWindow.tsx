@@ -1,7 +1,7 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, ListItemText, Paper, TextField, Typography } from "@mui/material";
+import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
@@ -109,7 +109,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 
     formatMessageTime(message: any) {
         const date = new Date(message.date)
-        return `${date.toDateString()} ${date.toLocaleTimeString()}`
+        return `${date.toLocaleString()}`
     }
 
     handleClose = () => {
@@ -117,12 +117,22 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     };
 
     render() {
-        const listChatMessages = this.state.messages.map((chatMessageDto, index) => 
-            <ListItem key={index}>
-                <ListItemText 
-                    primary={`${chatMessageDto.text}`} 
-                    secondary={`${this.formatMessageTime(chatMessageDto)}`}/>
-            </ListItem>
+        const listChatMessages = this.state.messages.map((msg, index) => {
+            return (
+                <ListItem key={index}>
+                    <div>
+                        <Typography variant="caption">
+                            {`${this.formatMessageTime(msg)}`}
+                        </Typography>
+                        <Typography variant="body1">
+                            {`${msg.sender.username}`}
+                        </Typography>
+                        <Typography variant="h6">
+                            {`${msg.text} `}
+                        </Typography>
+                    </div>
+                </ListItem> 
+            )}
         );
         
         return (
