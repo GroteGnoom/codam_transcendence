@@ -86,8 +86,10 @@ export class UsersController {
                             @Response({ passthrough: true }) res) : Promise<StreamableFile> {
     const userId = req.session.userId;
     const id = await this.userService.getAvatarId(userId);
-    const file = await this.databaseFilesService.getFileById(id);
+    this.logger.log("avatarID: " + id);
+    const file = await this.databaseFilesService.getFileById(id); //TODO: if avatarId NULL, default file!, now file doesn't make sense..
     const stream = Readable.from(file.data);
+    this.logger.log("userId: " + userId + " fileid: " + file.filename);
     res.set({
       'Content-Type': 'image',
       'Content-Disposition': `inline;// filename="${file.filename}"`,
