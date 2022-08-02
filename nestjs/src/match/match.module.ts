@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MatchGateway } from './match.gateway';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Match } from 'src/typeorm/match.entity';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([Channel, Message]), 
+    TypeOrmModule.forFeature([Match]), 
     // UsersModule,
     // AuthModule
   ],
