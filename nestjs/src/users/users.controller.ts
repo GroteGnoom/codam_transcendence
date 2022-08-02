@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Logger,
   Param,
   ParseIntPipe,
@@ -14,7 +15,8 @@ import {
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
+  Response,
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
@@ -72,8 +74,7 @@ export class UsersController {
 
   @Post('avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(@Req() req: any,
-                  @UploadedFile() file: Express.Multer.File) {
+  async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
     this.logger.log("id: ", req.session.userId);
     this.logger.log("filename: ", file.originalname);
     return this.userService.addAvatar(req.session.userId, file.buffer,
@@ -82,15 +83,15 @@ export class UsersController {
 
   @Get('avatar')
   async getDatabaseFileById(@Req() req: any,
-                            @Res({passthrough : true}) response: Response) {
+                            @Response({ passthrough: true }) res) : Promise<StreamableFile> {
     const userId = req.session.userId;
     const id = await this.userService.getAvatarId(userId);
     const file = await this.databaseFilesService.getFileById(id);
     const stream = Readable.from(file.data);
-    // response.set({
-    //   'Content-Disposition' : `inline; filename="${file.filename}"`,
-    //   'Content-Type' : 'image'
-    // })
+    res.set({
+      'Content-Type': 'image',
+      'Content-Disposition': `inline;// filename="${file.filename}"`,
+    });
     return new StreamableFile(stream);
   }
 }

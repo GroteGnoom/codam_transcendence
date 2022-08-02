@@ -17,28 +17,27 @@ import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import {styled} from '@mui/material/styles';
 import FormData from 'form-data';
 import {createReadStream} from 'fs';
+import { get_backend_host, userStatus } from './utils';
+
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
-
-enum userStatus {
-	Online = "online",
-	Offline = "offline",
-	InGame = "inGame",
-}
 
 export function Signup() {
     const [users, setUsers] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState("default");
-    const [intraName, setIntraName] = useState("default");
+    const [username, setUsername] = useState("");
+    const [intraName, setIntraName] = useState("");
     const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
     const [event, setEvent] = useState("");
-    const [avatar, setAvatar] = useState("");
+    const [avatar, setAvatar] = useState({
+        imgSrc: 'http://127.0.0.1:5000/users/avatar', //TODO: get backend server
+        imgHash: Date.now(),
+    });
 
     //backend calls
     async function getUserInfoDatabase () { // TODO: unexpected end of JSON input
-        return await fetch("http://127.0.0.1:5000/users/intraname/", { 
+        return await fetch(get_backend_host() + "/users/intraname/", { 
             method: "GET",
             credentials: 'include',
         })
@@ -60,7 +59,7 @@ export function Signup() {
     }
 
     async function getLoggedIn () {
-        return await fetch("http://127.0.0.1:5000/auth/amiloggedin/", { 
+        return await fetch(get_backend_host() + "/auth/amiloggedin/", { 
             method: "GET",
             credentials: 'include',
         })
@@ -79,7 +78,7 @@ export function Signup() {
     }
 
     async function getUsers () {
-        return await fetch("http://127.0.0.1:5000/users", {
+        return await fetch(get_backend_host() + "/users", {
             method: "GET"} )
         .then(async (response) => {
             const json = await response.json();
@@ -89,32 +88,8 @@ export function Signup() {
                 throw new Error(json.message)
             }
         })
-        .catch((err: Error) => setError(err.message))
-    }
-
-    async function createUser() {
-        console.log("try create user...");
-        console.log("current users");
-        console.log(users);
-        return await fetch("http://127.0.0.1:5000/users/create", {
-            method: "POST",
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                "username": username,
-                "intraName": intraName,
-                "status": status
-            })
-        })
-        .then(async (response) => {
-            const json = await response.json();
-            if (response.ok) {
-                return json;
-            } else {
-                throw new Error(json.message)
-            }
-        })
         .then((response) => {
-            setUsers(response)
+            setUsers(response);
         })
         .catch((err: Error) => setError(err.message))
     }
@@ -122,8 +97,8 @@ export function Signup() {
     async function saveUser() {
         console.log("try save user...");
         console.log("current users");
-        console.log(getUsers());
-        return await fetch("http://127.0.0.1:5000/users/signupuser", {
+        console.log(users);
+        return await fetch(get_backend_host() + "/users/signupuser", {
             method: "PUT",
             credentials: 'include',
             headers: {'Content-Type':'application/json'},
@@ -142,29 +117,14 @@ export function Signup() {
             }
         })
         .then((response) => {
-            setUsers(response)
+            getUsers();
             setEvent("User created successfully")
         })
         .catch((err: Error) => setError(err.message))
     }
 
-    async function getAvatar () {
-        return await fetch("http://127.0.0.1:5000/users/avatar/", { 
-            method: "GET",
-            credentials: 'include',
-        })
-        .then(async (response) => {
-            const json = await response.json();
-            if (response.ok) {
-                return json;
-            } else {
-                throw new Error(json.message)
-            }
-        })
-        .catch((err: Error) => setError(err.message))
-    }
-
-    async function handleChange(e: any){
+    async function saveAvatar(e: any){
+        getLoggedIn();
         console.log(e.target.files[0]);
         console.log(e.target.files[0].name);
         console.log(e.target.files[0].size);
@@ -176,7 +136,7 @@ export function Signup() {
         console.log(form);
         console.log(typeof form);
 
-        return await fetch("http://127.0.0.1:5000/users/avatar", {
+        return await fetch(get_backend_host() + "/users/avatar", {
             method: 'POST',
             credentials: 'include',
             body: form as any,
@@ -190,38 +150,19 @@ export function Signup() {
             }
         })
         .then((response) => {
-            setAvatar(response);
-            // getAvatar();
+            setEvent("Avatar created successfully");
+            setAvatar({
+                imgSrc: get_backend_host() + '/users/avatar',
+                imgHash: Date.now() // this will change the src attribute of avatar loading
+            });
         })
         .catch((err: Error) => setError(err.message))
-        // try {
-        //     const response = await fetch('http://localhost:5000/users/avatar', {
-        //         method: 'POST',
-        //         credentials: 'include',
-        //         body: JSON.stringify(form as FormData),
-        //     });
-        //     if (!response.ok) {
-        //         throw new Error(response.statusText);
-        //     }
-        //     console.log(response);
-        // } catch (err) {
-        //     console.log(err);
-        // }
-        // const fileStream = createReadStream(e.target.files[0].name);
-        // form.append('photo', readStream);
-        // form.append('firstName', 'Marcin');
-        // form.append('lastName', 'Wanago');
     }
 
-    function keyPress(e: any) {
-        if(e.key === 13){
-            console.log('enter pressed');
-            createUser();
+    function keyRelease(e: any) {
+        if(e.key === 'Enter'){
+            saveUser();
         }
-    }
-
-    function chooseAvatar(){ //TODO
-        console.log("clicked!");
     }
 
     // effect hooks
@@ -263,11 +204,11 @@ export function Signup() {
                                                 type="file"
                                                 accept="image/*"
                                                 hidden
-                                                onChange={(e) => handleChange(e)}                                              
+                                                onChange={(e) => saveAvatar(e)}                                              
                                             />
                                             <ChangeCircleIcon
                                                 fontSize='large'
-                                                onClick={() => chooseAvatar()}
+                                                onClick={() => getLoggedIn()}
                                             />
                                         </Button>
                                 </Avatar>
@@ -275,7 +216,7 @@ export function Signup() {
                             >
                             <Avatar className="item"
                                 alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
-                                src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Mona_Lisa_bw_square.jpeg"
+                                src={`${avatar.imgSrc}?${avatar.imgHash}`}
                                 sx={{ width: 150, height: 150 }}
                             />
                         </Badge>
@@ -284,7 +225,7 @@ export function Signup() {
                         <TextField className="item"
                             value={username || ''}
                             helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
-                            onKeyUp={(e) => keyPress(e)}
+                            onKeyUp={(e) => keyRelease(e)}
                             onChange={(e) => setUsername(e.target.value)} />
                         <Button className="item"
                             variant="contained"
@@ -292,9 +233,10 @@ export function Signup() {
                             onClick={() => saveUser()}
                         > SIGN UP </Button>
                     </div>
-                ) : (
+                ) : ( // if not logged in, show login button
                     <div className="menu">
-                        <a href="http://127.0.0.1:5000/auth/ft"><Button className="button" variant="contained">Log in 42</Button></a>
+                        {/* TODO get backend server */}
+                        <a href="http://127.0.0.1:5000/auth/ft"><Button className="button" variant="contained">Log in 42</Button></a> 
                     </div>
                 )}
 
