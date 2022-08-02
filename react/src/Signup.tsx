@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert } from "@mui/material";
+import { Alert, getAvatarGroupUtilityClass } from "@mui/material";
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -34,6 +34,7 @@ export function Signup() {
     const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
     const [event, setEvent] = useState("");
+    const [avatar, setAvatar] = useState("");
 
     //backend calls
     async function getUserInfoDatabase () { // TODO: unexpected end of JSON input
@@ -147,25 +148,38 @@ export function Signup() {
         .catch((err: Error) => setError(err.message))
     }
 
+    async function getAvatar () {
+        return await fetch("http://127.0.0.1:5000/users/avatar/", { 
+            method: "GET",
+            credentials: 'include',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => setError(err.message))
+    }
+
     async function handleChange(e: any){
         console.log(e.target.files[0]);
         console.log(e.target.files[0].name);
         console.log(e.target.files[0].size);
         console.log(e.target.files[0].type);
-
+    
         const file = e.target.files[0];
         const form = new FormData();
         form.append('file', file, file.name);
         console.log(form);
         console.log(typeof form);
 
-        return await fetch("http://localhost:5000/users/avatar", {
+        return await fetch("http://127.0.0.1:5000/users/avatar", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
             credentials: 'include',
-            body: JSON.stringify({form}),
+            body: form as any,
         })
         .then(async (response) => {
             const json = await response.json();
@@ -176,7 +190,8 @@ export function Signup() {
             }
         })
         .then((response) => {
-            setEvent("Avatar stored successfully");
+            setAvatar(response);
+            // getAvatar();
         })
         .catch((err: Error) => setError(err.message))
         // try {

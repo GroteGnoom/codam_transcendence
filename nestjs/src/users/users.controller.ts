@@ -8,21 +8,27 @@ import {
   Post,
   Put,
   Req,
+  Res,
+  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe
 } from '@nestjs/common';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
 import {UserDto} from 'src/users/users.dtos';
 import {UsersService} from 'src/users/users.service';
-import {FileInterceptor} from '@nestjs/platform-express';
+import {Readable} from 'stream';
+
+import {DatabaseFilesService} from './databaseFiles.service';
 
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService,
+              private readonly databaseFilesService: DatabaseFilesService) {};
 
   @Get()
   getUsers() {
@@ -66,10 +72,25 @@ export class UsersController {
 
   @Post('avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(@Req() request: any,
+  async addAvatar(@Req() req: any,
                   @UploadedFile() file: Express.Multer.File) {
-    this.logger.log(file);
-    return this.userService.addAvatar(request.session.userId, file.buffer,
+    this.logger.log("id: ", req.session.userId);
+    this.logger.log("filename: ", file.originalname);
+    return this.userService.addAvatar(req.session.userId, file.buffer,
                                       file.originalname);
+  }
+
+  @Get('avatar')
+  async getDatabaseFileById(@Req() req: any,
+                            @Res({passthrough : true}) response: Response) {
+    const userId = req.session.userId;
+    const id = await this.userService.getAvatarId(userId);
+    const file = await this.databaseFilesService.getFileById(id);
+    const stream = Readable.from(file.data);
+    // response.set({
+    //   'Content-Disposition' : `inline; filename="${file.filename}"`,
+    //   'Content-Type' : 'image'
+    // })
+    return new StreamableFile(stream);
   }
 }

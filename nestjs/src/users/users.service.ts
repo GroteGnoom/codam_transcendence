@@ -49,6 +49,10 @@ export class UsersService {
 
   getUsers() { return this.userRepository.find(); }
 
+  async getAvatarId(id: number) {
+    return (await this.userRepository.findOneBy({id : id})).avatarId;
+  }
+
   setUsername(username: string) {
     // return this.userRepository.save(username);
   }
@@ -107,7 +111,9 @@ export class UsersService {
   async addAvatar(id: number, imageBuffer: Buffer, filename: string) {
     const avatar = await this.databaseFilesService.uploadDatabaseFile(
         imageBuffer, filename);
-    await this.userRepository.update(id, {avatarId : avatar.id});
+    await this.userRepository.update(
+        id,
+        {avatarId : avatar.id}); // save the id of the avatar in user repository
     return avatar;
   }
 }
