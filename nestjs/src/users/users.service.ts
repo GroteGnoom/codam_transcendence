@@ -70,7 +70,7 @@ export class UsersService {
   }
 
   signUpUser(userId: number, username: string) {
-    return this.userRepository.update(userId, {username : username});
+    return this.userRepository.update(userId, {username : username, isSignedUp : true});
   }
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
