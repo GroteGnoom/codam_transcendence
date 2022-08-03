@@ -123,4 +123,17 @@ export class UsersService {
     }
     return avatar;
   }
+
+  async blockUser(blocker: number, blocked: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: blocker },
+      relations: ['blockedUsers']
+    });
+    if (user.blockedUsers.map((user) => Number(user.id)).includes(blocked)) {
+      return user;
+    }
+    user.blockedUsers = [...user.blockedUsers, {id: blocked} as User];
+    return this.userRepository.save(user); 
+  }
+
 }

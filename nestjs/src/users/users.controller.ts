@@ -96,4 +96,19 @@ export class UsersController {
     });
     return new StreamableFile(stream);
   }
+
+
+  // Endpoint needed for chat
+
+  @Get('id/:id')
+  findUser(@Param('id') id: number) {                 //need this endpoint to get owner name of a channel
+    return this.userService.findUsersById(Number(id));
+  }
+
+  @Put('block/:id')
+  blockUser(@Param('id') blocked: number, @Req() req: any) {
+    const blocker = req.session.userId;  
+    console.log("Blocking", blocker, blocked)             
+    return this.userService.blockUser(Number(blocker), Number(blocked));
+  }
 }

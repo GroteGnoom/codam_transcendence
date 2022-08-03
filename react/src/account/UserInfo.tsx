@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
+import React from "react";
 import { useParams } from "react-router-dom";
 
+//https://ui.dev/react-router-url-parameters
+//https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
 function withParams(Component: any) {
   return (props: any) => <Component {...props} params={useParams()} />;
 }
@@ -25,39 +25,35 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     getUserInfo() {
-        fetch(`http://127.0.0.1:5000/users/id/${this.props.params.id}`, { method: 'GET'})
+        fetch(`http://127.0.0.1:5000/users/id/${this.props.params.id}`, { 
+            method: 'GET'
+        })
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ user: response });            
         })
     }
 
+    blockUser() {
+        fetch(`http://127.0.0.1:5000/users/block/${this.props.params.id}`, { 
+            method: 'PUT',
+            credentials: 'include',
+        })
+    }
+
     componentDidMount() {
-        const id = this.props.params;
-        console.log(id)
+        this.getUserInfo()
     }
 
     render(){ 
-
         return (
-            // render user etc. when database is updated!
             <div className="menu">
-                {this.state.user && <Typography variant='h1'>
+                {this.state.user && <Typography variant='h2'>
                     {this.state.user.username}
                 </Typography>}
-                <Badge className="item"
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    badgeContent={
-                    // Avatar to make the Icon circular
-                    <Avatar
-                        style={{
-                            backgroundColor: '#fcc6ff'
-                        }}>
-                    </Avatar>
-                    }>
-                </Badge>
-
+                <Button variant="contained" onClick={() => this.blockUser()}>
+                    BLOCK
+                </Button>
             </div>
         )
     }
