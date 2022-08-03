@@ -70,7 +70,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
             !this.state.currentMembers.includes(user.id)
         );
 
-        const listUsers = nonMembers.map((user, index) => 
+        const listUsers = nonMembers.map((user) => 
             <MenuItem key={user.id} value={user.id}>{user.username}</MenuItem>
         );
         

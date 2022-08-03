@@ -19,7 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import ButtonGroup from '@mui/material/ButtonGroup';
 
 interface ChannelSettingsProps {
-    channel: string;
+    channel: Channel;
     openSettings: any;
     setError: (err: string) => void;    
 }
@@ -241,7 +241,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         <MemberSettings open={this.state.memberSettingsOpen}
                                         handleClose={this.handleClose}
                                         member={this.state.activeMember}
-                                        activeChannel={this.props.channel}
+                                        activeChannel={this.props.channel.name}
                                         setError={this.props.setError} />
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Admins
@@ -250,7 +250,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         <AdminSettings  open={this.state.adminSettingsOpen}
                                         handleClose={this.handleClose}
                                         member={this.state.activeMember}
-                                        activeChannel={this.props.channel}
+                                        activeChannel={this.props.channel.name}
                                         setError={this.props.setError} />
                     </DialogContent>
                 </Box>}
