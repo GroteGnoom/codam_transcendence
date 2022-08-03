@@ -8,7 +8,9 @@ import {
 import {User} from 'src/typeorm';
 import {UserDto} from 'src/users/users.dtos';
 import {Repository} from 'typeorm';
+
 import {userStatus} from '../typeorm/user.entity'
+
 import {DatabaseFilesService} from './databaseFiles.service';
 
 @ValidatorConstraint({name : 'UserExists', async : true})
@@ -109,11 +111,16 @@ export class UsersService {
   }
 
   async addAvatar(id: number, imageBuffer: Buffer, filename: string) {
+    const avatarIdBefore = await this.getAvatarId(id);
     const avatar = await this.databaseFilesService.uploadDatabaseFile(
-        imageBuffer, filename);
-    await this.userRepository.update(
-        id,
-        {avatarId : avatar.id}); // save the id of the avatar in user repository
+        avatarIdBefore, imageBuffer, filename);
+    this.logger.log(avatar.id);
+    this.logger.log(avatar.filename);
+    if (avatarIdBefore === null){
+      await this.userRepository.update(
+          id,
+          {avatarId : avatar.id}); // save the id of the avatar in user repository
+    }
     return avatar;
   }
 }

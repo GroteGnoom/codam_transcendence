@@ -10,13 +10,13 @@ import {
   Put,
   Req,
   Res,
+  Response,
   StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
-  Response,
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
@@ -82,17 +82,17 @@ export class UsersController {
   }
 
   @Get('avatar')
-  async getDatabaseFileById(@Req() req: any,
-                            @Response({ passthrough: true }) res) : Promise<StreamableFile> {
+  async getDatabaseFileById(@Req() req: any, @Response({passthrough : true})
+                                             res): Promise<StreamableFile> {
     const userId = req.session.userId;
-    const id = await this.userService.getAvatarId(userId);
-    this.logger.log("avatarID: " + id);
-    const file = await this.databaseFilesService.getFileById(id); //TODO: if avatarId NULL, default file!, now file doesn't make sense..
+    const avatarId = await this.userService.getAvatarId(userId);
+    if (avatarId === null)
+      return null;
+    const file = await this.databaseFilesService.getFileById(avatarId);
     const stream = Readable.from(file.data);
-    this.logger.log("userId: " + userId + " fileid: " + file.filename);
     res.set({
-      'Content-Type': 'image',
-      'Content-Disposition': `inline;// filename="${file.filename}"`,
+      'Content-Type' : 'image',
+      'Content-Disposition' : `inline;// filename="${file.filename}"`,
     });
     return new StreamableFile(stream);
   }

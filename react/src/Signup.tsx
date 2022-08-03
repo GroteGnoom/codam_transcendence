@@ -18,6 +18,9 @@ import {styled} from '@mui/material/styles';
 import FormData from 'form-data';
 import {createReadStream} from 'fs';
 import { get_backend_host, userStatus } from './utils';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
@@ -25,18 +28,24 @@ const pinkTheme = createTheme({ palette: { primary: pink } })
 export function Signup() {
     const [users, setUsers] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isSignedUp, setIsSignedUp] = useState(false);
     const [username, setUsername] = useState("");
     const [intraName, setIntraName] = useState("");
     const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
     const [event, setEvent] = useState("");
     const [avatar, setAvatar] = useState({
-        imgSrc: 'http://127.0.0.1:5000/users/avatar', //TODO: get backend server
+        imgSrc: get_backend_host() + "/users/avatar",
         imgHash: Date.now(),
     });
+    const [checked, setChecked] = useState(false);
+    const url = get_backend_host() + "/auth/ft";
+	const url2fa = get_backend_host() + "/2fa/generate";
+    const [tfaCode, setTfaCode] = useState("");
 
     //backend calls
     async function getUserInfoDatabase () { // TODO: unexpected end of JSON input
+        getLoggedIn();
         return await fetch(get_backend_host() + "/users/intraname/", { 
             method: "GET",
             credentials: 'include',
@@ -54,6 +63,7 @@ export function Signup() {
             console.log("found username: " + response.username);
             setIntraName(response.intraName);
             setUsername(response.username);
+            setIsSignedUp(response.isSignedUp);
         })
         .catch((err: Error) => setError(err.message))
     }
@@ -94,10 +104,44 @@ export function Signup() {
         .catch((err: Error) => setError(err.message))
     }
 
-    async function saveUser() {
+    async function checkTfaCode() {
+        const data = new URLSearchParams();
+        data.append("twoFactorAuthenticationCode", tfaCode);
+        console.log('going to post ', tfaCode);
+        return await fetch(get_backend_host() + "/2fa/authenticate", {
+            method: "POST",
+            credentials: 'include',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: data,
+            mode: 'cors',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                console.log('response was OK');
+                setEvent("2-factor authentication successful"); // TODO: not needed??
+                return true;
+            } else {
+                throw new Error(json.message);
+            }
+        }).catch((error) => {
+            console.log("catched the error");
+            return false;
+        });
+    }
+
+    async function signUpUser() {
+        getLoggedIn();
         console.log("try save user...");
         console.log("current users");
         console.log(users);
+        if (checked) {
+            const checkTfa = await checkTfaCode();
+            if (checkTfa === false){
+                setError("2-factor authentication failed");
+                return;
+            }
+        }
         return await fetch(get_backend_host() + "/users/signupuser", {
             method: "PUT",
             credentials: 'include',
@@ -105,7 +149,8 @@ export function Signup() {
             body: JSON.stringify({
                 "username": username,
                 "intraName": intraName,
-                "status": status
+                "status": status,
+                "isSignedUp": true,
             })
         })
         .then(async (response) => {
@@ -152,7 +197,7 @@ export function Signup() {
         .then((response) => {
             setEvent("Avatar created successfully");
             setAvatar({
-                imgSrc: get_backend_host() + '/users/avatar',
+                imgSrc: get_backend_host() + "/users/avatar",
                 imgHash: Date.now() // this will change the src attribute of avatar loading
             });
         })
@@ -161,9 +206,14 @@ export function Signup() {
 
     function keyRelease(e: any) {
         if(e.key === 'Enter'){
-            saveUser();
+            signUpUser();
         }
     }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        getLoggedIn();
+        setChecked(event.target.checked);
+    };
 
     // effect hooks
     // combination of componentDidMount and componentDidUpdate
@@ -183,9 +233,10 @@ export function Signup() {
         getLoggedIn();
     }, []); // will only be called on initial mount and unmount
 
+
     return ( // holds the HTML code
     <ThemeProvider theme={pinkTheme}>
-                { isLoggedIn ? (
+                { isLoggedIn ? ( // only show this when logged in
                     <div className="menu">
                         <Badge className="item"
                             overlap="circular"
@@ -217,7 +268,7 @@ export function Signup() {
                             <Avatar className="item"
                                 alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
                                 src={`${avatar.imgSrc}?${avatar.imgHash}`}
-                                sx={{ width: 150, height: 150 }}
+                                sx={{ width: 200, height: 200 }}
                             />
                         </Badge>
                         <TextField className="item"
@@ -227,16 +278,36 @@ export function Signup() {
                             helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
                             onKeyUp={(e) => keyRelease(e)}
                             onChange={(e) => setUsername(e.target.value)} />
+                        <FormGroup className="item">
+                            <FormControlLabel control={<Checkbox
+                                checked={checked}
+                                onChange={handleChange}
+                                inputProps={{ 'aria-label': 'controlled' }}
+                            />} label="Enable 2-factor authentication" />
+                        </FormGroup>
+                        {/* show the following only when 2fa is enabled */}
+                        {checked && <p className="item">
+                                Google Authenticator QR
+                            </p>}
+                        {checked && <img
+                            className="item"
+                            src={url2fa}
+                            />}
+                        {checked && 
+                            <TextField className="item"
+                            helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
+                            onChange={(e) => setTfaCode(e.target.value)}/>}
+                            {/* TODO: max_length text field */}
                         <Button className="item"
                             variant="contained"
                             startIcon={<PersonOutlineSharpIcon />}
-                            onClick={() => saveUser()}
+                            onClick={() => signUpUser()}
                         > SIGN UP </Button>
                     </div>
                 ) : ( // if not logged in, show login button
                     <div className="menu">
                         {/* TODO get backend server */}
-                        <a href="http://127.0.0.1:5000/auth/ft"><Button className="button" variant="contained">Log in 42</Button></a> 
+                        <a href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
                     </div>
                 )}
 
