@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
+import { get_backend_host } from './utils';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -13,7 +14,7 @@ const WaitingRoom = () => {
 
     useEffect(() => {
     console.log('Opening WebSocket');
-    webSocket.current = io('http://127.0.0.1:5000', {
+    webSocket.current = io(get_backend_host(), {
         withCredentials: true
     });
 
@@ -35,7 +36,7 @@ const WaitingRoom = () => {
         console.log('Closing WebSocket');
         webSocket.current.close();
     }
-    }, []);
+    }, );
 
     return (
         <ThemeProvider theme={pinkTheme}>

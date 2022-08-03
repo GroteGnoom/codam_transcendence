@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
+import { get_backend_host } from './utils';
 
 export default function PinkPong() {
 	let fieldWidth: number = 1500;		//3
@@ -48,7 +49,7 @@ export default function PinkPong() {
 		setTimeOut = false;
 		
 		console.log('Opening WebSocket');
-		webSocket.current = io('http://127.0.0.1:5000', {withCredentials: true, 
+		webSocket.current = io(get_backend_host(), {withCredentials: true, 
 							   extraHeaders: 
 							   {"extraheader":"extra", 
 								Cookie: "name=value; name2=value2",
