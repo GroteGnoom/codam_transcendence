@@ -3,12 +3,14 @@ import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { channel } from 'diagnostics_channel';
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
 import AddUserWindow from './AddUserWindow';
+import { Channel } from './Chat.types';
 
 interface ChatWindowProps { 
-    channel: string;
+    channel: Channel;
     openSettings: any;
 }
 
@@ -33,7 +35,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async getMessages(){
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/messages`, { 
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}/messages`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -46,7 +48,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async checkIfMuted() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}/is-muted`, { 
+		return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}/is-muted`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -55,7 +57,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 	}
 
     onReceiveMessage(socketMessage: any){   //subscribed to recMessage events through ws
-        if (socketMessage.channel === this.props.channel) {
+        if (socketMessage.channel === this.props.channel.name) {
             console.log("Received a message for this channel")
             this.setState( { messages: [...this.state.messages, socketMessage.message] } );
         } else {
@@ -92,14 +94,19 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.webSocket.close()
     }
 
-    // componentDidUpdate() { // this function shouldnt be necessary, look for solution when switching channels
-    //     console.log("updating")
-    //     this.getMessages()
-    // }
+    componentDidUpdate(prevProps: ChatWindowProps, prevState: ChatWindowState) { 
+        if (
+            !prevProps.channel ||
+            !this.props.channel ||
+            prevProps.channel.name !== this.props.channel.name) {
+            console.log("Changing channel, getting new messages")
+            this.getMessages()
+        }
+    }
 
     async postMessage() {
         this.webSocket.emit("sendMessage", { 
-            "channel": this.props.channel,
+            "channel": this.props.channel.name,
             "message": {
                 "text": this.state.text
             }
@@ -143,23 +150,27 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             <Grid container direction="row" alignItems="center">
                                 <Grid xs={10} item>
                                     <Typography variant="h4" gutterBottom>
-                                        {this.props.channel}
+                                        {this.props.channel.name}
                                     </Typography>
                                 </Grid>
                                 <Grid xs={1} item>
-                                    <IconButton onClick={() => { this.props.openSettings(true) }}
-                                        color="secondary">
-                                            <SettingsIcon />
-                                    </IconButton>
+                                    {this.props.channel.channelType !== "direct message" &&
+                                        <IconButton onClick={() => { this.props.openSettings(true) }}
+                                            color="secondary">
+                                                <SettingsIcon />
+                                        </IconButton>
+                                    }
                                 </Grid>
                                 <Grid xs={1} item>
-                                    <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
-                                        color="secondary">
-                                            <PersonAddIcon />
-                                    </IconButton>
+                                    {this.props.channel.channelType !== "direct message" &&
+                                        <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
+                                            color="secondary">
+                                                <PersonAddIcon />
+                                        </IconButton>
+                                    }
                                 </Grid>
                             </Grid>
-                            <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} activeChannel={this.props.channel}/>
+                            <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} activeChannel={this.props.channel.name}/>
                             <Divider />
                             <Grid container spacing={4} alignItems="center">
                                 <Grid id="chat-window" xs={12} item>

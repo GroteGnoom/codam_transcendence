@@ -35,13 +35,26 @@ export class ChannelsService {
     }
 
     getChannels(){
-        return this.channelRepository.find();
+        return this.channelRepository.find({
+            where : [
+                {channelType: ChannelType.Private},    // OR
+                {channelType: ChannelType.Protected},  //https://orkhan.gitbook.io/typeorm/docs/find-options
+                {channelType: ChannelType.Public}
+            ]
+        });
     };
 
     getChannelByName(name: string) {
         return this.channelRepository.findOne({
             where: {name: name},
             relations: ['members', 'admins']
+        });
+    }
+
+    getChats() {
+        return this.channelRepository.find({
+            where: {channelType: ChannelType.dm},
+            //relations: ['members', 'admins']
         });
     }
 
@@ -62,7 +75,8 @@ export class ChannelsService {
     }
 
     removeChannelByName(name: string) {
-        return this.channelRepository.delete({name: name});
+        this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
+        return this.channelRepository.delete({name: name});     // then delete channel
     }
 
     async addAdminToChannel(channelName: string, id: number, requester: number) {
@@ -202,7 +216,7 @@ export class ChannelsService {
         return this.messageRepository.findBy({channel: channel});
     }
 
-    directMessage(user : number , other : number) {
+    createDirectMessage(user : number , other : number) {
         return this.channelRepository.save({ // create new Channel object (direct mesage)
             name: `dm-${user}-${other}`,
             owner: user,
