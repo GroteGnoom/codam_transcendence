@@ -8,10 +8,11 @@ import { parse } from 'cookie'
 import * as cookieParser from 'cookie-parser'
 import { ConfigService } from '@nestjs/config';
 import { GlobalService } from '../global.service';
+import { get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://127.0.0.1:3000',
+    origin: get_frontend_host(),
     credentials: true
   },
 })

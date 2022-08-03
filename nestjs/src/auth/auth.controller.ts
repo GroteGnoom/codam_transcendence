@@ -14,6 +14,7 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UsersService } from '../users/users.service';
 import { GlobalService } from '../global.service';
+import { get_frontend_host } from 'src/utils';
 
 import "express-session";
 declare module "express-session" {
@@ -31,7 +32,7 @@ export class AuthController
 			   private userService: UsersService) {}
 	private readonly logger = new Logger(AuthController.name);
 	@Get('ft')
-	@Redirect('http://127.0.0.1:3000/logged_in', 302)
+	@Redirect(get_frontend_host() + '/logged_in', 302)
 	@UseGuards(AuthGuard('ft')) //before returning the get request this will try the ft strategy for authentication. If ft exists is checked during runtime, and will give Unknown authentication strategy "ft" if it doesn't exist.
 	async login(@Req() req: Request, @Res() response:Response): Promise<any> { //the function name doesn't matter?
 		const areq = await req;
@@ -46,8 +47,7 @@ export class AuthController
 		console.log("session id in authcontroller:", req.session.id);
 		GlobalService.sessionId = req.session.id;
 		GlobalService.users.set(req.session.id, Number(userID))
-		return {url:'http://127.0.0.1:3000/signup'};
-		//return user;
+		return {url: get_frontend_host() + '/signup'};
 	}
 
 	@UseGuards(JwtAuthGuard) // guards checks for jwt
