@@ -58,6 +58,12 @@ export class AuthController
 		return req.user;
 	}
 
+	@Get('logout')
+	logout(@Req() req) {
+		console.log('logging out');
+		req.session.destroy();
+	}
+
 	@Get('amiloggedin')
 	amILoggedIn(@Req() request: Request) {
 		this.logger.log("logged in?", request.session.logged_in);
