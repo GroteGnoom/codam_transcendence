@@ -99,14 +99,9 @@ export class ChannelsController {
     }
 
     @Put(':name/ban/:id')
-<<<<<<< HEAD
-    async banMember(@Param('name') name: string, @Param('id') member: number) {
-        return this.channelsService.banMemberFromChannel(name, Number(member));
-=======
     async banMember(@Req() req, @Param('name') name: string, @Param('id') member: number) {
         const userID = req.session.userId;
         return this.channelsService.banMemberFromChannel(name, Number(member), userID);
->>>>>>> f9fc3b5b169df4756fa76468b8fd7becc662e0c9
     }
 
     @Post('dm/:id')

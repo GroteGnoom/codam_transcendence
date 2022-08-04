@@ -347,13 +347,6 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
         .then( () => this.props.handleClose() )
     }
 
-    async banMember(){
-        return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/ban/${this.props.member.id}`, { 
-            method: 'PUT',
-            credentials: 'include',
-        })
-    }
-
     async createAdmin() {
 		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
             method: 'PUT',

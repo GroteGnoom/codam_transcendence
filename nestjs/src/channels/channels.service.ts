@@ -208,13 +208,6 @@ export class ChannelsService {
         })
       }
 
-<<<<<<< HEAD
-      async banMemberFromChannel(channelName: string, id: number) {
-        this.removeMemberFromChannel(channelName, id);
-        const channel: Channel = await this.channelRepository.findOne({
-            where: {name: channelName},
-        });
-=======
     async banMemberFromChannel(channelName: string, id: number, requester: number) {
         this.removeMemberFromChannel(channelName, id, requester);
         const channel: Channel = await this.channelRepository.findOne({
@@ -225,7 +218,6 @@ export class ChannelsService {
         if (!channel.admins.map((user) => user.id).includes(requester)) {   //////////
             throw new UnauthorizedException('You are not authorized');  
         }
->>>>>>> f9fc3b5b169df4756fa76468b8fd7becc662e0c9
         channel.bannedUsers.push(Number(id));
         return this.channelRepository.save(channel); 
     }
