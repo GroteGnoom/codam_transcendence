@@ -1,12 +1,10 @@
-import { pink } from '@mui/material/colors';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
 
-const pinkTheme = createTheme({ palette: { primary: pink } })
+// const pinkTheme = createTheme({ palette: { primary: pink } })
 
 const WaitingRoom = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
