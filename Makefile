@@ -1,7 +1,11 @@
 PROJECT = transcendence
 
 ifdef GLOBAL
+ifeq (GLOBAL, stef)
+export AMILOCAL := stef
+else
 export AMILOCAL := no
+endif
 else
 export AMILOCAL := yes
 endif
