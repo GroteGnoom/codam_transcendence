@@ -23,78 +23,102 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		private httpService: HttpService,
 		private configService: ConfigService,
 	) {
-		super(process.env.AMILOCAL ==="yes" ? {
-			authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
-				client_id    : configService.get('FT_OAUTH_CLIENT_ID'),
+		var block;
+
+		if (process.env.AMILOCAL === "yes") {
+			block = {
+				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
+					client_id    : configService.get('FT_OAUTH_CLIENT_ID'),
 				redirect_uri : callbackURL,
 				response_type: 'code',
 				scope        : 'public',
-			}) }`,
-			tokenURL        : 'https://api.intra.42.fr/oauth/token',
-			scope           : 'public',
-			clientID: configService.get('FT_OAUTH_CLIENT_ID'),
-			clientSecret: configService.get('FT_OAUTH_CLIENT_SECRET'),
-			callbackURL,
-		} : {
-			authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
-				client_id    : configService.get('FT_OAUTH_GENERAL_ID'),
+				}) }`,
+				tokenURL        : 'https://api.intra.42.fr/oauth/token',
+				scope           : 'public',
+				clientID: configService.get('FT_OAUTH_CLIENT_ID'),
+				clientSecret: configService.get('FT_OAUTH_CLIENT_SECRET'),
+				callbackURL,
+			};
+		} else if (process.env.AMILOCAL === "stef"){
+			block = {
+				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
+					client_id    : configService.get('FT_OAUTH_STEF_ID'),
 				redirect_uri : callbackURL,
 				response_type: 'code',
 				scope        : 'public',
-			}) }`,
-			tokenURL        : 'https://api.intra.42.fr/oauth/token',
-			scope           : 'public',
-			clientID: configService.get('FT_OAUTH_GENERAL_ID'),
-			clientSecret: configService.get('FT_OAUTH_GENERAL_SECRET'),
-			callbackURL,
-		});
+				}) }`,
+				tokenURL        : 'https://api.intra.42.fr/oauth/token',
+				scope           : 'public',
+				clientID: configService.get('FT_OAUTH_STEF_ID'),
+				clientSecret: configService.get('FT_OAUTH_STEF_SECRET'),
+				callbackURL,
+			}
+		} else { 
+			block = {
+				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
+					client_id    : configService.get('FT_OAUTH_GENERAL_ID'),
+				redirect_uri : callbackURL,
+				response_type: 'code',
+				scope        : 'public',
+				}) }`,
+				tokenURL        : 'https://api.intra.42.fr/oauth/token',
+				scope           : 'public',
+				clientID: configService.get('FT_OAUTH_GENERAL_ID'),
+				clientSecret: configService.get('FT_OAUTH_GENERAL_SECRET'),
+				callbackURL,
+			}
+		}
+		super(block);
 		this.logger.log('FtStrategy constructed\n');
 		this.logger.log('am i local?', process.env.AMILOCAL);
 		this.logger.log('hostname: ', process.env.MYHOSTNAME);
+		this.logger.log('callback url: ', callbackURL);
+		this.logger.log('clientID: ', configService.get('FT_OAUTH_GENERAL_ID'));
+		this.logger.log('clientSecret: ', configService.get('FT_OAUTH_GENERAL_SECRET'));
 	}
 	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');
 		/*
-		const data = this.httpService
-			.get('https://api.intra.42.fr/v2/cursus/users', {
-				headers: { Authorization: `Bearer ${accessToken}` },
-			});
-		this.logger.log('this is the data:', util.inspect(data, false, null, true));
-	   */
-	  	const resp = await this.httpService .get('https://api.intra.42.fr/v2/me', {
-	  	//this.httpService .get('https://api.intra.42.fr/v2/users', {
-				headers: { Authorization: `Bearer ${accessToken}` },
-			}).toPromise();
+		   const data = this.httpService
+		   .get('https://api.intra.42.fr/v2/cursus/users', {
+headers: { Authorization: `Bearer ${accessToken}` },
+});
+this.logger.log('this is the data:', util.inspect(data, false, null, true));
+*/
+		const resp = await this.httpService .get('https://api.intra.42.fr/v2/me', {
+			//this.httpService .get('https://api.intra.42.fr/v2/users', {
+			headers: { Authorization: `Bearer ${accessToken}` },
+		}).toPromise();
 
 		//resp.then(resp => {this.logger.log("validation result:", resp.data.login);});
 		this.logger.log("validation result:", resp.data.login);
 
-			
+
 		//.then(response =>{this.logger.log(response.data.login);});//.catch(error => {this.logger.log("niet gelukt", error);});
-			//}).toPromise().then(response =>{this.logger.log(response);});//.catch(error => {this.logger.log("niet gelukt", error);});
+		//}).toPromise().then(response =>{this.logger.log(response);});//.catch(error => {this.logger.log("niet gelukt", error);});
 		//this.logger.log('this is the data:', data.map(res => {return res.json();}));
 		return resp.data.login;
 
 		/*
-		const intraID = data.data.id;
-		const username = data.data.login;
-		const validateUserDto = { intraID, username };
-		return await this.authService.validateUser(validateUserDto);
-		return "not actually validated";
-	   */
+		   const intraID = data.data.id;
+		   const username = data.data.login;
+		   const validateUserDto = { intraID, username };
+		   return await this.authService.validateUser(validateUserDto);
+		   return "not actually validated";
+		   */
 	}
 
-	/*
-	async validate(
-		accessToken: string,
-	): Promise<any> {
-		this.logger.log('ft strategy validate called', data);
-		const { data } = await this.http.get('https://api.intra.42.fr/v2/cursus', {
-				headers: { Authorization: `Bearer ${ accessToken }` },
-			})
-			.toPromise();
-		this.logger.log('this is the data:', data);
-		return data;
-	}
-   */
+/*
+   async validate(
+accessToken: string,
+): Promise<any> {
+this.logger.log('ft strategy validate called', data);
+const { data } = await this.http.get('https://api.intra.42.fr/v2/cursus', {
+headers: { Authorization: `Bearer ${ accessToken }` },
+})
+.toPromise();
+this.logger.log('this is the data:', data);
+return data;
+}
+*/
 }
