@@ -17,6 +17,7 @@ import { Channel } from './Chat.types';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import { get_backend_host } from '../utils';
 
 interface ChannelSettingsProps {
     channel: Channel;
@@ -47,7 +48,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async getSettings() {
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}`, { 
+        return await fetch(get_backend_host() + `/channels/${this.props.channel.name}`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -59,7 +60,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async getOwner(id: number) {
-        return await fetch(`http://127.0.0.1:5000/users/id/${id}`, { 
+        return await fetch(get_backend_host() + `/users/id/${id}`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -70,7 +71,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async saveSettings() {
-        return await fetch("http://127.0.0.1:5000/channels", { // todo make update endpoint
+        return await fetch(get_backend_host() + "/channels", { // todo make update endpoint
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -285,7 +286,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
     }
 
     async removeMember() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.props.member.id}`, { 
+		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/member/${this.props.member.id}`, { 
             method: 'DELETE'
         })
 		.then( (response) => response.json() )
@@ -293,7 +294,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 	}
 
     async muteMember() {
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/mute/${this.props.member.id}`, { 
+        return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/mute/${this.props.member.id}`, { 
             method: 'PUT'
         })
 		.then( (response) => response.json() )
@@ -301,7 +302,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
     }
 
     async createAdmin() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
+		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
             method: 'PUT',
             credentials: 'include',
         })
@@ -370,7 +371,7 @@ class AdminSettings extends React.Component<AdminSettingsProps, AdminSettingsSta
     }
 
     async demoteAdmin() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
+		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
             method: 'DELETE'})
 		.then( (response) => response.json() )
         .then( () => this.props.handleClose() )

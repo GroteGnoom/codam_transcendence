@@ -1,6 +1,7 @@
 import { Button, Typography } from "@mui/material";
 import React from "react";
 import { useParams } from "react-router-dom";
+import { get_backend_host } from "../utils";
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
@@ -25,7 +26,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     getUserInfo() {
-        fetch(`http://127.0.0.1:5000/users/id/${this.props.params.id}`, { 
+        fetch(get_backend_host() + `/users/id/${this.props.params.id}`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -36,7 +37,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     blockUser() {
-        fetch(`http://127.0.0.1:5000/users/block/${this.props.params.id}`, { 
+        fetch(get_backend_host() + `/users/block/${this.props.params.id}`, { 
             method: 'PUT',
             credentials: 'include',
         })
