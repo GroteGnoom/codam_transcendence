@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 const util = require('node:util');
 // change these to be your ft client ID and secret
 const callbackURL = 'http://127.0.0.1:5000/auth/ft';
+const callbackURL2 = 'http://' + process.env.MYHOSTNAME + ':5000/auth/ft';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, 'ft')
@@ -22,7 +23,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		private httpService: HttpService,
 		private configService: ConfigService,
 	) {
-		super({
+		super(process.env.AMILOCAL ==="yes" ? {
 			authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
 				client_id    : configService.get('FT_OAUTH_CLIENT_ID'),
 				redirect_uri : callbackURL,
@@ -34,8 +35,22 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 			clientID: configService.get('FT_OAUTH_CLIENT_ID'),
 			clientSecret: configService.get('FT_OAUTH_CLIENT_SECRET'),
 			callbackURL,
+		} : {
+			authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
+				client_id    : configService.get('FT_OAUTH_GENERAL_ID'),
+				redirect_uri : callbackURL2,
+				response_type: 'code',
+				scope        : 'public',
+			}) }`,
+			tokenURL        : 'https://api.intra.42.fr/oauth/token',
+			scope           : 'public',
+			clientID: configService.get('FT_OAUTH_GENERAL_ID'),
+			clientSecret: configService.get('FT_OAUTH_GENERAL_SECRET'),
+			callbackURL,
 		});
 		this.logger.log('FtStrategy constructed\n');
+		this.logger.log('am i local?', process.env.AMILOCAL);
+		this.logger.log('hostname: ', process.env.MYHOSTNAME);
 	}
 	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');
