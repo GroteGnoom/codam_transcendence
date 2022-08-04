@@ -46,7 +46,6 @@ export class AuthController
 		req.session.logged_in = true;
 		req.session.userId = userID;
 		console.log("session id in authcontroller:", req.session.id);
-		GlobalService.sessionId = req.session.id;
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
 	}

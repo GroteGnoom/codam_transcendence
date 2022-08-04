@@ -41,6 +41,7 @@ export class MatchGateway {
 
   Player1: number;
 	Player2: number;
+  userID: number;
   
   ballRelX: number;
   ballRelY: number;
@@ -66,7 +67,7 @@ export class MatchGateway {
 
   @SubscribeMessage('startGame')
   async handleStartGame(client: Socket, payload: any): Promise<void> {
-    console.log(client.id);
+    this.userID = getUserFromClient(client, this.configService);
     console.log("Start game message");
     this.Player1 = payload.Player1;
     this.Player2 = payload.Player2;
@@ -76,7 +77,8 @@ export class MatchGateway {
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       console.log("Key pressed")
-      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, getUserFromClient(client, this.configService));
+      this.userID = getUserFromClient(client, this.configService);
+      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, this.userID);
   }
 
   setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean, client: number) {
@@ -84,7 +86,7 @@ export class MatchGateway {
       this.leftKeyPressedP1 = leftKeyPressed;
       this.rightKeyPressedP1 = rightKeyPressed;
     }
-    else if (client === this.Player2) {
+    if (client === this.Player2) {
       this.leftKeyPressedP2 = leftKeyPressed;
       this.rightKeyPressedP2 = rightKeyPressed;
     }

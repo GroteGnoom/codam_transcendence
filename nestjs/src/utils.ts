@@ -26,13 +26,16 @@ export function get_backend_host() {
 	return ('http://' + hostName + ":5000");
 }
 export function getUserFromClient(client: Socket, configService: ConfigService) {
+	let userID: number;
+
 	const cookie = parse(String(client.handshake.headers.cookie))
 	const name = 'transcendence'
 	const secret = configService.get('SESSION_SECRET');
 	const SID = cookieParser.signedCookie(cookie[name], secret)
-	if (GlobalService.sessionId != SID) {
+	userID = GlobalService.users.get(SID as string)
+	if (GlobalService.users.get(SID as string) != userID) {
 		console.log("session id's don't match, disconnecting");
 		client.disconnect();
 	}
-	return GlobalService.users.get(SID as string)
+	return userID
 }
