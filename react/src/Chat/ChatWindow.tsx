@@ -3,7 +3,6 @@ import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { channel } from 'diagnostics_channel';
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
 import AddUserWindow from './AddUserWindow';
@@ -99,7 +98,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             !prevProps.channel ||
             !this.props.channel ||
             prevProps.channel.name !== this.props.channel.name) {
-            console.log("Changing channel, getting new messages")
             this.getMessages()
         }
     }

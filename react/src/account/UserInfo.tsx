@@ -26,7 +26,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     getUserInfo() {
         fetch(`http://127.0.0.1:5000/users/id/${this.props.params.id}`, { 
-            method: 'GET'
+            method: 'GET',
+            credentials: 'include',
         })
 		.then((response) => response.json())
         .then((response) => {
