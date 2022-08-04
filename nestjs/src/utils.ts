@@ -9,7 +9,7 @@ const { exec } = require('child_process');
 export function get_frontend_host() {
 	//const hostName = os.hostname();
 	
-	var hostName: string = '10.11.1.19';
+	var hostName: string = '127.0.0.1';
 	/*
 	exec('hostname', (error, stdout, stderr) => {
 		console.log('error: ', error);
