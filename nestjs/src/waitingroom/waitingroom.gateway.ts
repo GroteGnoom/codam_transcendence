@@ -1,69 +1,57 @@
 import {
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer
-  } from '@nestjs/websockets';
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
-import { parse } from 'cookie'
-import * as cookieParser from 'cookie-parser'
-import { GlobalService } from '../global.service';
 import { ConfigService } from '@nestjs/config';
-import { MatchGateway } from 'src/match/match.gateway';
-import { get_frontend_host } from 'src/utils';
+import { getUserFromClient, get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
-  cors: {
-    origin: get_frontend_host(),
-    credentials: true
-  },
+cors: {
+  origin: get_frontend_host(),
+  credentials: true
+},
 })
 export class WaitingRoomGateway {
-  constructor (
-  private readonly configService: ConfigService
-	) {}
+constructor (
+private readonly configService: ConfigService
+) {}
 
-  logins: number = 0;
-  Player1: number;
-  Player2: number;
-  client: number;
+logins: number = 0;
+Player1: number;
+Player2: number;
+client: number;
 
-  @WebSocketServer()
-  server: Server;
+@WebSocketServer()
+server: Server;
 
-	handleConnection(client: Socket, @Session() session) {
-    console.log("started waitingroom server", session);
-		const cookie = parse(String(client.handshake.headers.cookie))
-		const name = 'transcendence'
-		const secret = this.configService.get('SESSION_SECRET');
-		const SID = cookieParser.signedCookie(cookie[name], secret)
-		if (GlobalService.sessionId != SID) {
-      console.log("session id's don't match, disconnecting");
-			client.disconnect();
-		}
-    this.client = GlobalService.users.get(SID as string);
-	}
+handleConnection(client: Socket, @Session() session) {
+  console.log("started waitingroom server", session);
+  this.client = getUserFromClient(client, this.configService);
+}
 
-  @SubscribeMessage('loggedIn')
-  async handleSendMessage(client: Socket, payload: any): Promise<void> {
-      this.checkWaitingRoom();
+@SubscribeMessage('loggedIn')
+async handleSendMessage(client: Socket, payload: any): Promise<void> {
+    this.checkWaitingRoom();
+}
+
+checkWaitingRoom() {
+  this.logins = this.logins + 1;
+  console.log(this.logins);
+  if (this.logins === 2) {
+      this.logins = 0;
+      this.Player2 = this.client;
+      console.log("2 players");
+      this.server.emit("found2Players", {
+        "Player1": this.Player1,
+        "Player2": this.Player2
+    });
+    this.Player1 = 0;
+    this.Player2 = 0;
   }
-
-  checkWaitingRoom() {
-    this.logins = this.logins + 1;
-    console.log(this.logins);
-    if (this.logins === 2) {
-        this.logins = 0;
-        this.Player2 = this.client;
-        console.log("2 players");
-        this.server.emit("found2Players", {
-          "Player1": this.Player1,
-          "Player2": this.Player2
-      });
-      this.Player1 = 0;
-      this.Player2 = 0;
-    }
-    else
-      this.Player1 = this.client;
-  }
+  else
+    this.Player1 = this.client;
+}
 }
