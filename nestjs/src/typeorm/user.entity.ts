@@ -31,10 +31,8 @@ export class User {
 	})
   	status: userStatus;
 
-	@Column({
-		nullable: false,
-		default: '',
-	})
+	@Column({ default: false })
+	public isSignedUp: boolean;
 
 	@Column({ nullable: true })
 	public twoFactorAuthenticationSecret?: string;

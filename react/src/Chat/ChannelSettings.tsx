@@ -47,7 +47,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async getSettings() {
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel}`, { 
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -186,7 +186,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         <TextField
                             disabled
                             onChange={(event) => { }}
-                            value={this.props.channel}
+                            value={this.props.channel.name}
                             autoFocus
                             margin="dense"  
                             id="name"

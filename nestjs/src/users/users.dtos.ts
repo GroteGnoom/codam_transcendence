@@ -1,7 +1,5 @@
 import {IsNotEmpty} from "class-validator";
-
 import {userStatus} from '../typeorm/user.entity'
-
 import {uniqueUser} from './uniqueUser';
 
 export class UserDto { // Nestjs Data Transfer Object = a class that

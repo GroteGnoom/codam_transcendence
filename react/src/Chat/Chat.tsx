@@ -25,14 +25,14 @@ const Chat = () => {
 
 	return (
 		<main>
-			<Stack direction="column">
-				<Stack direction="row">
+			<Stack direction="row">
+				<Stack direction="column">
 					<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+					< DirectMessage openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+					</Stack>
 					{activeChannel && <ChatWindow channel={activeChannel} openSettings={openSettings} />}
 					{settingsOpen && activeChannel && <ChannelSettings channel={activeChannel} openSettings={openSettings} setError={setError} />}
 					{errorPopup}
-				</Stack>
-				< DirectMessage openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
 			</Stack>
 		</main>
 	)

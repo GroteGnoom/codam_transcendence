@@ -13,9 +13,12 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] show intraName; fix 401 error request
 [ ] better unique username checker; custom validator
 [V] add icon for custom avatar upload
-[ ] save custom avatar in db
+[V] save custom avatar in db
+[ ] validation checks: image + username
 [ ] when signed up, redirect to homepage and show buttons
 [ ] make account page
+[ ] make account page other users
+[ ] fix issignedup
 
 flow:
 user authentication -> set username page -> create user

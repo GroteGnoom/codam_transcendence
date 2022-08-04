@@ -2,7 +2,9 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
  
 @Entity()
 export class DatabaseFile {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({
+    type: 'bigint'
+  })
   public id: number;
  
   @Column()

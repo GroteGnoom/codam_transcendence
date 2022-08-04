@@ -4,23 +4,26 @@ import {
     WebSocketServer
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
+import { get_frontend_host } from 'src/utils';
+import { getUserFromClient } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://127.0.0.1:3000',
+    origin: get_frontend_host(),
     credentials: true
   },
 })
 export class MatchGateway {
-	constructor (
-    private Player1: Server,
-    private Player2: Server,
-    private PinkPong: boolean //pinkpong (true) or original pong (false) version
-  ){
-    console.log("Start match");
-    this.loop();
-  }
+  constructor(
+    private readonly configService: ConfigService
+  ) {}
 
+  @WebSocketServer()
+  server: Server;
+
+  private PinkPong: boolean //pinkpong (true) or original pong (false) version
+    
   ballSpeed = 9;
   paddleSpeed = 15;
   maxScore = 3;
@@ -35,6 +38,9 @@ export class MatchGateway {
   leftKeyPressedP2 = false;
   rightKeyPressedP2 = false;
   reset = false;
+
+  Player1: number;
+	Player2: number;
   
   ballRelX: number;
   ballRelY: number;
@@ -58,21 +64,30 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
-  client: Socket;
-
-  @SubscribeMessage('keyPressed')
-  async handleSendMessage(client: Socket, payload: any): Promise<void> {
-      // this.client = client;
-      // console.log(client);
-      console.log("Key pressed")
-      this.setKeyPresses(payload.leftKeyPressedP1, payload.leftKeyPressedP2, payload.rightKeyPressedP1, payload.rightKeyPressedP2, payload.reset);
+  @SubscribeMessage('startGame')
+  async handleStartGame(client: Socket, payload: any): Promise<void> {
+    console.log(client.id);
+    console.log("Start game message");
+    this.Player1 = payload.Player1;
+    this.Player2 = payload.Player2;
+    this.loop();
   }
 
-  setKeyPresses(leftKeyPressedP1: boolean, leftKeyPressedP2: boolean, rightKeyPressedP1: boolean, rightKeyPressedP2: boolean, reset: boolean) {
-    this.leftKeyPressedP1 = leftKeyPressedP1;
-    this.leftKeyPressedP2 = leftKeyPressedP2;
-    this.rightKeyPressedP1 = rightKeyPressedP1;
-    this.rightKeyPressedP2 = rightKeyPressedP2;
+  @SubscribeMessage('keyPressed')
+  async handleKeyPressed(client: Socket, payload: any): Promise<void> {
+      console.log("Key pressed")
+      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, getUserFromClient(client, this.configService));
+  }
+
+  setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean, client: number) {
+    if (client === this.Player1) {
+      this.leftKeyPressedP1 = leftKeyPressed;
+      this.rightKeyPressedP1 = rightKeyPressed;
+    }
+    else if (client === this.Player2) {
+      this.leftKeyPressedP2 = leftKeyPressed;
+      this.rightKeyPressedP2 = rightKeyPressed;
+    }
     this.reset = reset;
     if (reset === true)
       this.setGame();
@@ -194,20 +209,7 @@ export class MatchGateway {
 
     setTimeout(() => {
         // console.log(this.server.getMaxListeners())
-        this.Player1.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner,
-        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
-        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
-      });
-      this.Player2.emit('boardUpdated', { 
+        this.server.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 
@@ -257,26 +259,13 @@ export class MatchGateway {
       this.paddleSizeMultiplierP2 = 1;
       this.noSizeDownP1 = 0;
       this.noSizeDownP2 = 0;
-      this.Player1.sockets.disconnectSockets();
-      this.Player2.sockets.disconnectSockets();
     }
     else {
       if (this.scoreP1 === this.maxScore)
         this.winner = 1;
       else
         this.winner = 2;
-      this.Player1.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner 
-      });
-      this.Player2.emit('boardUpdated', { 
+      this.server.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 
         "paddleP1RelX": this.paddleP1RelX, 

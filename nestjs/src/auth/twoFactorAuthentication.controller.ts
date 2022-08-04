@@ -45,7 +45,7 @@ export class TwoFactorAuthenticationController {
 		const user = await this.userService.findUsersById(request.session.userId);
 		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(user);
 
-		await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
+		// await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
 	}
 
@@ -86,6 +86,7 @@ export class TwoFactorAuthenticationController {
 			throw new UnauthorizedException('Wrong authentication code');
 		}
 		this.logger.log('2fa code is correct');
+		await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		request.session.tfa_validated = true;
 
 		//return request.session.tfa_validated;

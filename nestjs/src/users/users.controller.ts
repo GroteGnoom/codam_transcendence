@@ -2,27 +2,35 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Logger,
   Param,
   ParseIntPipe,
   Post,
   Put,
   Req,
+  Res,
+  Response,
+  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
+import {FileInterceptor} from '@nestjs/platform-express';
 import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
 import {UserDto} from 'src/users/users.dtos';
 import {UsersService} from 'src/users/users.service';
-import {FileInterceptor} from '@nestjs/platform-express';
+import {Readable} from 'stream';
+
+import {DatabaseFilesService} from './databaseFiles.service';
 
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService,
+              private readonly databaseFilesService: DatabaseFilesService) {};
 
   @Get()
   getUsers() {
@@ -66,10 +74,26 @@ export class UsersController {
 
   @Post('avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(@Req() request: any,
-                  @UploadedFile() file: Express.Multer.File) {
-    this.logger.log(file);
-    return this.userService.addAvatar(request.session.userId, file.buffer,
+  async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
+    this.logger.log("id: ", req.session.userId);
+    this.logger.log("filename: ", file.originalname);
+    return this.userService.addAvatar(req.session.userId, file.buffer,
                                       file.originalname);
+  }
+
+  @Get('avatar')
+  async getDatabaseFileById(@Req() req: any, @Response({passthrough : true})
+                                             res): Promise<StreamableFile> {
+    const userId = req.session.userId;
+    const avatarId = await this.userService.getAvatarId(userId);
+    if (avatarId === null)
+      return null;
+    const file = await this.databaseFilesService.getFileById(avatarId);
+    const stream = Readable.from(file.data);
+    res.set({
+      'Content-Type' : 'image',
+      'Content-Disposition' : `inline;// filename="${file.filename}"`,
+    });
+    return new StreamableFile(stream);
   }
 }

@@ -10,15 +10,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
 import './Account.css'
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-// import { userStatus } from '../../../nestjs/src/users/users.dtos'
+import { userStatus } from '../utils'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
-
-enum userStatus {
-	Online = "online",
-	Offline = "offline",
-	InGame = "inGame",
-}
 
 class Account extends react.Component<{}, { users:[], username: string, intraName: any, status: userStatus, error: string }> { //set the props to empty object, and set the state to {vars and types}
     constructor(props: any) {
