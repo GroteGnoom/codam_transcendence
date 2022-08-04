@@ -126,13 +126,12 @@ export class UsersService {
 
   async blockUser(blocker: number, blocked: number) {
     const user = await this.userRepository.findOne({
-      where: { id: blocker },
-      relations: ['blockedUsers']
+      where: { id: blocker }
     });
-    if (user.blockedUsers.map((user) => Number(user.id)).includes(blocked)) {
+    if (user.blockedUsers.includes(blocked)) {
       return user;
     }
-    user.blockedUsers = [...user.blockedUsers, {id: blocked} as User];
+    user.blockedUsers.push(blocked);
     return this.userRepository.save(user); 
   }
 

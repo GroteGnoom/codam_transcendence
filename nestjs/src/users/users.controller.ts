@@ -1,30 +1,20 @@
 import {
   Body,
   Controller,
-  Get,
-  Header,
-  Logger,
-  Param,
-  ParseIntPipe,
-  Post,
+  Get, Logger, Param, Post,
   Put,
-  Req,
-  Res,
-  Response,
+  Req, Response,
   StreamableFile,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
+  UploadedFile, UseInterceptors,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
-import {UserDto} from 'src/users/users.dtos';
-import {UsersService} from 'src/users/users.service';
-import {Readable} from 'stream';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserDto } from 'src/users/users.dtos';
+import { UsersService } from 'src/users/users.service';
+import { Readable } from 'stream';
 
-import {DatabaseFilesService} from './databaseFiles.service';
+import { DatabaseFilesService } from './databaseFiles.service';
 
 @Controller('users')
 export class UsersController {
