@@ -41,7 +41,7 @@ const WaitingRoom = () => {
     return (
         <ThemeProvider theme={pinkTheme}>
             <main>
-
+                
             </main>
         </ThemeProvider>
     )

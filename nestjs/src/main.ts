@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as cors from 'cors'
+import { get_frontend_host } from './utils';
 const os = require("os");
 
 async function bootstrap() {
@@ -24,7 +25,7 @@ async function bootstrap() {
 		  saveUninitialized: false,
 	  }),
   );
-    var allowed = ['http://127.0.0.1:3000', 'http://localhost:3000', 'https://127.0.0.1:5000']
+    var allowed = ['http://127.0.0.1:3000', 'http://localhost:3000', 'https://127.0.0.1:5000', get_frontend_host()]
     var corsOptions = {
       origin: (origin, callback) => {
 		  if (!origin) {
