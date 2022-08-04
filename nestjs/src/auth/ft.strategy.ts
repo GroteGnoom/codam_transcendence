@@ -24,57 +24,39 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		private configService: ConfigService,
 	) {
 		var block;
+		var client_id;
+		var client_secret;
 
-		if (process.env.AMILOCAL === "yes") {
-			block = {
-				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
-					client_id    : configService.get('FT_OAUTH_CLIENT_ID'),
-				redirect_uri : callbackURL,
-				response_type: 'code',
-				scope        : 'public',
-				}) }`,
-				tokenURL        : 'https://api.intra.42.fr/oauth/token',
-				scope           : 'public',
-				clientID: configService.get('FT_OAUTH_CLIENT_ID'),
-				clientSecret: configService.get('FT_OAUTH_CLIENT_SECRET'),
-				callbackURL,
-			};
-		} else if (process.env.AMILOCAL === "stef"){
-			block = {
-				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
-					client_id    : configService.get('FT_OAUTH_STEF_ID'),
-				redirect_uri : callbackURL,
-				response_type: 'code',
-				scope        : 'public',
-				}) }`,
-				tokenURL        : 'https://api.intra.42.fr/oauth/token',
-				scope           : 'public',
-				clientID: configService.get('FT_OAUTH_STEF_ID'),
-				clientSecret: configService.get('FT_OAUTH_STEF_SECRET'),
-				callbackURL,
-			}
-		} else { 
-			block = {
-				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
-					client_id    : configService.get('FT_OAUTH_GENERAL_ID'),
-				redirect_uri : callbackURL,
-				response_type: 'code',
-				scope        : 'public',
-				}) }`,
-				tokenURL        : 'https://api.intra.42.fr/oauth/token',
-				scope           : 'public',
-				clientID: configService.get('FT_OAUTH_GENERAL_ID'),
-				clientSecret: configService.get('FT_OAUTH_GENERAL_SECRET'),
-				callbackURL,
-			}
+		if (process.env.SERVER_LOCATION === "local") {
+			client_id = configService.get('FT_OAUTH_CLIENT_ID');
+			client_secret = configService.get('FT_OAUTH_CLIENT_SECRET');
+		} else if (process.env.SERVER_LOCATION === "stef") {
+			client_id = configService.get('FT_OAUTH_STEF_ID');
+			client_secret = configService.get('FT_OAUTH_STEF_SECRET');
+		} else {
+			client_id = configService.get('FT_OAUTH_DANIEL_ID');
+			client_secret = configService.get('FT_OAUTH_DANIEL_SECRET');
 		}
+		block = {
+				authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
+					client_id    : client_id,
+				redirect_uri : callbackURL,
+				response_type: 'code',
+				scope        : 'public',
+				}) }`,
+				tokenURL        : 'https://api.intra.42.fr/oauth/token',
+				scope           : 'public',
+				clientID: client_id,
+				clientSecret: client_secret,
+				callbackURL,
+		};
 		super(block);
 		this.logger.log('FtStrategy constructed\n');
 		this.logger.log('am i local?', process.env.AMILOCAL);
 		this.logger.log('hostname: ', process.env.MYHOSTNAME);
 		this.logger.log('callback url: ', callbackURL);
-		this.logger.log('clientID: ', configService.get('FT_OAUTH_GENERAL_ID'));
-		this.logger.log('clientSecret: ', configService.get('FT_OAUTH_GENERAL_SECRET'));
+		this.logger.log('clientID: ', client_id);
+		this.logger.log('clientSecret: ', client_secret);
 	}
 	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');

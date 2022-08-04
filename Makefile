@@ -1,13 +1,13 @@
 PROJECT = transcendence
 
-ifdef GLOBAL
-ifeq (GLOBAL, stef)
-export AMILOCAL := stef
+ifdef SL
+ifeq ($(SL),stef)
+export SERVER_LOCATION = stef
 else
-export AMILOCAL := no
+export SERVER_LOCATION = daniel
 endif
 else
-export AMILOCAL := yes
+export SERVER_LOCATION = local
 endif
 
 export MYHOSTNAME := $(shell hostname)

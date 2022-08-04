@@ -51,7 +51,7 @@ services:
     networks:
       - transcendence
     environment:
-      - AMILOCAL
+      - SERVER_LOCATION
       - MYHOSTNAME
 
     
