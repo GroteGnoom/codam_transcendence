@@ -24,7 +24,7 @@ export function get_frontend_host() {
 export function getUserFromClient(client: Socket, configService: ConfigService) {
 	const cookie = parse(String(client.handshake.headers.cookie))
 	const name = 'transcendence'
-	const secret = this.configService.get('SESSION_SECRET');
+	const secret = configService.get('SESSION_SECRET');
 	const SID = cookieParser.signedCookie(cookie[name], secret)
 	if (GlobalService.sessionId != SID) {
 		console.log("session id's don't match, disconnecting");
