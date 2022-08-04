@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Alert } from "@mui/material";
 import './Account.css'
 import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-import { userStatus } from '../utils'
+import { get_backend_host, userStatus } from '../utils'
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -31,7 +31,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         console.log("try create user...");
         console.log("current users");
         console.log(this.getUsers());
-        return await fetch("http://127.0.0.1:5000/users/create", {
+        return await fetch(get_backend_host() + "/users/create", {
             method: "POST",
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
@@ -55,8 +55,8 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     }
 
     async getUser() {
-        // return await fetch(`http://127.0.0.1:5000/users/id/${this.state.user.id}`, {
-        return await fetch("http://127.0.0.1:5000/users/id/1", {
+        // return await fetch(get_backend_host() + `/users/id/${this.state.user.id}`, {
+        return await fetch(get_backend_host() + "/users/id/1", {
             method: "GET" })
         .then(async (response) => {
             const json = await response.json();
@@ -70,7 +70,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     }
 
     async changeUsername () {
-        return await fetch("http://127.0.0.1:5000/users/setusername", {
+        return await fetch(get_backend_host() + "/users/setusername", {
             method: "POST",
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
@@ -80,7 +80,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
 	}
 
     async getUsers () {
-        return await fetch("http://127.0.0.1:5000/users", {
+        return await fetch(get_backend_host() + "/users", {
             method: "GET"} )
         .then(async (response) => {
             const json = await response.json();
@@ -101,7 +101,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
     }
 
     async getIntraName () { //TODO: doesnt work yet: 401 error
-        return await fetch("http://127.0.0.1:5000/users/intraname/", { 
+        return await fetch(get_backend_host() + "/users/intraname/", { 
             method: "GET",
             credentials: 'include',
         })
