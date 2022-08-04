@@ -6,9 +6,11 @@ import {
 import { Socket, Server } from 'socket.io';
 import { ChannelsService } from './channels.service';
 import { SocketMessage } from './message.dtos';
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
 import { ConfigService } from '@nestjs/config';
+import { GlobalService } from '../global.service';
 import { forwardRef, Inject } from '@nestjs/common';
-import { getUserFromClient } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
@@ -26,10 +28,18 @@ export class ChannelsGateway {
   @WebSocketServer()
   server: Server;
 
+  
+  private getUserFromClient(client: Socket) {
+    const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+    return GlobalService.users.get(SID as string)
+	}
 
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: Socket, payload: SocketMessage): Promise<void> {
-      const userId = getUserFromClient(client, this.configService)
+      const userId = this.getUserFromClient(client)
       const userIsMuted = await this.channelsService.checkIfMuted(payload.channel, userId)
       if (userIsMuted)
         return;

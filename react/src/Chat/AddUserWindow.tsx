@@ -13,6 +13,7 @@ interface AddUserWindowProps {
     open: boolean;
     handleClose: () => void;
     activeChannel: string;
+    setError: any;
 }
 
 interface AddUserWindowState { 
@@ -51,7 +52,17 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.state.selectedMember}`, { 
             method: 'PUT'
         })
-		.then((response) => response.json())
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
         .then(() => this.props.handleClose())
 	}
 

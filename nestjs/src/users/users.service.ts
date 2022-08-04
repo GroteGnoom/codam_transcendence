@@ -123,4 +123,16 @@ export class UsersService {
     }
     return avatar;
   }
+
+  async blockUser(blocker: number, blocked: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: blocker }
+    });
+    if (user.blockedUsers.includes(blocked)) {
+      return user;
+    }
+    user.blockedUsers.push(blocked);
+    return this.userRepository.save(user); 
+  }
+
 }

@@ -92,6 +92,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
 
     handleClose = () => {
         this.setState( {memberSettingsOpen: false} );
+        this.setState( {adminSettingsOpen: false} );
         this.getSettings();
     };
 
@@ -140,7 +141,13 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             <ListItem key={el.id}> 
                 <ListItemText 
                     primary={`${el.username}`} 
-                    />                
+                    /> 
+                <IconButton onClick={() => {
+                                this.setState( {adminSettingsOpen: true} ); 
+                                this.setState( {activeMember: el} )}
+                                } color="secondary">
+                    <MoreHorizIcon />
+                </IconButton>                   
             </ListItem>
         ))  
         return (
@@ -154,12 +161,11 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
 
         return (
             <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
-                {this.state.owner.name}
+                {this.state.owner.username}
             </Box>
         );
     }
     
-
     render() {
         return (
             <Dialog open={true} fullScreen>  {/*pop window for settings */}
@@ -262,8 +268,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
 export default ChannelSettings
 
 
-
-
+// ---------------------------------------------------------------------------------------
 
 
 interface MemberSettingsProps { 
@@ -286,7 +291,8 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 
     async removeMember() {
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.props.member.id}`, { 
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         })
 		.then( (response) => response.json() )
         .then( () => this.props.handleClose() )
@@ -294,10 +300,18 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 
     async muteMember() {
         return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/mute/${this.props.member.id}`, { 
-            method: 'PUT'
+            method: 'PUT',
+            credentials: 'include'
         })
 		.then( (response) => response.json() )
         .then( () => this.props.handleClose() )
+    }
+
+    async banMember(){
+        return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/ban/${this.props.member.id}`, { 
+            method: 'PUT',
+            credentials: 'include',
+        })
     }
 
     async createAdmin() {
@@ -327,6 +341,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
         const buttons = [
             <Button color="secondary" onClick={() => { this.removeMember() }} key="kick">Kick</Button>,
             <Button color="secondary" onClick={() => { this.muteMember() }} key="mute">Mute</Button>,
+            <Button color="secondary" onClick={() => { this.banMember() }} key="ban">Ban</Button>,
             <Button color="secondary" onClick={() => { this.createAdmin() }} key="make-admin">Promote Admin</Button>,
           ];
         
@@ -350,6 +365,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
 }
 
 
+// ---------------------------------------------------------------------------------------
 
 
 interface AdminSettingsProps { 
@@ -371,7 +387,9 @@ class AdminSettings extends React.Component<AdminSettingsProps, AdminSettingsSta
 
     async demoteAdmin() {
 		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/admin/${this.props.member.id}`, { 
-            method: 'DELETE'})
+            method: 'DELETE',
+            credentials: 'include'
+        })
 		.then( (response) => response.json() )
         .then( () => this.props.handleClose() )
 	}

@@ -5,8 +5,12 @@ import {
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
+import { parse } from 'cookie'
+import * as cookieParser from 'cookie-parser'
+import { GlobalService } from '../global.service';
 import { ConfigService } from '@nestjs/config';
-import { getUserFromClient, get_frontend_host } from 'src/utils';
+import { MatchGateway } from 'src/match/match.gateway';
+import { get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
@@ -29,7 +33,15 @@ export class WaitingRoomGateway {
 
 	handleConnection(client: Socket, @Session() session) {
     console.log("started waitingroom server", session);
-    this.client = getUserFromClient(client, this.configService);
+		const cookie = parse(String(client.handshake.headers.cookie))
+		const name = 'transcendence'
+		const secret = this.configService.get('SESSION_SECRET');
+		const SID = cookieParser.signedCookie(cookie[name], secret)
+		if (GlobalService.sessionId != SID) {
+      console.log("session id's don't match, disconnecting");
+			client.disconnect();
+		}
+    this.client = GlobalService.users.get(SID as string);
 	}
 
   @SubscribeMessage('loggedIn')

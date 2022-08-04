@@ -47,8 +47,9 @@ export class ChannelsController {
     }
 
     @Delete(':name/admin/:id')
-    demoteAdmin(@Param('name') name: string, @Param('id') admin: number) {
-        return this.channelsService.demoteAdmin(name, Number(admin));
+    demoteAdmin(@Param('name') name: string, @Param('id') admin: number, @Req() req: any) {
+        const userID = req.session.userId;
+        return this.channelsService.demoteAdmin(name, Number(admin), userID);
     }
 
     @Get(':name/messages')
@@ -93,6 +94,11 @@ export class ChannelsController {
     async checkIfMuted(@Req() req, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMuted(name, userID);
+    }
+
+    @Put(':name/ban/:id')
+    async banMember(@Param('name') name: string, @Param('id') member: number) {
+        return this.channelsService.banMemberFromChannel(name, Number(member));
     }
 
     @Post('dm/:id')
