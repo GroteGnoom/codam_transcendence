@@ -1,4 +1,6 @@
 PROJECT = transcendence
+export AMILOCAL := yes
+export MYHOSTNAME := $(shell hostname)
 
 all:
 	docker-compose up --build -d

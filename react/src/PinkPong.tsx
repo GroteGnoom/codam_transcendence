@@ -31,6 +31,9 @@ export default function PinkPong() {
 	let paddleSizeMultiplierP1: number = 1;
     let paddleSizeMultiplierP2: number = 1;
 
+	let namePlayer1: string = "naamspeler1"; //get the intraname from the id
+	let namePlayer2: string = "naamspeler2";
+
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
 	
@@ -233,9 +236,9 @@ export default function PinkPong() {
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//Show winner
 		if (winner === 1)
-			drawText("Player 1 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
+			drawText(namePlayer1 + " has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		else
-			drawText("Player 2 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
+			drawText(namePlayer2 + " has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		//Show score
 		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600 * (fieldWidth / 1500), getFieldY() + 600 * (fieldHeight / 1000), textSize.toString() + 'px serif');
 	}

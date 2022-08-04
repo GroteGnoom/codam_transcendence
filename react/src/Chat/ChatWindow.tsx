@@ -1,10 +1,11 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
+import { Container, Divider, FormControl, Grid, IconButton, Link, List, ListItem, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
+import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
@@ -39,18 +40,18 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async getMessages(){
-        return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}/messages`, { 
+        return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/messages`, { 
             method: 'GET',
             credentials: 'include',
         })
 		.then((response) => response.json())
         .then((response) => {
-            this.setState({ messages: response });           
+            this.setState({ messages: response }); 
         })
     }
 
     async checkIfMuted() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.channel.name}/is-muted`, { 
+		return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/is-muted`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -59,7 +60,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 	}
 
     async getBlockedUsers(){
-        return await fetch(`http://127.0.0.1:5000/users/id`, { 
+        return await fetch(get_backend_host() + `/users/id`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -88,7 +89,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     openWebsocket() {
         if (!this.webSocket) {
             console.log('Opening WebSocket');
-            this.webSocket = io('http://127.0.0.1:5000', {withCredentials: true});
+            this.webSocket = io(`http://${get_backend_host()}:5000`, {withCredentials: true});
             this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
             this.webSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
             this.webSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
@@ -114,7 +115,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             !prevProps.channel ||
             !this.props.channel ||
             prevProps.channel.name !== this.props.channel.name) {
-            console.log("Changing channel, getting new messages")
             this.getMessages()
         }
     }
@@ -153,7 +153,9 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            {`${msg.sender.username}`}
+                            <Link href={`http://localhost:3000/userinfo/${msg.sender.id}`} underline="hover">
+                                {`${msg.sender.username}`}
+                            </Link>
                         </Typography>
                         <Typography variant="h6">
                             {`${msg.text} `}

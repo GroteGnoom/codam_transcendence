@@ -50,6 +50,9 @@ services:
     restart: on-failure
     networks:
       - transcendence
+    environment:
+      - AMILOCAL
+      - MYHOSTNAME
 
     
 networks: 

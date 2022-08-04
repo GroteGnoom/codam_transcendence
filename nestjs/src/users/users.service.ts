@@ -1,17 +1,15 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraint
 } from 'class-validator';
-import {User} from 'src/typeorm';
-import {UserDto} from 'src/users/users.dtos';
-import {Repository} from 'typeorm';
+import { User } from 'src/typeorm';
+import { UserDto } from 'src/users/users.dtos';
+import { Repository } from 'typeorm';
 
-import {userStatus} from '../typeorm/user.entity'
+import { userStatus } from '../typeorm/user.entity';
 
-import {DatabaseFilesService} from './databaseFiles.service';
+import { DatabaseFilesService } from './databaseFiles.service';
 
 @ValidatorConstraint({name : 'UserExists', async : true})
 @Injectable()
@@ -70,7 +68,7 @@ export class UsersService {
   }
 
   signUpUser(userId: number, username: string) {
-    return this.userRepository.update(userId, {username : username});
+    return this.userRepository.update(userId, {username : username, isSignedUp : true});
   }
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {

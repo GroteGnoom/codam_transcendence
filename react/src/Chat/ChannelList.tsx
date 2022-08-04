@@ -14,6 +14,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import React from 'react';
+import { get_backend_host } from '../utils';
 import { Channel } from './Chat.types';
 
 
@@ -61,7 +62,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     // Backend calls
     async getChannels() {
-		return await fetch("http://127.0.0.1:5000/channels", { 
+		return await fetch(get_backend_host() + "/channels", { 
             method: 'GET',
             credentials: 'include',
         })
@@ -72,7 +73,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 	}
 
     async newchannel() {
-		return await fetch("http://127.0.0.1:5000/channels", { 
+		return await fetch(get_backend_host() + "/channels", { 
             method: 'POST',
             credentials: 'include',
             headers: {'Content-Type':'application/json'},
@@ -98,7 +99,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 	}
 
     async isMember(channelname: string) {
-		return await fetch(`http://127.0.0.1:5000/channels/${channelname}/is-member`, { 
+		return await fetch(get_backend_host() + `/channels/${channelname}/is-member`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -106,7 +107,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 	}
 
     async joinChannel() {
-        return await fetch(`http://127.0.0.1:5000/channels/${this.state.channelToJoin.name}/join`, { 
+        return await fetch(get_backend_host() + `/channels/${this.state.channelToJoin.name}/join`, { 
             method: 'PUT',
             credentials: 'include',
             headers: {'Content-Type':'application/json'},
@@ -190,7 +191,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         return (
         <div>
             <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
-            <Typography variant="h5" component="div" align="center">
+            <Typography variant="h5" component="div" align="center" color="secondary">
                 Channels
             </Typography>
             {this.renderChannels()}
@@ -208,7 +209,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         label="Channel name"
                         type="text"
                         fullWidth
-                        variant="standard"/>
+                        variant="standard"
+                        color="primary"/>
                     <RadioGroup
                         row
                         value={this.state.newChannelType}

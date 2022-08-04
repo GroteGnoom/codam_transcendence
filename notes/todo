@@ -14,11 +14,12 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [ ] better unique username checker; custom validator
 [V] add icon for custom avatar upload
 [V] save custom avatar in db
+[V] fix issignedup
 [ ] validation checks: image + username
 [ ] when signed up, redirect to homepage and show buttons
 [ ] make account page
 [ ] make account page other users
-[ ] fix issignedup
+[ ] rvan: 2fa didn't work first sign up? error is send but 2fa code was found correct
 
 flow:
 user authentication -> set username page -> create user
