@@ -9,10 +9,11 @@ import { SocketMessage } from './message.dtos';
 import { ConfigService } from '@nestjs/config';
 import { forwardRef, Inject } from '@nestjs/common';
 import { getUserFromClient } from 'src/utils';
+import { get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://127.0.0.1:3000',
+    origin: get_frontend_host(),
     credentials: true
   },
 })

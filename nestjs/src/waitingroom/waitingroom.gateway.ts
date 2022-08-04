@@ -21,7 +21,7 @@ private readonly configService: ConfigService
 
 logins: number = 0;
 Player1: number;
-Player2: number;  
+Player2: number;
 client: number;
 
 @WebSocketServer()
@@ -40,7 +40,7 @@ async handleSendMessage(client: Socket, payload: any): Promise<void> {
 checkWaitingRoom() {
   this.logins = this.logins + 1;
   console.log(this.logins);
-  if (this.logins === 2) {
+  if (this.logins === 2 && this.client != this.Player1) {
       this.logins = 0;
       this.Player2 = this.client;
       console.log("2 players");

@@ -150,7 +150,6 @@ export function Signup() {
                 "username": username,
                 "intraName": intraName,
                 "status": status,
-                "isSignedUp": true,
             })
         })
         .then(async (response) => {

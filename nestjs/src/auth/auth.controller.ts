@@ -46,7 +46,6 @@ export class AuthController
 		req.session.logged_in = true;
 		req.session.userId = userID;
 		console.log("session id in authcontroller:", req.session.id);
-		GlobalService.sessionId = req.session.id;
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
 	}
@@ -56,6 +55,12 @@ export class AuthController
 	getProfile(@Req() req) {
 		console.log(req.user);
 		return req.user;
+	}
+
+	@Get('logout')
+	logout(@Req() req) {
+		console.log('logging out');
+		req.session.destroy();
 	}
 
 	@Get('amiloggedin')

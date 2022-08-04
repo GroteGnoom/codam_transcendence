@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import React from 'react';
+import { get_backend_host } from "../utils";
 
 interface AddUserWindowProps { 
     open: boolean;
@@ -33,7 +34,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     async getUsers(){
-        fetch(`http://127.0.0.1:5000/users`, { method: 'GET'})
+        fetch(get_backend_host() + `/users`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ users: response });            
@@ -41,7 +42,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     async getCurrentMembers(){
-        fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}`, { method: 'GET'})
+        fetch(get_backend_host() + `/channels/${this.props.activeChannel}`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ currentMembers: response.members.map((user: any) => user.id) });            
@@ -49,7 +50,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     async addMember() {
-		return await fetch(`http://127.0.0.1:5000/channels/${this.props.activeChannel}/member/${this.state.selectedMember}`, { 
+		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/member/${this.state.selectedMember}`, { 
             method: 'PUT'
         })
         .then(async (response) => {
