@@ -1,30 +1,21 @@
 import {
   Body,
   Controller,
-  Get,
-  Header,
-  Logger,
-  Param,
-  ParseIntPipe,
-  Post,
+  Get, Logger,
+  Param, Post,
   Put,
-  Req,
-  Res,
-  Response,
+  Req, Response,
   StreamableFile,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
+  UploadedFile, UseInterceptors,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
-import {FileInterceptor} from '@nestjs/platform-express';
-import {ReservedOrUserEventNames} from 'socket.io/dist/typed-events';
-import {UserDto} from 'src/users/users.dtos';
-import {UsersService} from 'src/users/users.service';
-import {Readable} from 'stream';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserDto } from 'src/users/users.dtos';
+import { UsersService } from 'src/users/users.service';
+import { Readable } from 'stream';
 
-import {DatabaseFilesService} from './databaseFiles.service';
+import { DatabaseFilesService } from './databaseFiles.service';
 
 @Controller('users')
 export class UsersController {
@@ -95,5 +86,20 @@ export class UsersController {
       'Content-Disposition' : `inline;// filename="${file.filename}"`,
     });
     return new StreamableFile(stream);
+  }
+
+
+  // Endpoint needed for chat
+
+  @Get('id/:id')
+  findUser(@Param('id') id: number) {                 //need this endpoint to get owner name of a channel
+    return this.userService.findUsersById(Number(id));
+  }
+
+  @Put('block/:id')
+  blockUser(@Param('id') blocked: number, @Req() req: any) {
+    const blocker = req.session.userId;  
+    console.log("Blocking", blocker, blocked)             
+    return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 }

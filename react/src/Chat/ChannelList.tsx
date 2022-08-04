@@ -19,7 +19,7 @@ import { Channel } from './Chat.types';
 
 interface ChannelListProps { 
     openChat: any;
-    activeChannel?: string;
+    activeChannel?: Channel;
     setError: (err: string) => void;
 }
 
@@ -97,8 +97,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         })
 	}
 
-    async isMember(channel: string) {
-		return await fetch(`http://127.0.0.1:5000/channels/${channel}/is-member`, { 
+    async isMember(channelname: string) {
+		return await fetch(`http://127.0.0.1:5000/channels/${channelname}/is-member`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -125,7 +125,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         .then( () => this.getChannels() )
         .then( () => {
             this.setState( {openJoinWindow: false} ) 
-            this.props.openChat(this.state.channelToJoin.name)
+            this.props.openChat(this.state.channelToJoin)
         })
         .catch((err: Error) => {
             this.props.setError(err.message)
@@ -134,14 +134,13 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     }
 
     //Helpers
-    async tryToOpenChat(channel: string) {
-        this.props.openChat(undefined);
-        const member = await this.isMember(channel);
+    async tryToOpenChat(channel: Channel) {
+        const member = await this.isMember(channel.name);
         console.log("Is member?", member)
         if (member) {
             this.props.openChat(channel);
         } else {
-            const channelToJoin = this.state.channels.find((el) => el.name === channel)
+            const channelToJoin = this.state.channels.find((el) => el.name === channel.name)
             this.setState({channelToJoin: channelToJoin})
             this.setState({openJoinWindow: true})
         }
@@ -160,9 +159,9 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     renderChannels = () => {
         const channel = this.state.channels.map((el) => (
             <ListItem sx={ { height: 40 } } key={el.name}> 
-                <ListItemButton selected={el.name===this.props.activeChannel} 
+                <ListItemButton selected={this.props.activeChannel && el.name===this.props.activeChannel.name} 
                     //</ListItem>onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
-                    onClick={() => this.tryToOpenChat(el.name) }> {/* sets active channel */}
+                    onClick={() => this.tryToOpenChat(el) }> {/* sets active channel */}
                     <ListItemText primary={el.name} />
                 </ListItemButton>    
             </ListItem>

@@ -4,11 +4,9 @@ import {
     WebSocketServer
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { parse } from 'cookie'
-import * as cookieParser from 'cookie-parser'
 import { ConfigService } from '@nestjs/config';
-import { GlobalService } from '../global.service';
 import { get_frontend_host } from 'src/utils';
+import { getUserFromClient } from 'src/utils';
 
 @WebSocketGateway({
   cors: {
@@ -66,14 +64,6 @@ export class MatchGateway {
   noSizeDownP1: number = 0;
   noSizeDownP2: number = 0;
 
-  private getUserFromClient(client: Socket) {
-    const cookie = parse(String(client.handshake.headers.cookie))
-		const name = 'transcendence'
-		const secret = this.configService.get('SESSION_SECRET');
-		const SID = cookieParser.signedCookie(cookie[name], secret)
-    return GlobalService.users.get(SID as string)
-	}
-
   @SubscribeMessage('startGame')
   async handleStartGame(client: Socket, payload: any): Promise<void> {
     console.log(client.id);
@@ -86,7 +76,7 @@ export class MatchGateway {
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       console.log("Key pressed")
-      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, this.getUserFromClient(client));
+      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, getUserFromClient(client, this.configService));
   }
 
   setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean, client: number) {

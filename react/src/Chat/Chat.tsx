@@ -4,9 +4,10 @@ import { useState } from 'react';
 import ChannelList from './ChannelList';
 import ChannelSettings from './ChannelSettings';
 import ChatWindow from './ChatWindow';
+import DirectMessage from "./DirectMesssages";
 
 const Chat = () => {
-    const [activeChannel, setActiveChannel] = useState("");// return prop and setter
+    const [activeChannel, setActiveChannel] = useState(undefined);// return prop and setter
 	const [settingsOpen, openSettings] = useState(false);
 	const [error, setError] = useState("");
 
@@ -25,10 +26,13 @@ const Chat = () => {
 	return (
 		<main>
 			<Stack direction="row">
-				<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
-            	{activeChannel && <ChatWindow channel={activeChannel} openSettings={openSettings} />}
-				{settingsOpen && <ChannelSettings channel={activeChannel} openSettings={openSettings} setError={setError} />}
-				{errorPopup}
+				<Stack direction="column">
+					<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+					< DirectMessage openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+					</Stack>
+					{activeChannel && <ChatWindow channel={activeChannel} openSettings={openSettings} />}
+					{settingsOpen && activeChannel && <ChannelSettings channel={activeChannel} openSettings={openSettings} setError={setError} />}
+					{errorPopup}
 			</Stack>
 		</main>
 	)

@@ -13,9 +13,13 @@ export class ChannelsController {
     }
 
     @Get(':name')
-    getChannel(@Param('name') name: string) {      
-        console.log("retrieving channel", name);  
+    getChannel(@Param('name') name: string) {       
         return this.channelsService.getChannelByName(name);
+    }
+
+    @Get('chats/direct-messages')
+    getChats() { 
+        return this.channelsService.getChats();
     }
 
     @Post()
@@ -92,8 +96,8 @@ export class ChannelsController {
     }
 
     @Post('dm/:id')
-    async directMessage(@Req() req, @Param('id') other: number) {
+    async createDirectMessage(@Req() req, @Param('id') other: number) {
         const userID = req.session.userId;
-        return this.channelsService.directMessage(userID, other);
+        return this.channelsService.createDirectMessage(userID, other);
     }
 }

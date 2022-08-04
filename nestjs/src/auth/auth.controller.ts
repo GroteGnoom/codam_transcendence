@@ -12,6 +12,7 @@ import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { SessionGuard } from './session.guard';
 import { UsersService } from '../users/users.service';
 import { GlobalService } from '../global.service';
 import { get_frontend_host } from 'src/utils';
@@ -50,11 +51,17 @@ export class AuthController
 		return {url: get_frontend_host() + '/signup'};
 	}
 
-	@UseGuards(JwtAuthGuard) // guards checks for jwt
+	@UseGuards(SessionGuard)
 	@Get('profile')
 	getProfile(@Req() req) {
 		console.log(req.user);
 		return req.user;
+	}
+
+	@Get('logout')
+	logout(@Req() req) {
+		console.log('logging out');
+		req.session.destroy();
 	}
 
 	@Get('amiloggedin')
@@ -64,6 +71,7 @@ export class AuthController
 			return true;
 		return false;
 	}
+	@UseGuards(SessionGuard)
 	@Get('is_tfa_enabled')
 	async isTfaEnabled(@Req() request: Request) {
 		const user = await this.userService.findUsersById(request.session.userId);
@@ -73,6 +81,7 @@ export class AuthController
 		return false;
 	}
 
+	@UseGuards(SessionGuard)
 	@Get('user_id')
 	getUserId(@Req() request: Request) {
 		this.logger.log("getting user name", request.session.userId);
@@ -81,6 +90,7 @@ export class AuthController
 		return "";
 	}
 
+	@UseGuards(SessionGuard)
 	@Get('intra_name')
 	async getUserName(@Req() request: Request) {
 		const user = await this.userService.findUsersById(request.session.userId);
