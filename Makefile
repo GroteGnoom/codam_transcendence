@@ -1,5 +1,11 @@
 PROJECT = transcendence
+
+ifdef GLOBAL
+export AMILOCAL := no
+else
 export AMILOCAL := yes
+endif
+
 export MYHOSTNAME := $(shell hostname)
 
 all:

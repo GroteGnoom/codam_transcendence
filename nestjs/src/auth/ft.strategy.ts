@@ -51,6 +51,9 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		this.logger.log('FtStrategy constructed\n');
 		this.logger.log('am i local?', process.env.AMILOCAL);
 		this.logger.log('hostname: ', process.env.MYHOSTNAME);
+		this.logger.log('callback url: ', callbackURL);
+		this.logger.log('clientID: ', configService.get('FT_OAUTH_GENERAL_ID'));
+		this.logger.log('clientSecret: ', configService.get('FT_OAUTH_GENERAL_SECRET'));
 	}
 	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');
