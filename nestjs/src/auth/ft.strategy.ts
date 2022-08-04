@@ -10,9 +10,9 @@ import { stringify } from 'querystring';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 const util = require('node:util');
+import { get_backend_host } from 'src/utils';
 // change these to be your ft client ID and secret
-const callbackURL = 'http://127.0.0.1:5000/auth/ft';
-const callbackURL2 = 'http://' + process.env.MYHOSTNAME + ':5000/auth/ft';
+const callbackURL = get_backend_host() + '/auth/ft';
 
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, 'ft')
@@ -38,7 +38,7 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		} : {
 			authorizationURL: `https://api.intra.42.fr/oauth/authorize?${ stringify({
 				client_id    : configService.get('FT_OAUTH_GENERAL_ID'),
-				redirect_uri : callbackURL2,
+				redirect_uri : callbackURL,
 				response_type: 'code',
 				scope        : 'public',
 			}) }`,
