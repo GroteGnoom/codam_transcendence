@@ -29,7 +29,7 @@ export class ChannelsGateway {
 
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: Socket, payload: SocketMessage): Promise<void> {
-      const userId = getUserFromClient(client)
+      const userId = getUserFromClient(client, this.configService)
       const userIsMuted = await this.channelsService.checkIfMuted(payload.channel, userId)
       if (userIsMuted)
         return;

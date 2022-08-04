@@ -29,7 +29,7 @@ export class WaitingRoomGateway {
 
 	handleConnection(client: Socket, @Session() session) {
     console.log("started waitingroom server", session);
-    this.client = getUserFromClient(client);
+    this.client = getUserFromClient(client, this.configService);
 	}
 
   @SubscribeMessage('loggedIn')

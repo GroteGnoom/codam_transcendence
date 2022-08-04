@@ -2,6 +2,7 @@ import { GlobalService } from './global.service';
 import * as cookieParser from 'cookie-parser';
 import { parse } from 'cookie';
 import { Socket } from 'socket.io';
+import { ConfigService } from '@nestjs/config';
 
 const { exec } = require('child_process');
 
@@ -20,7 +21,7 @@ export function get_frontend_host() {
 	return ('http://' + hostName + ":3000");
 }
 
-export function getUserFromClient(client: Socket) {
+export function getUserFromClient(client: Socket, configService: ConfigService) {
 	const cookie = parse(String(client.handshake.headers.cookie))
 	const name = 'transcendence'
 	const secret = this.configService.get('SESSION_SECRET');

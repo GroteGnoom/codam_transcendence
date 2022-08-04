@@ -76,7 +76,7 @@ export class MatchGateway {
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       console.log("Key pressed")
-      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, getUserFromClient(client));
+      this.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, payload.reset, getUserFromClient(client, this.configService));
   }
 
   setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean, client: number) {
