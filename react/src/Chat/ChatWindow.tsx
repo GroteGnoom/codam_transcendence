@@ -1,7 +1,7 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
+import { Container, Divider, FormControl, Grid, IconButton, Link, List, ListItem, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
@@ -45,7 +45,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         })
 		.then((response) => response.json())
         .then((response) => {
-            this.setState({ messages: response });           
+            this.setState({ messages: response }); 
         })
     }
 
@@ -114,7 +114,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             !prevProps.channel ||
             !this.props.channel ||
             prevProps.channel.name !== this.props.channel.name) {
-            console.log("Changing channel, getting new messages")
             this.getMessages()
         }
     }
@@ -153,7 +152,9 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            {`${msg.sender.username}`}
+                            <Link href={`http://localhost:3000/userinfo/${msg.sender.id}`} underline="hover">
+                                {`${msg.sender.username}`}
+                            </Link>
                         </Typography>
                         <Typography variant="h6">
                             {`${msg.text} `}

@@ -294,7 +294,17 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
             method: 'DELETE',
             credentials: 'include'
         })
-		.then( (response) => response.json() )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
         .then( () => this.props.handleClose() )
 	}
 
@@ -303,7 +313,17 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
             method: 'PUT',
             credentials: 'include'
         })
-		.then( (response) => response.json() )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
         .then( () => this.props.handleClose() )
     }
 
@@ -312,6 +332,18 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
             method: 'PUT',
             credentials: 'include',
         })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
+        .then( () => this.props.handleClose() )
     }
 
     async createAdmin() {
@@ -390,7 +422,17 @@ class AdminSettings extends React.Component<AdminSettingsProps, AdminSettingsSta
             method: 'DELETE',
             credentials: 'include'
         })
-		.then( (response) => response.json() )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
         .then( () => this.props.handleClose() )
 	}
 

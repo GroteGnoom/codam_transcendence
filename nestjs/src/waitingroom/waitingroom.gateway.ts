@@ -21,7 +21,7 @@ private readonly configService: ConfigService
 
 logins: number = 0;
 Player1: number;
-Player2: number;
+Player2: number;  
 client: number;
 
 @WebSocketServer()

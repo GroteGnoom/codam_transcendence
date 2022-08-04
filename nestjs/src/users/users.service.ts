@@ -1,17 +1,15 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface
+  ValidatorConstraint
 } from 'class-validator';
-import {User} from 'src/typeorm';
-import {UserDto} from 'src/users/users.dtos';
-import {Repository} from 'typeorm';
+import { User } from 'src/typeorm';
+import { UserDto } from 'src/users/users.dtos';
+import { Repository } from 'typeorm';
 
-import {userStatus} from '../typeorm/user.entity'
+import { userStatus } from '../typeorm/user.entity';
 
-import {DatabaseFilesService} from './databaseFiles.service';
+import { DatabaseFilesService } from './databaseFiles.service';
 
 @ValidatorConstraint({name : 'UserExists', async : true})
 @Injectable()

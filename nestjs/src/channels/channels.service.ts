@@ -157,13 +157,13 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, members: members});
     }
 
-    async removeMemberFromChannel(channelName: string, id: number) {
+    async removeMemberFromChannel(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
-            relations: ['members']
+            relations: ['members', 'admins']
         });
-        if (!channel) {
-            return undefined;
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');  
         }
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from members');
@@ -172,11 +172,14 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, members: members}); 
     }
 
-    async muteMemberInChannel(channelName: string, id: number) {
+    async muteMemberInChannel(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
-            relations: ['members']
+            relations: ['members', 'admins']
         });
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');
+        }
         channel.members.forEach((member) => {
             if (member.user.id == id) {
                 member.isMuted = true;
@@ -205,11 +208,16 @@ export class ChannelsService {
         })
       }
 
-      async banMemberFromChannel(channelName: string, id: number) {
-        this.removeMemberFromChannel(channelName, id);
+    async banMemberFromChannel(channelName: string, id: number, requester: number) {
+        this.removeMemberFromChannel(channelName, id, requester);
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
+            relations: ['admins']
         });
+
+        if (!channel.admins.map((user) => user.id).includes(requester)) {   //////////
+            throw new UnauthorizedException('You are not authorized');  
+        }
         channel.bannedUsers.push(Number(id));
         return this.channelRepository.save(channel); 
     }

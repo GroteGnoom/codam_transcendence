@@ -190,7 +190,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         return (
         <div>
             <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
-            <Typography variant="h5" component="div" align="center">
+            <Typography variant="h5" component="div" align="center" color="secondary">
                 Channels
             </Typography>
             {this.renderChannels()}
@@ -208,7 +208,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         label="Channel name"
                         type="text"
                         fullWidth
-                        variant="standard"/>
+                        variant="standard"
+                        color="primary"/>
                     <RadioGroup
                         row
                         value={this.state.newChannelType}
