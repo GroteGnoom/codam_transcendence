@@ -55,11 +55,14 @@ export class UsersService {
     return (await this.userRepository.findOneBy({id : id})).avatarId;
   }
 
-  setUsername(username: string) {
-    // return this.userRepository.save(username);
+  setUsername(userId: number, username: string) {
+    return this.userRepository.update(userId, {username : username});
   }
 
-  findUsersById(id: number) { return this.userRepository.findOneBy({id : id}); }
+  findUsersById(id: number) {
+    this.logger.log("userId: " + id);
+    return this.userRepository.findOneBy({id : id});
+  }
 
   findUsersByName(username: string) {
     return this.userRepository.findOneBy({username : username});

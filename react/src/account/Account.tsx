@@ -100,8 +100,8 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
         }
     }
 
-    async getIntraName () { //TODO: doesnt work yet: 401 error
-        return await fetch("http://127.0.0.1:5000/users/intraname/", { 
+    async getIntraName () {
+        return await fetch("http://127.0.0.1:5000/users/user/", { 
             method: "GET",
             credentials: 'include',
         })

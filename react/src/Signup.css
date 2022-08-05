@@ -22,6 +22,10 @@ body {
     margin: 5px;
 }
 
+.spinner {
+    align-items: center;
+}
+
 .menu >*{
     width: 200;
     margin: 5px;

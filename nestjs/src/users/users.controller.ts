@@ -29,15 +29,14 @@ export class UsersController {
     return this.userService.getUsers();
   }
 
-  @Get('id')
+  @Get('user')
   findUsersById(@Req() req: any) {
-    const userId = req.session.userId;
-    return this.userService.findUsersById(userId);
+    return this.userService.findUsersById(req.session.userId);
   }
 
   @Post('create')
   @UsePipes(ValidationPipe)
-  createUsers(@Body() body: UserDto) {
+  createUser(@Body() body: UserDto) {
     this.logger.log('Creating user...')
     return this.userService.createUser(body);
   }
@@ -45,22 +44,14 @@ export class UsersController {
   @Put('signupuser')
   @UsePipes(ValidationPipe)
   signUpUser(@Req() req: any, @Body() body: UserDto) {
-    const userId = req.session.userId;
-    return this.userService.signUpUser(userId, body.username);
+    return this.userService.signUpUser(req.session.userId, body.username);
   }
 
   @Post('setusername')
   @UsePipes(ValidationPipe)
-  setUsername(username: string) {
+  setUsername(@Req() req: any, username: string) {
     this.logger.log("setUsername called");
-    return this.userService.setUsername(username);
-  }
-
-  @Get('intraname')
-  getIntraname(@Req() req: any) {
-    const userId = req.session.userId;
-    this.logger.log("userId: " + userId);
-    return this.userService.findUsersById(userId);
+    return this.userService.setUsername(req.session.userId, username);
   }
 
   @Post('avatar')

@@ -21,7 +21,8 @@ import { get_backend_host, userStatus } from './utils';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-
+import {useNavigate} from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -42,11 +43,12 @@ export function Signup() {
     const url = get_backend_host() + "/auth/ft";
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
+    const navigate = useNavigate();
 
     //backend calls
-    async function getUserInfoDatabase () { // TODO: unexpected end of JSON input
+    async function getUserInfoDatabase () {
         getLoggedIn();
-        return await fetch(get_backend_host() + "/users/intraname/", { 
+        return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
         })
@@ -104,7 +106,7 @@ export function Signup() {
         .catch((err: Error) => setError(err.message))
     }
 
-    async function checkTfaCode() {
+    async function checkTfaCode () {
         const data = new URLSearchParams();
         data.append("twoFactorAuthenticationCode", tfaCode);
         console.log('going to post ', tfaCode);
@@ -130,7 +132,7 @@ export function Signup() {
         });
     }
 
-    async function signUpUser() {
+    async function signUpUser () {
         getLoggedIn();
         console.log("try save user...");
         console.log("current users");
@@ -162,7 +164,8 @@ export function Signup() {
         })
         .then((response) => {
             getUsers();
-            setEvent("User created successfully")
+            setIsSignedUp(response.isSignedUp);
+            setEvent("User created successfully");
         })
         .catch((err: Error) => setError(err.message))
     }
@@ -204,7 +207,7 @@ export function Signup() {
     }
 
     function keyRelease(e: any) {
-        if(e.key === 'Enter'){
+        if (e.key === 'Enter'){
             signUpUser();
         }
     }
@@ -213,6 +216,83 @@ export function Signup() {
         getLoggedIn();
         setChecked(event.target.checked);
     };
+
+    function showSignup() {
+        return (
+            <div className="menu">
+                <Badge className="item"
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={
+                        // Avatar to make the Icon circular
+                        <Avatar
+                            style={{
+                                // border: '2px solid #fcc6ff', // not needed with avatar
+                                backgroundColor: '#fcc6ff'
+                            }}>
+                                <Button
+                                    component="label"
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={(e) => saveAvatar(e)}                                              
+                                    />
+                                    <ChangeCircleIcon
+                                        fontSize='large'
+                                        onClick={() => getLoggedIn()}
+                                    />
+                                </Button>
+                        </Avatar>
+                    }
+                    >
+                    <Avatar className="item"
+                        alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
+                        src={`${avatar.imgSrc}?${avatar.imgHash}`}
+                        sx={{ width: 200, height: 200 }}
+                    />
+                </Badge>
+                <TextField className="item"
+                    disabled value={intraName || ''} id="filled-basic" label="Intraname" variant="filled" />
+                <TextField className="item"
+                    value={username || ''}
+                    helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
+                    onKeyUp={(e) => keyRelease(e)}
+                    onChange={(e) => setUsername(e.target.value)} />
+                <FormGroup className="item">
+                    <FormControlLabel control={<Checkbox
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />} label="Enable 2-factor authentication" />
+                </FormGroup>
+                {/* show the following only when 2fa is enabled */}
+                {checked && <p className="item">
+                        Google Authenticator QR
+                    </p>}
+                {checked && <img
+                    className="item"
+                    src={url2fa}
+                    alt={""}
+                    />}
+                {checked && 
+                    <TextField className="item"
+                    helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
+                    onChange={(e) => setTfaCode(e.target.value)}/>}
+                    {/* TODO: max_length text field */}
+                <Button className="item"
+                    variant="contained"
+                    startIcon={<PersonOutlineSharpIcon />}
+                    onClick={() => signUpUser()}
+                > SIGN UP </Button>
+            </div>
+        )
+    }
+
+    const sleep = (milliseconds : any) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
 
     // effect hooks
     // combination of componentDidMount and componentDidUpdate
@@ -224,91 +304,40 @@ export function Signup() {
 
     useEffect(() => {
         if ( isLoggedIn ) {
-            getUserInfoDatabase();
+            getLoggedIn();
         }
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
     useEffect(() => {
-        getLoggedIn();
+        if ( isLoggedIn && isSignedUp ) {
+            navigate('/');
+        }
+    }, [isSignedUp]); // will only be called when isSignedUp changes
+
+    useEffect(() => {
+        async function fetchData() { // sleep before fetching the data to show spinner
+            await sleep(500);
+            getUserInfoDatabase();
+        }
+        fetchData();
     }, []); // will only be called on initial mount and unmount
 
 
     return ( // holds the HTML code
-    <ThemeProvider theme={pinkTheme}>
-                { isLoggedIn ? ( // only show this when logged in
-                    <div className="menu">
-                        <Badge className="item"
-                            overlap="circular"
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                            badgeContent={
-                                // Avatar to make the Icon circular
-                                <Avatar
-                                    style={{
-                                        // border: '2px solid #fcc6ff', // not needed with avatar
-                                        backgroundColor: '#fcc6ff'
-                                    }}>
-                                        <Button
-                                            component="label"
-                                        >
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                hidden
-                                                onChange={(e) => saveAvatar(e)}                                              
-                                            />
-                                            <ChangeCircleIcon
-                                                fontSize='large'
-                                                onClick={() => getLoggedIn()}
-                                            />
-                                        </Button>
-                                </Avatar>
-                            }
-                            >
-                            <Avatar className="item"
-                                alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
-                                src={`${avatar.imgSrc}?${avatar.imgHash}`}
-                                sx={{ width: 200, height: 200 }}
-                            />
-                        </Badge>
-                        <TextField className="item"
-                            disabled value={intraName || ''} id="filled-basic" label="Intraname" variant="filled" />
-                        <TextField className="item"
-                            value={username || ''}
-                            helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
-                            onKeyUp={(e) => keyRelease(e)}
-                            onChange={(e) => setUsername(e.target.value)} />
-                        <FormGroup className="item">
-                            <FormControlLabel control={<Checkbox
-                                checked={checked}
-                                onChange={handleChange}
-                                inputProps={{ 'aria-label': 'controlled' }}
-                            />} label="Enable 2-factor authentication" />
-                        </FormGroup>
-                        {/* show the following only when 2fa is enabled */}
-                        {checked && <p className="item">
-                                Google Authenticator QR
-                            </p>}
-                        {checked && <img
-                            className="item"
-                            src={url2fa}
-                            />}
-                        {checked && 
-                            <TextField className="item"
-                            helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
-                            onChange={(e) => setTfaCode(e.target.value)}/>}
-                            {/* TODO: max_length text field */}
-                        <Button className="item"
-                            variant="contained"
-                            startIcon={<PersonOutlineSharpIcon />}
-                            onClick={() => signUpUser()}
-                        > SIGN UP </Button>
-                    </div>
-                ) : ( // if not logged in, show login button
-                    <div className="menu">
-                        {/* TODO get backend server */}
-                        <a href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
-                    </div>
-                )}
+        <ThemeProvider theme={pinkTheme}>
+            { intraName === "" ? // before fetchin the data, show spinner
+                ( <div className="menu"> <CircularProgress/> </div> )
+            : isLoggedIn ? ( // only show this when logged in
+                <div>
+                    {!isSignedUp && showSignup()}
+                    {/* <Button variant="contained" onClick={() => redir()}>please go backkkk</Button> */}
+                </div>
+            ) : ( // if not logged in, show login button
+                <div className="menu">
+                    {/* TODO get backend server */}
+                    <a href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
+                </div>
+            )}
 
             <Snackbar open={event !== ""} autoHideDuration={3000} onClose={() => setEvent("")}>
                 <Alert onClose={() => setEvent("")} severity="success" sx={{ width: '100%' }}>

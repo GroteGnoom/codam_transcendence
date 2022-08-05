@@ -25,12 +25,16 @@
 }
 
 .App-header .button {
-	width: 175px;
+	width: 250px;
 	margin: 5px;
 }
 
+.App-header .disabledLink {
+	pointer-events: none;
+}
+
 .App-link {
-  color: #61dafb;
+  color: #ff33cc;
 }
 
 @keyframes App-logo-spin {
