@@ -31,6 +31,7 @@ const WaitingRoom = () => {
     webSocket.current.on("found2Players", startGame ) // subscribe on backend events
 
     return () => {
+        webSocket.current.emit("playerLeft", {});
         console.log('Closing WebSocket');
         webSocket.current.close();
     }

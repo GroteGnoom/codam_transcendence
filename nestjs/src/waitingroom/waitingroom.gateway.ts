@@ -32,15 +32,24 @@ export class WaitingRoomGateway {
     this.client = getUserFromClient(client, this.configService);
 	}
 
+  @SubscribeMessage('playerLeft')
+  async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
+      this.logins = this.logins - 1;
+      console.log(this.logins);
+  }
+
   @SubscribeMessage('loggedIn')
-  async handleSendMessage(client: Socket, payload: any): Promise<void> {
+  async handleLoggedIn(client: Socket, payload: any): Promise<void> {
       this.checkWaitingRoom();
   }
 
   checkWaitingRoom() {
-    this.logins = this.logins + 1;
+    if (this.logins === 0 || this.client != this.Player1)
+      this.logins = this.logins + 1;
     console.log(this.logins);
-    if (this.logins === 2 && this.client != this.Player1) {
+    if (this.logins === 2) {
+        console.log("Player1: ", this.Player1);
+        console.log("Client: ", this.client);
         this.logins = 0;
         this.Player2 = this.client;
         console.log("2 players");
