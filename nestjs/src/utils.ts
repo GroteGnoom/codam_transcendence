@@ -8,7 +8,7 @@ const { exec } = require('child_process');
 
 export function get_frontend_host() {
 	var hostName: string;
-	if (process.env.AMILOCAL ==="yes") {
+	if (process.env.SERVER_LOCATION ==="local") {
 		hostName = '127.0.0.1';
 	} else {
 		hostName = process.env.MYHOSTNAME;
@@ -18,7 +18,7 @@ export function get_frontend_host() {
 
 export function get_backend_host() {
 	var hostName: string;
-	if (process.env.AMILOCAL ==="yes") {
+	if (process.env.SERVER_LOCATION ==="local") {
 		hostName = '127.0.0.1';
 	} else {
 		hostName = process.env.MYHOSTNAME;
