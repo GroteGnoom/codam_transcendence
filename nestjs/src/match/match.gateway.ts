@@ -42,6 +42,8 @@ export class MatchGateway {
   Player1: number;
 	Player2: number;
   userID: number;
+
+  interval: any;
   
   ballRelX: number;
   ballRelY: number;
@@ -151,10 +153,10 @@ export class MatchGateway {
   }
 
   loop() {
-      this.getPositions();
-    }
-  
-    getPositions() {
+    this.interval = setInterval(this.getPositions.bind(this), 1000 / 60);
+  }
+    
+  getPositions() {
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
@@ -192,13 +194,13 @@ export class MatchGateway {
       this.ballRelX = this.ballRelX + this.ballVX;
       this.ballRelY = this.ballRelY + this.ballVY;
       /*	calculate paddle positions */
-      if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 1)
+      if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0.9)
         this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-      if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 1)
+      if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 0.9)
         this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
-      if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 1)
+      if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0.9)
         this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-      if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 1)
+      if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 0.9)
         this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
     }
     else if (this.winner === -1) {
@@ -207,26 +209,23 @@ export class MatchGateway {
     }
     else {
       this.setGame();
-      return;
+      clearInterval(this.interval);
     }
 
-    setTimeout(() => {
-        // console.log(this.server.getMaxListeners())
-        this.server.emit('boardUpdated', { 
-        "ballRelX": this.ballRelX, 
-        "ballRelY": this.ballRelY, 
-        "paddleP1RelX": this.paddleP1RelX, 
-        "paddleP1RelY": this.paddleP1RelY, 
-        "paddleP2RelX": this.paddleP2RelX, 
-        "paddleP2RelY": this.paddleP2RelY, 
-        "scoreP1": this.scoreP1, 
-        "scoreP2": this.scoreP2,
-        "winner": this.winner,
-        "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
-        "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
-      });
-      this.loop();
-    }, 1000 / 60);
+    // console.log(this.server.getMaxListeners())
+    this.server.emit('boardUpdated', { 
+      "ballRelX": this.ballRelX, 
+      "ballRelY": this.ballRelY, 
+      "paddleP1RelX": this.paddleP1RelX, 
+      "paddleP1RelY": this.paddleP1RelY, 
+      "paddleP2RelX": this.paddleP2RelX, 
+      "paddleP2RelY": this.paddleP2RelY, 
+      "scoreP1": this.scoreP1, 
+      "scoreP2": this.scoreP2,
+      "winner": this.winner,
+      "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
+      "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
+    });
   }
 
   setGame() {
@@ -268,6 +267,7 @@ export class MatchGateway {
         this.winner = 1;
       else
         this.winner = 2;
+      clearInterval(this.interval);
       this.server.emit('boardUpdated', { 
         "ballRelX": this.ballRelX, 
         "ballRelY": this.ballRelY, 

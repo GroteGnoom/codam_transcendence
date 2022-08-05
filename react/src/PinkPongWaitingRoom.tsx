@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
+import { PlaylistAddOutlined } from '@mui/icons-material';
 
 // const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -32,8 +33,13 @@ const PinkPongWaitingRoom = () => {
     webSocket.current.on("found2PlayersPinkPong", startGame ) // subscribe on backend events
     webSocket.current.on("redirectHomePinkPong", redirHome ) // subscribe on backend events
 
-    function redirHome() {
-        navigate("/", { replace: true });
+    async function redirHome(payload: any) {
+        const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+			method: 'GET',
+			credentials: 'include',
+		}).then(response => response.json());
+        if (await li === false)
+            navigate("/", { replace: true });
     }
 
     return () => {

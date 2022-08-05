@@ -152,17 +152,17 @@ export default function PinkPong() {
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//field
-		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', 'darkpink');
+		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', '#d154a9');
 		//score P1
 		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, textSize.toString() + 'px serif');
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
 		//paddle P1
-		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'darkpink', 'darkpink');
+		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, '#d154a9', '#d154a9');
 		//paddle P2
-		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'darkpink', 'darkpink');
+		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, '#d154a9', '#d154a9');
 		//ball
-		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'lightpink', 'darkpink');
+		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'lightpink', '#d154a9');
 	}
 
 	function getFieldX() {

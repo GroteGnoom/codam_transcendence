@@ -20,8 +20,8 @@ export class ClassicWaitingRoomGateway {
 	) {}
 
   logins: number = 0;
-  Player1: number;
-  Player2: number;
+  Player1: number = 0;
+  Player2: number = 0;
   client: number = 0;
 
   @WebSocketServer()
@@ -30,12 +30,21 @@ export class ClassicWaitingRoomGateway {
 	handleConnection(client: Socket, @Session() session) {
     console.log("started classic waitingroom server", session);
     this.client = getUserFromClient(client, this.configService);
+    if (!this.client) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeClassic", {"client": client.id});
+      this.server.close();
+    }
 	}
 
   @SubscribeMessage('playerLeftClassic')
   async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
-      if (getUserFromClient(client, this.configService))
-        this.logins = this.logins - 1;
+      if (getUserFromClient(client, this.configService)) {
+        if (this.logins === 2)
+          this.logins = 1;
+        else
+          this.logins = 0;
+      }
       console.log(this.logins);
   }
 
@@ -45,10 +54,8 @@ export class ClassicWaitingRoomGateway {
   }
 
   checkWaitingRoom() {
-    if ((this.logins === 0 && this.client) || this.client !== this.Player1)
+    if (this.logins === 0  || this.client != this.Player1)
       this.logins = this.logins + 1;
-    else if (this.client === this.Player1)
-      this.server.emit("redirectHomeClassic", {});
     console.log("Classic: ", this.logins);
     if (this.logins === 2) {
         console.log("Player1: ", this.Player1);

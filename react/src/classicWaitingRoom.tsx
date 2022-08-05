@@ -32,8 +32,15 @@ const ClassicWaitingRoom = () => {
     webSocket.current.on("found2PlayersClassic", startGame ) // subscribe on backend events
     webSocket.current.on("redirectHomeClassic", redirHome ) // subscribe on backend events
 
-    function redirHome() {
-        navigate("/", { replace: true });
+    async function redirHome(payload: any) {
+        console.log("RedirHome");
+        const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+			method: 'GET',
+			credentials: 'include',
+		}).then(response => response.json());
+        console.log(await li);
+        if (await li === false)
+            navigate("/", { replace: true });
     }
 
     return () => {
