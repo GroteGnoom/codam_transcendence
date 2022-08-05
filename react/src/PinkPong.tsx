@@ -158,11 +158,11 @@ export default function PinkPong() {
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
 		//paddle P1
-		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'black', 'yellow');
+		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'darkpink', 'darkpink');
 		//paddle P2
-		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'white', 'yellow');
+		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'darkpink', 'darkpink');
 		//ball
-		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
+		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'lightpink', 'darkpink');
 	}
 
 	function getFieldX() {

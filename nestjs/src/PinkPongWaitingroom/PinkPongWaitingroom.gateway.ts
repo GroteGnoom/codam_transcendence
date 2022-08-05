@@ -22,7 +22,7 @@ export class PinkPongWaitingRoomGateway {
   logins: number = 0;
   Player1: number;
   Player2: number;
-  client: number;
+  client: number = 0;
 
   @WebSocketServer()
   server: Server;
@@ -34,8 +34,9 @@ export class PinkPongWaitingRoomGateway {
 
   @SubscribeMessage('playerLeftPinkPong')
   async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
+    if (getUserFromClient(client, this.configService))
       this.logins = this.logins - 1;
-      console.log(this.logins);
+    console.log(this.logins);
   }
 
   @SubscribeMessage('loggedInPinkPong')
@@ -44,7 +45,7 @@ export class PinkPongWaitingRoomGateway {
   }
 
   checkWaitingRoom() {
-    if (this.logins === 0 || this.client != this.Player1)
+    if ((this.logins === 0 && this.client) || this.client != this.Player1)
       this.logins = this.logins + 1;
     else if (this.client === this.Player1)
       this.server.emit("redirectHomePinkPong", {});
@@ -54,6 +55,7 @@ export class PinkPongWaitingRoomGateway {
         console.log("Client: ", this.client);
         this.logins = 0;
         this.Player2 = this.client;
+        this.client = 0;
         console.log("2 players");
         this.server.emit("found2PlayersPinkPong", {
           "Player1": this.Player1,
