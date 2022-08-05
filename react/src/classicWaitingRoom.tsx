@@ -6,7 +6,7 @@ import {CircularProgress, Typography} from '@mui/material';
 
 // const pinkTheme = createTheme({ palette: { primary: pink } })
 
-const WaitingRoom = () => {
+const ClassicWaitingRoom = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
 
@@ -16,22 +16,28 @@ const WaitingRoom = () => {
         withCredentials: true
     });
 
-    webSocket.current.emit("loggedIn", {
+    webSocket.current.emit("loggedInClassic", {
         "loggedIn": true
     });
 
     function startGame(payload: any) {
         webSocket.current.emit("startGame", {
             "Player1": payload.Player1,
-            "Player2": payload.Player2
+            "Player2": payload.Player2,
+            "PinkPong": false
         });
         navigate("/pinkpong", { replace: true });
     }
 
-    webSocket.current.on("found2Players", startGame ) // subscribe on backend events
+    webSocket.current.on("found2PlayersClassic", startGame ) // subscribe on backend events
+    webSocket.current.on("redirectHomeClassic", redirHome ) // subscribe on backend events
+
+    function redirHome() {
+        navigate("/", { replace: true });
+    }
 
     return () => {
-        webSocket.current.emit("playerLeft", {});
+        webSocket.current.emit("playerLeftClassic", {});
         console.log('Closing WebSocket');
         webSocket.current.close();
     }
@@ -49,4 +55,4 @@ const WaitingRoom = () => {
     )
 }
 
-export default WaitingRoom;
+export default ClassicWaitingRoom;

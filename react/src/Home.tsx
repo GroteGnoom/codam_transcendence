@@ -77,7 +77,8 @@ const Home = () =>
                   <Link to= {{pathname:"/signup"}}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
                   {/* <Link to= {{pathname:"/check_2fa"}}><Button className="button" variant="contained">Check 2fa</Button></Link> */}
                   {/* <Link to= {{pathname:"/show_qr"}}><Button className="button" variant="contained">Enable 2fa</Button></Link> */}
-                  <Link to= {{pathname:"/waitingroom"}}><Button disabled={!li} className="button" variant="contained">PinkPong</Button></Link>
+                  <Link to= {{pathname:"/classicWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
+                  <Link to= {{pathname:"/PinkPongWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
                   <Link to= {{pathname:"/chat"}}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
                   <Link to= {{pathname:"/account"}}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
             </header>

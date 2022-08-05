@@ -71,6 +71,7 @@ export class MatchGateway {
     console.log("Start game message");
     this.Player1 = payload.Player1;
     this.Player2 = payload.Player2;
+    this.PinkPong = payload.PinkPong;
     this.loop();
   }
 

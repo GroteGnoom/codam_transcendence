@@ -14,7 +14,7 @@ import { getUserFromClient, get_frontend_host } from 'src/utils';
     credentials: true
   },
 })
-export class WaitingRoomGateway {
+export class PinkPongWaitingRoomGateway {
   constructor (
   private readonly configService: ConfigService
 	) {}
@@ -28,17 +28,17 @@ export class WaitingRoomGateway {
   server: Server;
 
 	handleConnection(client: Socket, @Session() session) {
-    console.log("started waitingroom server", session);
+    console.log("started pink pong waitingroom server", session);
     this.client = getUserFromClient(client, this.configService);
 	}
 
-  @SubscribeMessage('playerLeft')
+  @SubscribeMessage('playerLeftPinkPong')
   async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
       this.logins = this.logins - 1;
       console.log(this.logins);
   }
 
-  @SubscribeMessage('loggedIn')
+  @SubscribeMessage('loggedInPinkPong')
   async handleLoggedIn(client: Socket, payload: any): Promise<void> {
       this.checkWaitingRoom();
   }
@@ -46,16 +46,19 @@ export class WaitingRoomGateway {
   checkWaitingRoom() {
     if (this.logins === 0 || this.client != this.Player1)
       this.logins = this.logins + 1;
-    console.log(this.logins);
+    else if (this.client === this.Player1)
+      this.server.emit("redirectHomePinkPong", {});
+    console.log("PinkPong: ", this.logins);
     if (this.logins === 2) {
         console.log("Player1: ", this.Player1);
         console.log("Client: ", this.client);
         this.logins = 0;
         this.Player2 = this.client;
         console.log("2 players");
-        this.server.emit("found2Players", {
+        this.server.emit("found2PlayersPinkPong", {
           "Player1": this.Player1,
-          "Player2": this.Player2
+          "Player2": this.Player2,
+          "PinkPong": true
       });
       this.Player1 = 0;
       this.Player2 = 0;

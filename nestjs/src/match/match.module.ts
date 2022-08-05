@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Match } from 'src/typeorm/match.entity';
-import { WaitingRoomGateway } from 'src/waitingroom/waitingroom.gateway';
+import { ClassicWaitingRoomGateway } from 'src/classicWaitingroom/classicWaitingroom.gateway';
 import { MatchGateway } from './match.gateway';
+import { PinkPongWaitingRoomGateway } from 'src/PinkPongWaitingroom/PinkPongWaitingroom.gateway';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { MatchGateway } from './match.gateway';
     // AuthModule
   ],
   controllers: [],
-  providers: [MatchGateway, WaitingRoomGateway]
+  providers: [MatchGateway, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway]
 })
 export class MatchModule {}
