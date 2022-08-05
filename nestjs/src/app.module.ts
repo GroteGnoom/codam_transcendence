@@ -11,7 +11,8 @@ import { TwoFactorAuthenticationModule } from './auth/twoFactorAuthentication.mo
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MatchModule } from './match/match.module';
-import { WaitingRoomModule } from './waitingroom/waitingroom.module';
+import { ClassicWaitingRoomModule } from './classicWaitingroom/classicWaitingroom.module';
+import { PinkPongWaitingRoomModule } from './PinkPongWaitingroom/PinkPongWaitingroom.module';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -46,7 +47,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 		UsersModule,
 		MatchModule,
 		ChannelsModule,
-		WaitingRoomModule,
+		ClassicWaitingRoomModule,
+		PinkPongWaitingRoomModule,
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname, '..', 'test_homepage'), 
     }),

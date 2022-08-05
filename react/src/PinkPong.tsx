@@ -31,6 +31,9 @@ export default function PinkPong() {
 	let paddleSizeMultiplierP1: number = 1;
     let paddleSizeMultiplierP2: number = 1;
 
+	let namePlayer1: string = "naamspeler1"; //get the intraname from the id
+	let namePlayer2: string = "naamspeler2";
+
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
 	
@@ -149,17 +152,17 @@ export default function PinkPong() {
 		//background
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//field
-		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', 'darkpink');
+		drawRectangle(getFieldX(), getFieldY(), fieldWidth, fieldHeight, 'pink', '#d154a9');
 		//score P1
 		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, textSize.toString() + 'px serif');
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
 		//paddle P1
-		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, 'black', 'yellow');
+		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, '#d154a9', '#d154a9');
 		//paddle P2
-		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, 'white', 'yellow');
+		drawRectangle(paddleP2X, paddleP2Y, (paddleWidth * paddleSizeMultiplierP2), paddleHeight, '#d154a9', '#d154a9');
 		//ball
-		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'blue', 'yellow');
+		drawRectangle(ballX, ballY, ballWidth, ballWidth, 'lightpink', '#d154a9');
 	}
 
 	function getFieldX() {
@@ -233,9 +236,9 @@ export default function PinkPong() {
 		drawRectangle(0, 0, canvas.width, canvas.height, 'lightpink', 'lightpink');
 		//Show winner
 		if (winner === 1)
-			drawText("Player 1 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
+			drawText(namePlayer1 + " has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		else
-			drawText("Player 2 has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
+			drawText(namePlayer2 + " has won!", getFieldX() + 440 * (fieldWidth / 1500), getFieldY() + 400 * (fieldHeight / 1000), textSizeLarge.toString() + 'px serif');
 		//Show score
 		drawText(scoreP1.toString() + " - " + scoreP2.toString(), getFieldX() + 600 * (fieldWidth / 1500), getFieldY() + 600 * (fieldHeight / 1000), textSize.toString() + 'px serif');
 	}

@@ -44,7 +44,7 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 
 
 const Home = () => {
-	const [li, setLi] = useState(true);
+	const [li, setLi] = useState(false);
 
 	// effect hooks
 	// combination of componentDidMount and componentDidUpdate
@@ -74,7 +74,8 @@ const Home = () => {
 					<header className="App-header">
 						<ShowLogin />
 						<Link to={{ pathname: "/signup" }}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
-						<Link className={!li ? "disabledLink" : ""} to={{ pathname: "/waitingroom" }}><Button disabled={!li} className="button" variant="contained">PinkPong</Button></Link>
+						<Link className={!li ? "disabledLink" : ""} to= {{pathname:"/classicWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
+                  		<Link className={!li ? "disabledLink" : ""} to= {{pathname:"/PinkPongWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
 						<Link className={!li ? "disabledLink" : ""} to={{ pathname: "/chat" }}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
 						<Link className={!li ? "disabledLink" : ""} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 					</header>

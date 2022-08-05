@@ -2,6 +2,7 @@ import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle,
 import React from 'react';
 import { Channel } from './Chat.types';
 import AddIcon from '@mui/icons-material/Add';
+import { get_backend_host } from '../utils';
 
 
 interface DirectMessageProps { 
@@ -41,7 +42,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     }
 
     async getChats() {
-		return await fetch("http://127.0.0.1:5000/channels/chats/direct-messages", { 
+		return await fetch(get_backend_host() + "/channels/chats/direct-messages", { 
             method: 'GET',
             credentials: 'include',
         })
@@ -65,7 +66,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     };
 
     async getUsers(){
-        fetch(`http://127.0.0.1:5000/users`, { method: 'GET'})
+        fetch(get_backend_host() + `/users`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ users: response });            
@@ -73,7 +74,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     }
 
     async createDirectMessage() {
-		return await fetch(`http://127.0.0.1:5000/channels/dm/${this.state.selectedMember}`, { 
+		return await fetch(get_backend_host() + `/channels/dm/${this.state.selectedMember}`, { 
             method: 'POST',
             credentials: 'include',
             headers: {'Content-Type':'application/json'},

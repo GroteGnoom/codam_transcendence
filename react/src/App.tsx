@@ -8,7 +8,8 @@ import Chat from './Chat/Chat';
 import Account from './account/Account';
 import LoggedIn from './LoggedIn';
 import { Signup } from './Signup';
-import WaitingRoom from './WaitingRoom';
+import ClassicWaitingRoom from './classicWaitingRoom';
+import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { pink } from '@mui/material/colors';
 import UserInfo from './account/UserInfo';
@@ -23,7 +24,8 @@ function App() {
 				<Route path={"/check_2fa"} element={<CheckTfa />} />
 				<Route path={"/show_qr"} element={<QR />} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />
-				<Route path={"/waitingroom"} element={<WaitingRoom />} />
+				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
+				<Route path={"/PinkPongWaitingroom"} element={<PinkPongWaitingRoom />} />
 				<Route path={"/chat"} element={<Chat />} />
 				<Route path={"/account"} element={<Account />} />
 				<Route path={"/logged_in/:token"} element={<LoggedIn />} />

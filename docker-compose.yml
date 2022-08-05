@@ -50,6 +50,9 @@ services:
     restart: on-failure
     networks:
       - transcendence
+    environment:
+      - SERVER_LOCATION
+      - MYHOSTNAME
 
     
 networks: 
