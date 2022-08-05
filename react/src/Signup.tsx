@@ -164,7 +164,7 @@ export function Signup() {
         })
         .then((response) => {
             getUsers();
-            setIsSignedUp(response.isSignedUp);
+            setIsSignedUp(true);
             setEvent("User created successfully");
         })
         .catch((err: Error) => setError(err.message))
@@ -196,7 +196,7 @@ export function Signup() {
                 throw new Error(json.message)
             }
         })
-        .then((response) => {
+        .then(() => {
             setEvent("Avatar created successfully");
             setAvatar({
                 imgSrc: get_backend_host() + "/users/avatar",
@@ -309,6 +309,7 @@ export function Signup() {
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
     useEffect(() => {
+        console.log("isSignedUp changed to: ", isSignedUp);
         if ( isLoggedIn && isSignedUp ) {
             navigate('/');
         }
@@ -335,7 +336,7 @@ export function Signup() {
             ) : ( // if not logged in, show login button
                 <div className="menu">
                     {/* TODO get backend server */}
-                    <a href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
+                    <a className="App-link" href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
                 </div>
             )}
 

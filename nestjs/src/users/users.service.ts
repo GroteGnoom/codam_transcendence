@@ -68,6 +68,10 @@ export class UsersService {
     return this.userRepository.findOneBy({username : username});
   }
 
+  signOutUser(userId: number){
+    return this.userRepository.update(userId, {isSignedUp: false});
+  }
+
   findUsersByIntraname(intraName: string) {
     return this.userRepository.findOneBy({intraName : intraName});
   }

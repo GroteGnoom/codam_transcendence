@@ -46,16 +46,7 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 const Home = () => {
 	const [li, setLi] = useState(false);
 
-	// effect hooks
-	// combination of componentDidMount and componentDidUpdate
-	useEffect(() => { // will be called after the DOM update (after render)
-		getLoggedIn();
-	});
-
-	useEffect(() => {
-		getLoggedIn();
-	}, []); // will only be called on initial mount and unmount
-
+	//backend calls
 	async function getLoggedIn() {
 		return await fetch(get_backend_host() + "/auth/amiloggedin/", {
 			method: "GET",
@@ -67,17 +58,37 @@ const Home = () => {
 			});
 	}
 
+	async function signOutUser() {
+		return await fetch(get_backend_host() + "/users/signoutuser", {
+			method: "PUT",
+			credentials: 'include',
+		})
+	}
+
+	// effect hooks
+	// combination of componentDidMount and componentDidUpdate
+	useEffect(() => { // will be called after the DOM update (after render)
+		getLoggedIn();
+	});
+
+	useEffect(() => {
+		getLoggedIn();
+	}, []); // will only be called on initial mount and unmount
+
+
 	return (
 		<ThemeProvider theme={pinkTheme}>
 			<main>
 				<div className="App">
 					<header className="App-header">
 						<ShowLogin />
-						<Link to={{ pathname: "/signup" }}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
-						<Link className={!li ? "disabledLink" : ""} to= {{pathname:"/classicWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
-                  		<Link className={!li ? "disabledLink" : ""} to= {{pathname:"/PinkPongWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
-						<Link className={!li ? "disabledLink" : ""} to={{ pathname: "/chat" }}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
-						<Link className={!li ? "disabledLink" : ""} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
+						<Link className="App-link" to={{ pathname: "/signup" }}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
+						<Link className={!li ? "disabledLink" : "App-link"} to= {{pathname:"/classicWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
+                  		<Link className={!li ? "disabledLink" : "App-link"} to= {{pathname:"/PinkPongWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
+						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/chat" }}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
+						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
+						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
+						{/* TODO: add logout button */}
 					</header>
 				</div>
 			</main>

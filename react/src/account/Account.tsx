@@ -151,7 +151,7 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
                         <Button className="item"
                             variant="contained"
                             startIcon={<PersonOutlineSharpIcon />}
-                            onClick={(e) => this.createUser()}
+                            onClick={() => this.createUser()}
                         > SIGN UP </Button>
 
                 </div>

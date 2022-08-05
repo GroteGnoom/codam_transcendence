@@ -29,12 +29,13 @@
 	margin: 5px;
 }
 
-.App-header .disabledLink {
+.disabledLink {
 	pointer-events: none;
+	text-decoration: none;
 }
 
 .App-link {
-  color: #ff33cc;
+    text-decoration: none;
 }
 
 @keyframes App-logo-spin {
