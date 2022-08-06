@@ -6,6 +6,7 @@ export interface Channel {
     members: any[];
     password: string;
     channelType: string;
+    displayName?: string;
 }
 
 export interface Message {

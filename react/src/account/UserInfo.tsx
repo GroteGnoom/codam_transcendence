@@ -21,7 +21,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     constructor(props: UserInfoProps){
         super(props);
         this.state = { 
-            user: undefined,
+            user: undefined,    
         }
     }
 

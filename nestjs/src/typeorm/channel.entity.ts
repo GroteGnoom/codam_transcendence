@@ -23,6 +23,9 @@ export class Channel {
     @ManyToMany(() => User)
     @JoinTable()
     admins: User[]
+
+    @Column("int", { array: true, default: []})
+    bannedUsers: number[]
 } 
 
 @Entity()

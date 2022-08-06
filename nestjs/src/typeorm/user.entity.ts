@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {DatabaseFile} from './databaseFile.entity';
 
 export enum userStatus {
@@ -53,7 +53,10 @@ export class User {
 	@Column({ nullable: true })
 	public avatarId?: number;
 
-    @ManyToMany(() => User)
-	@JoinTable()
-    blockedUsers: User[]
+    // @ManyToMany(() => User)
+	// @JoinTable()
+    // blockedUsers: User[]
+
+	@Column("int", { array: true, default: []})
+    blockedUsers: number[]
 }

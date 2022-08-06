@@ -47,8 +47,9 @@ export class ChannelsController {
     }
 
     @Delete(':name/admin/:id')
-    demoteAdmin(@Param('name') name: string, @Param('id') admin: number) {
-        return this.channelsService.demoteAdmin(name, Number(admin));
+    demoteAdmin(@Param('name') name: string, @Param('id') admin: number, @Req() req: any) {
+        const userID = req.session.userId;
+        return this.channelsService.demoteAdmin(name, Number(admin), userID);
     }
 
     @Get(':name/messages')
@@ -80,19 +81,27 @@ export class ChannelsController {
     }
 
     @Delete(':name/member/:id')
-    removeMemberFromChannel(@Param('name') name: string, @Param('id') member: number) {
-        return this.channelsService.removeMemberFromChannel(name, Number(member));
+    removeMemberFromChannel(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+        const userID = req.session.userId;
+        return this.channelsService.removeMemberFromChannel(name, Number(member), userID);
     }
 
     @Put(':name/mute/:id')
-    async muteMember(@Param('name') name: string, @Param('id') member: number) {
-        return this.channelsService.muteMemberInChannel(name, Number(member));
+    async muteMember(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+        const userID = req.session.userId;
+        return this.channelsService.muteMemberInChannel(name, Number(member), userID);
     }
 
     @Get(':name/is-muted')
     async checkIfMuted(@Req() req, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMuted(name, userID);
+    }
+
+    @Put(':name/ban/:id')
+    async banMember(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+        const userID = req.session.userId;
+        return this.channelsService.banMemberFromChannel(name, Number(member), userID);
     }
 
     @Post('dm/:id')

@@ -54,7 +54,7 @@ export class ChannelsService {
     getChats() {
         return this.channelRepository.find({
             where: {channelType: ChannelType.dm},
-            //relations: ['members', 'admins']
+            relations: ['members']
         });
     }
 
@@ -94,13 +94,13 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, admins: admins});
     }
 
-    async demoteAdmin(channelName: string, id: number) {
+    async demoteAdmin(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['admins']
         });
-        if (!channel) {
-            return undefined;
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');
         }
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from administators');
@@ -114,8 +114,8 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members']
         });
-        if (!channel) {
-            return undefined;
+        if (channel.bannedUsers.includes(id)) {
+            throw new BadRequestException("This member is banned")
         }
         if (channel.members.map((member) => member.user.id).includes(id)) {
             return channel;
@@ -145,6 +145,9 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members']
         });
+        if (channel.bannedUsers.includes(id)) {
+                throw new BadRequestException("This member is banned")
+        }
         if (channel.channelType === ChannelType.Protected) {
             // TODO check password hash with backend value instead of string compare
             if (password !== channel.password) {
@@ -155,13 +158,13 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, members: members});
     }
 
-    async removeMemberFromChannel(channelName: string, id: number) {
+    async removeMemberFromChannel(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
-            relations: ['members']
+            relations: ['members', 'admins']
         });
-        if (!channel) {
-            return undefined;
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');  
         }
         if (id == channel.owner) {
             throw new BadRequestException('Cannot remove owner from members');
@@ -170,11 +173,14 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, members: members}); 
     }
 
-    async muteMemberInChannel(channelName: string, id: number) {
+    async muteMemberInChannel(channelName: string, id: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
-            relations: ['members']
+            relations: ['members', 'admins']
         });
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');
+        }
         channel.members.forEach((member) => {
             if (member.user.id == id) {
                 member.isMuted = true;
@@ -202,6 +208,20 @@ export class ChannelsService {
             }
         })
       }
+
+    async banMemberFromChannel(channelName: string, id: number, requester: number) {
+        this.removeMemberFromChannel(channelName, id, requester);
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['admins']
+        });
+
+        if (!channel.admins.map((user) => user.id).includes(requester)) {   //////////
+            throw new UnauthorizedException('You are not authorized');  
+        }
+        channel.bannedUsers.push(Number(id));
+        return this.channelRepository.save(channel); 
+    }
 
     async addMessage(channel: string, sender: number, message: MessageDto) {
         const newMessage: Message = this.messageRepository.create({sender: {id: sender}, text: message.text}); // will create id and date for message

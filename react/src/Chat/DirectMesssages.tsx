@@ -17,6 +17,7 @@ interface DirectMessageState {
     open: boolean;
     users: any[];
     selectedMember: number;
+    currentUser: any; // currently logged in user
 }
 
 class DirectMessage extends React.Component<DirectMessageProps, DirectMessageState> {
@@ -29,6 +30,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             open: false,
             users: [],
             selectedMember: 0,
+            currentUser: undefined,
 
             // openJoinWindow: false,
             // channelToJoin: undefined,
@@ -38,19 +40,42 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     componentDidMount() {
         console.log("direct messages")
         this.getUsers()
-        this.getChats()
+        this.getCurrentUser()
+        .then(() => this.getChats())
     }
 
-    async getChats() {
+    addDisplayName(channel: Channel) {
+        console.log(channel);
+        var displayName = channel.name;
+        const otherMembers = channel.members.filter((member) => member.user.id !== this.state.currentUser.id)
+        if (otherMembers.length > 0) {
+            displayName = otherMembers[0].user.username;
+        }        
+        return {...channel, displayName: displayName}
+    }
+
+    async getChats() {        
 		return await fetch(get_backend_host() + "/channels/chats/direct-messages", { 
             method: 'GET',
             credentials: 'include',
         })
 		.then((response) => response.json())
         .then((response) => {
-            this.setState({ chats: response });
+            const chats = response.map((chat: Channel) => this.addDisplayName(chat))
+            this.setState({ chats: chats });
         })
 	}
+
+    async getCurrentUser() {
+        return await fetch(get_backend_host() + "/users/user", { 
+            method: 'GET',
+            credentials: 'include',
+        })
+		.then((response) => response.json())
+        .then((response) => {
+            this.setState({ currentUser: response });
+        })
+    }
 
     handleClickOpen = () => {
         this.setState( {open: true} );
@@ -101,7 +126,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                 <ListItemButton selected={ this.props.activeChannel && el.name===this.props.activeChannel.name} 
                     //</ListItem>onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     onClick={() => this.props.openChat(el) }> {/* sets active channel */}
-                    <ListItemText primary={el.name} />
+                    <ListItemText primary={el.displayName} />
                 </ListItemButton>    
             </ListItem>
         ))  
