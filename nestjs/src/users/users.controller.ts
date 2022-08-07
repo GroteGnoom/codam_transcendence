@@ -98,4 +98,38 @@ export class UsersController {
     console.log("Blocking", blocker, blocked)             
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
+
+  @Put('unblock/:id')
+  unblockUser(@Param('id') blocked: number, @Req() req: any) {
+    const blocker = req.session.userId;  
+    console.log("UNblocking", blocker, blocked)             
+    return this.userService.unblockUser(Number(blocker), Number(blocked));
+  }
+
+  @Get('is-blocked/:id')
+  isBlocked(@Param('id') id: number, @Req() req: any) {
+    const blocker = req.session.userId;        
+    return this.userService.isBlocked(Number(blocker), Number(id));
+  }
+
+
+  @Put('friend/:id')
+  friendUser(@Param('id') friend: number, @Req() req: any) {
+    const userID = req.session.userId;  
+    console.log("Befriending", userID, friend)             
+    return this.userService.friendUser(Number(userID), Number(friend));
+  }
+
+  @Put('unfriend/:id')
+  unfriendUser(@Param('id') friend: number, @Req() req: any) {
+    const userID = req.session.userId;  
+    console.log("UNfriending", userID, friend)             
+    return this.userService.unfriendUser(Number(userID), Number(friend));
+  }
+
+  @Get('is-friend/:id')
+  isFriend(@Param('id') id: number, @Req() req: any) {
+    const userID = req.session.userId;        
+    return this.userService.isFriend(Number(userID), Number(id));
+  }
 }

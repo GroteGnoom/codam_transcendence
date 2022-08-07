@@ -1,28 +1,26 @@
-import './Signup.css'
-import { useState, useEffect } from 'react';
-import TextField from '@mui/material/TextField';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
+import { Alert } from "@mui/material";
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import { pink } from '@mui/material/colors';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert, getAvatarGroupUtilityClass } from "@mui/material";
-import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import Snackbar from '@mui/material/Snackbar';
-import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
-import {styled} from '@mui/material/styles';
-import FormData from 'form-data';
-import {createReadStream} from 'fs';
-import { get_backend_host, userStatus } from './utils';
-import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import {useNavigate} from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
+import FormGroup from '@mui/material/FormGroup';
+import Snackbar from '@mui/material/Snackbar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import FormData from 'form-data';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Signup.css';
+import { get_backend_host, userStatus } from './utils';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 

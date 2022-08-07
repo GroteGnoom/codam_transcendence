@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import { AppBar, IconButton, List, ListItem, ListItemAvatar, ListItemText, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, IconButton, List, ListItem, ListItemAvatar, ListItemText, Stack, TextField, Toolbar, Typography } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -23,6 +23,7 @@ interface ChannelSettingsProps {
     channel: Channel;
     openSettings: any;
     setError: (err: string) => void;    
+    openChat: any;
 }
 
 interface ChannelSettingsState {
@@ -71,8 +72,8 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async saveSettings() {
-        return await fetch(get_backend_host() + "/channels", { // todo make update endpoint
-            method: 'POST',
+        return await fetch(get_backend_host() + `/channels/update/${this.props.channel.name}`, { // todo make update endpoint
+            method: 'PUT',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.state.settings)
@@ -89,6 +90,28 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
             .catch((err: Error) => {
                 this.props.setError(err.message)
             })
+    }
+
+    async leaveChannel() {
+		return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/member/self`, {  
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })        
+        .then(() => {
+            this.props.openSettings(false)
+            this.props.openChat(undefined) // close the underlying ChatWindow
+        }) //skips this step when error is thrown
+        .catch((err: Error) => {
+            this.props.setError(err.message)
+        })
     }
 
     handleClose = () => {
@@ -161,15 +184,15 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     renderOwner = () => {
 
         return (
-            <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+            <Box sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292', mb:5 }} >
                 {this.state.owner.username}
-            </Box>
+            </Box>  
         );
     }
     
     render() {
         return (
-            <Dialog open={true} fullScreen>  {/*pop window for settings */}
+            <Dialog open={true} fullScreen PaperProps={{ sx:{ bgcolor: '#f48fb1' } }}>  {/*pop window for settings */}
                 <AppBar sx={{ position: 'relative', bgcolor: '#f06292' }}>
                     <Toolbar>
                         <IconButton
@@ -188,7 +211,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                     </Toolbar>
                 </AppBar>
 
-                {this.state.settings && <Box sx={{ bgcolor: '#f48fb1' }}>
+                {this.state.settings && <Stack sx={{ bgcolor: '#f48fb1' }} direction='row'>
                     <DialogContent>
                         <TextField
                             disabled
@@ -199,7 +222,6 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             id="name"
                             label="Channel name"
                             type="text"
-                            fullWidth
                             variant="standard" />
                         <RadioGroup
                             row
@@ -241,6 +263,11 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             Owner
                         </Typography>
                         {this.renderOwner()}
+                        <Button variant="contained" onClick={() => this.leaveChannel()} >
+                            Leave Channel    
+                        </Button>                      
+                    </DialogContent>
+                    <DialogContent>                      
                         <Typography sx={{ flex: 1 }} variant="h6" component="div">
                             Members
                         </Typography>
@@ -260,7 +287,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                                         activeChannel={this.props.channel.name}
                                         setError={this.props.setError} />
                     </DialogContent>
-                </Box>}
+                </Stack>}
             </Dialog>
         )
     }

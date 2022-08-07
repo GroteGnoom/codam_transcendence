@@ -48,7 +48,7 @@ async function bootstrap() {
 		  }
           //console.log('ORIGIN: ', origin);
 		  if (originIsAllowed) {
-			  console.log('cors is allowed');
+			//   console.log('cors is allowed');
 			  callback(null, true);
 		  } else {
 			  console.log('cors not allowed');

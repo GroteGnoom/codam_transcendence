@@ -58,8 +58,10 @@ export class UsersService {
   }
 
   findUsersById(id: number) {
-    this.logger.log("userId: " + id);
-    return this.userRepository.findOneBy({id : id});
+    return this.userRepository.findOne( { 
+      where: { id : id },
+      relations: ['friends']             
+    });
   }
 
   findUsersByName(username: string) {
@@ -129,6 +131,15 @@ export class UsersService {
     return avatar;
   }
 
+  
+  async setStatus(userID: number, status : userStatus){
+    const user = await this.userRepository.findOne({
+      where: { id: userID }
+    });
+    user.status = status;
+    return this.userRepository.save(user);
+  }
+
   async blockUser(blocker: number, blocked: number) {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
@@ -140,4 +151,55 @@ export class UsersService {
     return this.userRepository.save(user); 
   }
 
+  async unblockUser(blocker: number, blocked: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: blocker }
+    });
+    user.blockedUsers = user.blockedUsers.filter((id) => id != blocked);
+    return this.userRepository.save(user); 
+  }
+
+  async isBlocked(blocker: number, id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: blocker }
+    });
+    return  (user.blockedUsers.includes(id));
+  }
+
+  async friendUser(userId: number, friend: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['friends']
+    });
+    if (user.friends.map((user) => user.id).includes(friend)) {
+      return user;
+    }
+    // const friends = [...user.friends, this.newFriend(friend)];
+    // return this.userRepository.save({id: userId, friends: friends});
+    user.friends = [...user.friends, this.newFriend(friend)];
+    return this.userRepository.save(user);
+  }
+
+  async unfriendUser(userId: number, friend: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['friends']
+    });
+    // const friends = user.friends.filter((user) => user.id != friend)
+    // return this.userRepository.save({id: userId, friends: friends}); 
+    user.friends = user.friends.filter((user) => Number(user.id) !== friend)
+    return this.userRepository.save(user);
+  }
+
+  async isFriend(userId: number, friend: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['friends']
+    });
+    return (user.friends.map((user) => Number(user.id)).includes(friend))
+  }
+
+  private newFriend(userId: number) {
+    return {id: userId} as User
+  }
 }

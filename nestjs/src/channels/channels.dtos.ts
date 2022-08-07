@@ -1,4 +1,4 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, MaxLength } from "class-validator";
 
 export enum ChannelType {
 	Private = "private",
@@ -9,6 +9,7 @@ export enum ChannelType {
 
 export class CreateChannelDto {
 	@IsNotEmpty()
+	@MaxLength(20)
 	name: string;
 
 	password?: string;

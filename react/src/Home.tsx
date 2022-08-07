@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { get_backend_host } from './utils';
+import { io } from 'socket.io-client';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -41,9 +42,12 @@ class ShowLogin extends React.Component<LoginProps, LoginState> {
 	}
 }
 
+interface HomeProps {
+	statusWebsocket: any;
+	setStatusWebsocket: any;
+}
 
-
-const Home = () => {
+const Home = (props : HomeProps) => {
 	const [li, setLi] = useState(false);
 
 	//backend calls
@@ -54,6 +58,14 @@ const Home = () => {
 		})
 			.then(async (response) => {
 				const json = await response.json();
+				console.log(json)
+				if ( json && !props.statusWebsocket ){
+					console.log('Opening Status WebSocket');
+					props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
+						withCredentials: true,
+						path: "/status-ws/socket.io" 
+					}))
+				}
 				setLi(json);
 			});
 	}

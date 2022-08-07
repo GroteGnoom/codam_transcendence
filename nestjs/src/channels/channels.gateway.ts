@@ -12,6 +12,8 @@ import { getUserFromClient } from 'src/utils';
 import { get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
+  namespace: '/channels-ws', // https://stackoverflow.com/questions/66764826/nestjs-socket-io-serving-websockets-from-microservice-at-nested-path-instead-o
+  path: '/channels-ws/socket.io',
   cors: {
     origin: get_frontend_host(),
     credentials: true

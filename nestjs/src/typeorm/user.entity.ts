@@ -53,10 +53,10 @@ export class User {
 	@Column({ nullable: true })
 	public avatarId?: number;
 
-    // @ManyToMany(() => User)
-	// @JoinTable()
-    // blockedUsers: User[]
-
 	@Column("int", { array: true, default: []})
     blockedUsers: number[]
+
+    @ManyToMany(() => User)
+	@JoinTable()
+    friends: User[]
 }

@@ -17,30 +17,34 @@ export class ChannelsService {
         @InjectRepository(ChannelMember) private readonly memberRepository: Repository<ChannelMember>,         
         private readonly channelGateway: ChannelsGateway,
         private readonly userService: UsersService ) {
-        // this.getChannels()
-        // .then( (channels) => {
-        //     console.log(`Found ${channels.length} channels on startup`)
-        //     try{
-        //         if (channels.length === 0) {
-        //             userService.findOrCreateUser("root")
-        //             .then( (user) => {
-        //                 this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
-        //                 .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
-        //                 // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
-        //             })
-        //         }
-        //     }
-        //     catch(e){}
-        // })
+        this.getChannels(0)
+        .then( (channels) => {
+            console.log(`Found ${channels.length} channels on startup`)
+            try{
+                if (channels.length === 2) {
+                    userService.findOrCreateUser("root")
+                    .then( (user) => {
+                        this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
+                        .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
+                        // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
+                    })
+                }
+            }
+            catch(e){}
+        })
     }
 
-    getChannels(){
+
+    getChannels(userID: number){
         return this.channelRepository.find({
             where : [
-                {channelType: ChannelType.Private},    // OR
+                {channelType: ChannelType.Private, members: [{user: {id: userID}}]},    // OR
                 {channelType: ChannelType.Protected},  //https://orkhan.gitbook.io/typeorm/docs/find-options
                 {channelType: ChannelType.Public}
-            ]
+            ],
+            order: {
+                name: "ASC" // "DESC"
+            }
         });
     };
 
@@ -51,10 +55,11 @@ export class ChannelsService {
         });
     }
 
-    getChats() {
+    getChats(userID: number) { //gets direct messages
         return this.channelRepository.find({
-            where: {channelType: ChannelType.dm},
-            relations: ['members']
+            //where: {channelType: ChannelType.dm, admins: [{id: 35}]}, testing
+            where: {channelType: ChannelType.dm, admins: [{id: userID}]},
+            relations: ['members', 'admins']
         });
     }
 
@@ -73,6 +78,27 @@ export class ChannelsService {
             channelType: createChannelDto.channelType,
         });
     }
+
+    async updateChannel(createChannelDto: CreateChannelDto, requester: number) {
+        if (createChannelDto.channelType == ChannelType.Protected &&
+                !createChannelDto.password) {
+            throw new BadRequestException('Must provide a password for a protected channel');
+        }
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: createChannelDto.name},
+            relations: ['admins']
+        });
+        if (!channel.admins.map((user) => user.id).includes(requester)) {
+            throw new UnauthorizedException('You are not authorized');
+        }
+
+        return this.channelRepository.save({ // update Channel object
+            name: createChannelDto.name,
+            password: createChannelDto.password,
+            channelType: createChannelDto.channelType,
+        });
+    }
+
 
     removeChannelByName(name: string) {
         this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
@@ -170,7 +196,25 @@ export class ChannelsService {
             throw new BadRequestException('Cannot remove owner from members');
         }
         const members = channel.members.filter((member) => member.user.id != id)
-        return this.channelRepository.save({name: channelName, members: members}); 
+        const admins = channel.admins.filter((admin) => admin.id != id)
+        return this.channelRepository.save({name: channelName, members: members, admins: admins}); 
+    }
+
+    async leaveFromChannel(channelName: string, id: number) {
+        const channel: Channel = await this.channelRepository.findOne({
+            where: {name: channelName},
+            relations: ['members', 'admins']
+        });
+        if (id == channel.owner) {
+            const nextOwner = channel.admins.find((admin) => admin.id != id)
+            if (!nextOwner) {
+                throw new BadRequestException('Promote someone else to admin before leaving this channel');
+            }
+            channel.owner = nextOwner.id        
+        }
+        channel.members = channel.members.filter((member) => member.user.id != id)
+        channel.admins = channel.admins.filter((admin) => admin.id != id)
+        return this.channelRepository.save(channel); 
     }
 
     async muteMemberInChannel(channelName: string, id: number, requester: number) {
@@ -210,15 +254,11 @@ export class ChannelsService {
       }
 
     async banMemberFromChannel(channelName: string, id: number, requester: number) {
-        this.removeMemberFromChannel(channelName, id, requester);
+        await this.removeMemberFromChannel(channelName, id, requester);
         const channel: Channel = await this.channelRepository.findOne({
-            where: {name: channelName},
+            where: {name: channelName },
             relations: ['admins']
         });
-
-        if (!channel.admins.map((user) => user.id).includes(requester)) {   //////////
-            throw new UnauthorizedException('You are not authorized');  
-        }
         channel.bannedUsers.push(Number(id));
         return this.channelRepository.save(channel); 
     }
@@ -233,7 +273,12 @@ export class ChannelsService {
     }
 
     getMessages(channel: string) {
-        return this.messageRepository.findBy({channel: channel});
+        //return this.messageRepository.findBy({channel: channel});
+
+        return this.messageRepository.find({
+            where : {channel: channel},
+            order: { date: "ASC" } // "DESC"
+        });
     }
 
     createDirectMessage(user : number , other : number) {

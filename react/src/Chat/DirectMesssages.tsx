@@ -45,11 +45,10 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     }
 
     addDisplayName(channel: Channel) {
-        console.log(channel);
         var displayName = channel.name;
-        const otherMembers = channel.members.filter((member) => member.user.id !== this.state.currentUser.id)
-        if (otherMembers.length > 0) {
-            displayName = otherMembers[0].user.username;
+        const otherMember = channel.members.filter((member) => member.user.id !== this.state.currentUser.id)
+        if (otherMember.length > 0) {
+            displayName = otherMember[0].user.username;
         }        
         return {...channel, displayName: displayName}
     }
@@ -152,13 +151,14 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
 
     render(){
-    // const nonMembers = this.state.users.filter((user) => 
-    //     !this.state.currentMembers.includes(user.id)
-    // );
+        const excludeCurrentChats = this.state.users.filter((user) =>
+            !this.state.chats.find((chat) => chat.displayName === user.username) && // only display users you dont already have dm with
+            this.state.currentUser && (user.id !== this.state.currentUser.id)
+        );
 
-    const listUsers = this.state.users.map((user) => 
-        <MenuItem key={user.id} value={user.id}>{user.username}</MenuItem>
-    );
+        const listUsers = excludeCurrentChats.map((user) => 
+            <MenuItem key={user.id} value={user.id}>{user.username}</MenuItem>
+        );
 
         return (
         <div>

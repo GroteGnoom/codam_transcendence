@@ -9,7 +9,6 @@ import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import BlockIcon from '@mui/icons-material/Block';
 import { Link } from 'react-router-dom';
 
 interface ChatWindowProps { 
@@ -61,7 +60,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 	}
 
     async getBlockedUsers(){
-        return await fetch(get_backend_host() + `/users/id`, { 
+        return await fetch(get_backend_host() + `/users/user`, { 
             method: 'GET',
             credentials: 'include',
         })
@@ -90,7 +89,10 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     openWebsocket() {
         if (!this.webSocket) {
             console.log('Opening WebSocket');
-            this.webSocket = io(get_backend_host(), {withCredentials: true});
+            this.webSocket = io(get_backend_host() + "/channels-ws", {
+                withCredentials: true, 
+                path: "/channels-ws/socket.io" 
+            });
             this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
             this.webSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
             this.webSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
@@ -154,9 +156,11 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            <Link to={{ pathname: `userinfo/${msg.sender.id}` }} style={{ color: 'mediumvioletred' }}>
+                        {/* <Link href={`/userinfo/${msg.sender.id}`} underline="hover">
                                 {`${msg.sender.username}`}
-                            </Link>
+                        </Link> */}
+                        <Link to={{ pathname:`/userinfo/${msg.sender.id}`} }>{`${msg.sender.username}`}</Link>
+                        
                         </Typography>
                         <Typography variant="h6">
                             {`${msg.text} `}
@@ -184,12 +188,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                                 <SettingsIcon />
                                         </IconButton>
                                     }
-                                    { this.props.channel.channelType === "direct message" && // challenge another player to a game
-                                        <IconButton //onClick={() => { this.props.openSettings(true) }}
-                                            color="secondary">
-                                                <SportsEsportsIcon />
-                                        </IconButton>
-                                    }
                                 </Grid>
                                 <Grid xs={1} item>
                                     { this.props.channel.channelType !== "direct message" &&
@@ -198,10 +196,10 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                                 <PersonAddIcon />
                                         </IconButton>
                                     }
-                                    { this.props.channel.channelType === "direct message" && // block another user
-                                        <IconButton //onClick={() => { this.props.blockUser() }}
+                                    { this.props.channel.channelType === "direct message" && // challenge another player to a game
+                                        <IconButton //onClick={() => { this.props.openSettings(true) }}
                                             color="secondary">
-                                                <BlockIcon />
+                                                <SportsEsportsIcon />
                                         </IconButton>
                                     }
                                 </Grid>

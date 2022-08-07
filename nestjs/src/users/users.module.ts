@@ -6,6 +6,7 @@ import {DatabaseFile} from '../typeorm/databaseFile.entity';
 import {UsersController} from './users.controller';
 import {UsersService} from './users.service';
 import {DatabaseFilesService} from './databaseFiles.service';
+import { StatusGateway } from './status.gateway';
 
 @Module({
   imports : [
@@ -13,7 +14,7 @@ import {DatabaseFilesService} from './databaseFiles.service';
     TypeOrmModule.forFeature([ DatabaseFile ])
   ],
   controllers : [ UsersController ],
-  providers : [ UsersService, DatabaseFilesService ],
+  providers : [ UsersService, DatabaseFilesService, StatusGateway ],
   exports : [ UsersService, DatabaseFilesService ]
 })
 export class UsersModule {

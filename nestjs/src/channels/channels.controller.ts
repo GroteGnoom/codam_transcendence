@@ -8,18 +8,20 @@ export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
 
     @Get()
-    getChannels() { 
-        return this.channelsService.getChannels();
+    getChannels(@Req() req: any) {
+        const userID = req.session.userId;
+        return this.channelsService.getChannels(userID);
     }
 
     @Get(':name')
-    getChannel(@Param('name') name: string) {       
+    getChannel(@Param('name') name: string) {    
         return this.channelsService.getChannelByName(name);
     }
 
     @Get('chats/direct-messages')
-    getChats() { 
-        return this.channelsService.getChats();
+    getChats(@Req() req: any) {
+        const userID = req.session.userId;   
+        return this.channelsService.getChats(userID);
     }
 
     @Post()
@@ -28,6 +30,13 @@ export class ChannelsController {
         const userID = req.session.userId;
         console.log("user id: ", userID);
 		return this.channelsService.createChannel(createChannelDto, userID);
+	}
+
+    @Put('update/:name')
+	@UsePipes(ValidationPipe)   //validates body (not empty etc)
+	updateChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
+        const userID = req.session.userId;
+		return this.channelsService.updateChannel(createChannelDto, userID);
 	}
 
     @Delete(':name')
@@ -78,6 +87,13 @@ export class ChannelsController {
         const userID = req.session.userId;
         const password = joinChannelDto.password;
         return this.channelsService.joinChannel(name, userID, password);
+    }
+
+    @Delete(':name/member/self')
+    removeSelfFromChannel(@Req() req, @Param('name') name: string) {
+        const userID = req.session.userId;
+        console.log("Removing self from channel")
+        return this.channelsService.leaveFromChannel(name, userID);
     }
 
     @Delete(':name/member/:id')
