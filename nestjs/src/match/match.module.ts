@@ -4,6 +4,8 @@ import { Match } from 'src/typeorm/match.entity';
 import { ClassicWaitingRoomGateway } from 'src/classicWaitingroom/classicWaitingroom.gateway';
 import { MatchGateway } from './match.gateway';
 import { PinkPongWaitingRoomGateway } from 'src/PinkPongWaitingroom/PinkPongWaitingroom.gateway';
+import { MatchController } from './match.controller';
+import { MatchService } from './match.service';
 
 @Module({
   imports: [
@@ -11,7 +13,7 @@ import { PinkPongWaitingRoomGateway } from 'src/PinkPongWaitingroom/PinkPongWait
     // UsersModule,
     // AuthModule
   ],
-  controllers: [],
-  providers: [MatchGateway, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway]
+  controllers: [MatchController],
+  providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway]
 })
 export class MatchModule {}

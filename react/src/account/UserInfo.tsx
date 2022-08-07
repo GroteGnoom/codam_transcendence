@@ -3,9 +3,9 @@ import BlurOnIcon from '@mui/icons-material/BlurOn';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SportsTennisIcon from '@mui/icons-material/SportsTennis';
-import { Box, Button, Divider, IconButton, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import { Box, Button, Divider, IconButton, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { get_backend_host } from "../utils";
 
 
@@ -24,6 +24,7 @@ interface UserInfoState {
     user: any;
     isBlocked: Boolean;
     isFriend: Boolean;
+    matches: any[];   //array of match entities
 }
 
 class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
@@ -33,6 +34,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             user: undefined,
             isBlocked: false,
             isFriend: false,
+            matches: [],
         }
     }
 
@@ -109,6 +111,17 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         })
     }
 
+    getMatches(){
+        fetch(get_backend_host() + `/match/history/${this.props.params.id}`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
+        .then((response) => response.json())
+        .then((response) => {
+            this.setState({ matches: response });            
+        })
+    }
+
     updateStatus(socketMessage: any){   //subscribed to statusUpdate events through ws
         const user = this.state.user;
         const friends = user.friends.map((el: any) => {
@@ -120,16 +133,56 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         })     
     }
 
+    componentDidUpdate(prevProps: UserInfoProps, prevState: UserInfoState) { 
+        if (
+            !prevProps.params || !this.props.params ||
+            prevProps.params.id !== this.props.params.id) {
+                this.componentDidMount()
+        }
+    }
+
     componentDidMount() {
         this.getUserInfo()
         this.isUserBlocked()
         this.isUserFriend()
+        this.getMatches()
 
         if (this.props.statusWebsocket){
             console.log("subscribe to status ws", this.props.statusWebsocket)
             this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
         }
     }
+
+
+    renderMatches = () => {
+
+        const matches = this.state.matches.map((el: any) => (
+            <TableRow
+                key={el.id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                <TableCell align="right" style={{ width: 300 }}>
+                    <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
+                                {`${el.player_1.username}`}
+                    </Link>
+                </TableCell>
+                <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
+                <TableCell align="center">{"-"}</TableCell>
+                <TableCell align="right">{`${el.scoreP2}`}</TableCell>
+                <TableCell align="left" style={{ width: 300 }}>
+                    <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
+                                {`${el.player_2.username}`}
+                    </Link>
+                </TableCell>
+            </TableRow>
+            ))
+            return (
+                <Table sx={{bgcolor: '#f48fb1'}}>
+                    <TableBody>
+                        {matches}
+                    </TableBody>
+                </Table>
+            );
+        }
 
     renderFriends = () => {
         const friends = this.state.user.friends.map((el: any) => (
@@ -153,9 +206,13 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                         </IconButton>
                     }
 
-                    <ListItemText 
-                        primary={`${el.username}`}
-                    />            
+                    <ListItemText >
+                        <Typography variant="body1">
+                            <Link to={{ pathname:`/userinfo/${el.id}`} }>
+                                {`${el.username}`}
+                            </Link>
+                        </Typography>
+                    </ListItemText>         
                 </ListItem>
             ))  
             return (
@@ -199,19 +256,19 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                     }
                 </Stack>
                 <Stack direction="row">
-                    <Box sx={{ width: '100%', maxWidth: 250, bgcolor: '#f06292', m:10, mr: 16}}>
-                        <Typography sx={{ flex: 1 }} variant="h6" component="div">
+                    <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, mr: 16}}>
+                        <Typography variant="h6" component="div">
                             Friends
                         </Typography>
                         <Divider />
                         {this.state.user && this.renderFriends()}
                     </Box>
-                    <Box sx={{ width: '100%', maxWidth: 300, bgcolor: '#f06292', m:10, ml:16 }}>
-                        <Typography sx={{ flex: 1 }} variant="h6" component="div">
+                    <Box sx={{bgcolor: '#f06292', m:10, ml:16 }}>
+                        <Typography variant="h6" component="div">
                             Matches
                         </Typography>
                         <Divider />
-                        {this.state.user && this.renderFriends()}
+                        {this.state.user && this.renderMatches()}
                     </Box>
                 </Stack>
 

@@ -30,7 +30,8 @@ export class UsersController {
 
   @Get('user')
   findUsersById(@Req() req: any) {
-    return this.userService.findUsersById(req.session.userId);
+    return this.userService.findUsersById(req.session.userId)
+    //.then((user) => user ? user : {} );
   }
 
   @Post('create')

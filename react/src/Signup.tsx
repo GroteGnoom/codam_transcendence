@@ -50,7 +50,7 @@ export function Signup() {
             method: "GET",
             credentials: 'include',
         })
-        .then(async (response) => {
+        .then(async (response) => {            
             const json = await response.json();
             if (response.ok) {
                 return json;
