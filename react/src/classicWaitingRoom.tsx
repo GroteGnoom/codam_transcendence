@@ -20,13 +20,33 @@ const ClassicWaitingRoom = () => {
         "loggedIn": true
     });
 
-    function startGame(payload: any) {
-        webSocket.current.emit("startGame", {
-            "Player1": payload.Player1,
-            "Player2": payload.Player2,
-            "PinkPong": false
-        });
-        navigate("/pinkpong", { replace: true });
+    async function startGame(payload: any) {
+        let user:number = 0;
+        await fetch(get_backend_host() + `/users/user`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+        .then((response) => {user = response.id})
+
+        let P1:number = payload.Player1;
+        let P2:number = payload.Player2;
+
+        console.log("User: ", user);
+        console.log("Player1: ", P1);
+        console.log("Player2: ", P2);
+        
+        if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
+            console.log("Emit start game");
+            webSocket.current.emit("startGame", {
+                "Player1": payload.Player1,
+                "Player2": payload.Player2,
+                "PinkPong": false
+            });
+            navigate("/pinkpong", { replace: true });
+        }
+        else {
+            console.log("Dit is niet de bedoeling...");
+        }
     }
 
     webSocket.current.on("found2PlayersClassic", startGame ) // subscribe on backend events

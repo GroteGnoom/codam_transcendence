@@ -11,6 +11,9 @@ import { Channel } from './Chat.types';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Link } from 'react-router-dom';
 
+const ENTER_KEY_CODE = 13;
+
+
 interface ChatWindowProps { 
     channel: Channel;
     openSettings: any;
@@ -136,6 +139,12 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         return `${date.toLocaleString()}`
     }
 
+    handleEnterKey(event: any) {
+        if(event.keyCode === ENTER_KEY_CODE){
+            this.postMessage();
+        }
+    }
+
     handleClose = () => {
         this.setState( {addUserOpen: false} );
     };
@@ -214,6 +223,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                 <Grid xs={9} item>
                                     <FormControl fullWidth>
                                         <TextField onChange={(e) => this.setState({text: e.target.value})}
+                                            onKeyDown={(e) => this.handleEnterKey(e)}
                                             disabled={this.state.muted}
                                             value={this.state.text}
                                             label="Type your message..."

@@ -19,6 +19,7 @@ export class ClassicWaitingRoomGateway {
   private readonly configService: ConfigService
 	) {}
 
+  waitingUsers: number[] = [];
   logins: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -29,23 +30,24 @@ export class ClassicWaitingRoomGateway {
 
 	handleConnection(client: Socket, @Session() session) {
     console.log("started classic waitingroom server", session);
-    this.client = getUserFromClient(client, this.configService);
-    if (!this.client) {
+    if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomeClassic", {"client": client.id});
       this.server.close();
     }
+    else {
+      this.waitingUsers.push(getUserFromClient(client, this.configService));
+      console.log("Pushed user");
+    }
 	}
 
   @SubscribeMessage('playerLeftClassic')
-  async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
-      if (getUserFromClient(client, this.configService)) {
-        if (this.logins === 2)
-          this.logins = 1;
-        else
-          this.logins = 0;
-      }
-      console.log(this.logins);
+  async handlePlayerLeaves(client: Socket, payload: any): Promise<void> {
+    if (getUserFromClient(client, this.configService)) {
+      let index = this.waitingUsers.indexOf(getUserFromClient(client, this.configService));
+      this.waitingUsers.splice(index, 1);
+    }
+    console.log("Left: ", this.logins);
   }
 
   @SubscribeMessage('loggedInClassic')
@@ -53,26 +55,21 @@ export class ClassicWaitingRoomGateway {
       this.checkWaitingRoom();
   }
 
-  checkWaitingRoom() {
-    if (this.logins === 0  || this.client != this.Player1)
-      this.logins = this.logins + 1;
-    console.log("Classic: ", this.logins);
-    if (this.logins === 2) {
-        console.log("Player1: ", this.Player1);
-        console.log("Client: ", this.client);
-        this.logins = 0;
-        this.Player2 = this.client;
-        this.client = 0;
-        console.log("2 players");
-        this.server.emit("found2PlayersClassic", {
-          "Player1": this.Player1,
-          "Player2": this.Player2,
-          "PinkPong": false
+  getUser(user:number) {
+    return (user);
+  }
+
+  async checkWaitingRoom() {
+    if (this.waitingUsers.length >= 2) {
+      console.log("Found 2 players");
+      this.Player1 = await this.getUser(this.waitingUsers[0]);
+      this.Player2 = await this.getUser(this.waitingUsers[1]);
+      await this.server.emit("found2PlayersClassic", {
+        "Player1": this.Player1,
+        "Player2": this.Player2,
+        "PinkPong": false
       });
-      this.Player1 = 0;
-      this.Player2 = 0;
+      this.waitingUsers.splice(0, 2);
     }
-    else
-      this.Player1 = this.client;
   }
 }

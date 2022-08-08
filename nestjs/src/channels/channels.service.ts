@@ -8,6 +8,7 @@ import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { ChannelsGateway } from './channels.gateway';
 import { MessageDto } from './message.dtos';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelsService {
@@ -17,21 +18,21 @@ export class ChannelsService {
         @InjectRepository(ChannelMember) private readonly memberRepository: Repository<ChannelMember>,         
         private readonly channelGateway: ChannelsGateway,
         private readonly userService: UsersService ) {
-        this.getChannels(0)
-        .then( (channels) => {
-            console.log(`Found ${channels.length} channels on startup`)
-            try{
-                if (channels.length === 2) {
-                    userService.findOrCreateUser("root")
-                    .then( (user) => {
-                        this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
-                        .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
-                        // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
-                    })
-                }
-            }
-            catch(e){}
-        })
+        // this.getChannels(0)
+        // .then( (channels) => {
+        //     console.log(`Found ${channels.length} channels on startup`)
+            // try{
+            //     if (channels.length === 2) {
+            //         userService.findOrCreateUser("root")
+            //         .then( (user) => {
+            //             this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
+            //             .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
+            //             // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
+            //         })
+            //     }
+            // }
+            // catch(e){}
+        // })
     }
 
 
@@ -48,11 +49,13 @@ export class ChannelsService {
         });
     };
 
-    getChannelByName(name: string) {
-        return this.channelRepository.findOne({
+    async getChannelByName(name: string) {
+        const channel = await this.channelRepository.findOne({
             where: {name: name},
             relations: ['members', 'admins']
         });
+        channel.password = undefined;
+        return channel;
     }
 
     getChats(userID: number) { //gets direct messages
@@ -63,18 +66,22 @@ export class ChannelsService {
         });
     }
 
-    createChannel(createChannelDto: CreateChannelDto, userID: number) {
+    async createChannel(createChannelDto: CreateChannelDto, userID: number) {
         if (createChannelDto.channelType == ChannelType.Protected &&
                 !createChannelDto.password) {
             throw new BadRequestException('Must provide a password for a protected channel');
         }
-
+        // https://wanago.io/2020/05/25/api-nestjs-authenticating-users-bcrypt-passport-jwt-cookies/
+        // When we use bcrypt, we define salt rounds. It boils down to being a cost factor and controls the time needed to receive a result. 
+        // Increasing it by one doubles the time. The bigger the cost factor, the more difficult it is to reverse the hash with brute-forcing. 
+        // Generally speaking, 10 salt rounds should be fine.
+        const hash = await bcrypt.hash(createChannelDto.password, 10);  //ten salt
         return this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
             owner: userID,
             admins: [{id: userID}],
             members: [this.newMember(userID)],
-            password: createChannelDto.password,
+            password: hash,
             channelType: createChannelDto.channelType,
         });
     }
@@ -91,10 +98,10 @@ export class ChannelsService {
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
-
-        return this.channelRepository.save({ // update Channel object
+        const hash = await bcrypt.hash(createChannelDto.password, 10);
+        return this.channelRepository.save({
             name: createChannelDto.name,
-            password: createChannelDto.password,
+            password: hash,
             channelType: createChannelDto.channelType,
         });
     }
@@ -175,8 +182,8 @@ export class ChannelsService {
                 throw new BadRequestException("This member is banned")
         }
         if (channel.channelType === ChannelType.Protected) {
-            // TODO check password hash with backend value instead of string compare
-            if (password !== channel.password) {
+            const isPasswordMatching = await bcrypt.compare(password, channel.password);
+            if (!isPasswordMatching) {
                 throw new BadRequestException("Password is not correct")
             }
         }

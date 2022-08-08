@@ -1,4 +1,4 @@
-import { MenuItem } from "@mui/material";
+import { Box, MenuItem } from "@mui/material";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -88,11 +88,14 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
         
         return (
             <Dialog open={this.props.open} onClose={this.props.handleClose}>  {/*pop window to add user to channel */}
+                <Box sx={{ bgcolor: '#f48fb1' }}>
                 <DialogTitle>Add Member</DialogTitle>
                 <DialogContent>          
                     <FormControl fullWidth>
                         <InputLabel>select</InputLabel>
                         <Select
+                            color="primary"
+                            sx={{ bgcolor: '#f48fb1' }}
                             label="Member"
                             onChange={this.handleChange}
                             >
@@ -104,6 +107,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
                     <Button onClick={this.props.handleClose}>Cancel</Button>
                     <Button variant="contained" onClick={() => this.addMember()}>Add</Button>
                 </DialogActions>
+                </Box>
             </Dialog>
         );
     }
