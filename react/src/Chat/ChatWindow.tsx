@@ -115,8 +115,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 
     componentDidUpdate(prevProps: ChatWindowProps, prevState: ChatWindowState) { 
         if (
-            !prevProps.channel ||
-            !this.props.channel ||
+            !prevProps.channel || !this.props.channel ||
             prevProps.channel.name !== this.props.channel.name) {
             this.getMessages()
         }
@@ -156,11 +155,9 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                        {/* <Link href={`/userinfo/${msg.sender.id}`} underline="hover">
+                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} }>
                                 {`${msg.sender.username}`}
-                        </Link> */}
-                        <Link to={{ pathname:`/userinfo/${msg.sender.id}`} }>{`${msg.sender.username}`}</Link>
-                        
+                            </Link>
                         </Typography>
                         <Typography variant="h6">
                             {`${msg.text} `}

@@ -9,15 +9,19 @@ export class MatchService {
 
     addMatch(player_1_id : number, player_2_id : number) {
         const match = this.matchRepository.create({player_1 : {id : player_1_id}, player_2 : {id : player_2_id}});
-        this.matchRepository.save(match);
+        return this.matchRepository.save(match);
+    }
+
+    storeResult(matchID : number, scoreP1 : number, scoreP2 : number) {
+        this.matchRepository.save({id: matchID, scoreP1: scoreP1, scoreP2: scoreP2 });
     }
 
     getMatchHistory(player_id : number) {      //returns array of match entities
-        this.matchRepository.find({ 
+        return this.matchRepository.find({ 
             where : [
                 { player_1 : {id : player_id} },    // OR
                 { player_2 : {id : player_id} },    //https://orkhan.gitbook.io/typeorm/docs/find-options
             ]
-        })
+        })   
     }
 }

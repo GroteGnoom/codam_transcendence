@@ -13,7 +13,10 @@ export class Match {
     player_2: User;
 
     @Column()
-    score: number;
+    scoreP1: number;
+
+    @Column()
+    scoreP2: number;
 
     @CreateDateColumn()
     date: Date;

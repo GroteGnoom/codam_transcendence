@@ -7,6 +7,7 @@ import { Server, Socket } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
 import { get_frontend_host } from 'src/utils';
 import { getUserFromClient } from 'src/utils';
+import { MatchService } from './match.service';
 
 @WebSocketGateway({
 cors: {
@@ -16,7 +17,8 @@ cors: {
 })
 export class MatchGateway {
 constructor(
-  private readonly configService: ConfigService
+  private readonly configService: ConfigService,
+  private readonly matchService: MatchService,
 ) {}
 
 @WebSocketServer()
@@ -43,6 +45,7 @@ reset = false;
 Player1: number;
 Player2: number;
 userID: number;
+matchID: number;
 
 interval: any;
 
@@ -75,6 +78,8 @@ async handleStartGame(client: Socket, payload: any): Promise<void> {
   this.Player1 = payload.Player1;
   this.Player2 = payload.Player2;
   this.PinkPong = payload.PinkPong;
+  const match = await this.matchService.addMatch(this.Player1, this.Player2)
+  this.matchID = match.id;
   this.loop();
 }
 
@@ -171,7 +176,7 @@ getPositions() {
       /*	score a point */
       this.scoreP2 = this.scoreP2 + 1;
       if (this.PinkPong)
-      this.handlePowerups(1);
+        this.handlePowerups(1);
       this.setGame();
     }
     /*	handle bottom side */
@@ -274,6 +279,8 @@ setGame() {
       this.winner = 1;
     else
       this.winner = 2;
+    this.matchService.storeResult(this.matchID, this.scoreP1, this.scoreP2)
+
     clearInterval(this.interval);
     this.server.emit('boardUpdated', { 
       "ballRelX": this.ballRelX, 
