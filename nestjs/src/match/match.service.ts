@@ -5,15 +5,19 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class MatchService {
-    constructor( @InjectRepository(Match) private readonly matchRepository: Repository<Match>){}
+    constructor( 
+        @InjectRepository(Match) private readonly matchRepository: Repository<Match>,
+
+    ){}
 
     addMatch(player_1_id : number, player_2_id : number) {
         const match = this.matchRepository.create({player_1 : {id : player_1_id}, player_2 : {id : player_2_id}});
         return this.matchRepository.save(match);
     }
 
-    storeResult(matchID : number, scoreP1 : number, scoreP2 : number) {
-        this.matchRepository.save({id: matchID, scoreP1: scoreP1, scoreP2: scoreP2 });
+    async storeResult(matchID : number, scoreP1 : number, scoreP2 : number) {
+        
+        return this.matchRepository.save({id: matchID, scoreP1: scoreP1, scoreP2: scoreP2 });
     }
 
     getMatchHistory(player_id : number) {      //returns array of match entities
