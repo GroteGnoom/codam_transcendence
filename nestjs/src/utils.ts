@@ -25,6 +25,7 @@ export function get_backend_host() {
 	}
 	return ('http://' + hostName + ":5000");
 }
+
 export function getUserFromClient(client: Socket, configService: ConfigService) {
 	let userID: number;
 

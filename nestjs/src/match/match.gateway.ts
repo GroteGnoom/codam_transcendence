@@ -79,12 +79,12 @@ async handleStartGame(client: Socket, payload: any): Promise<void> {
   this.Player1 = payload.Player1;
   this.Player2 = payload.Player2;
   this.PinkPong = payload.PinkPong;
-  const match = await this.matchService.addMatch(this.Player1, this.Player2);
-  this.matchID = match.id;
   this.server.emit('playerNames', {
     "Player1": this.Player1,
     "Player2": this.Player2
   });
+  const match = await this.matchService.addMatch(this.Player1, this.Player2);
+  this.matchID = match.id;
   this.getPositions();
   setTimeout(this.loop.bind(this), 2000);
 }
@@ -226,23 +226,23 @@ getPositions() {
     this.ballRelX = this.ballRelX + this.ballVX;
     this.ballRelY = this.ballRelY + this.ballVY;
     /*	calculate paddle positions */
-    if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0.9)
+    if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0)
       this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-    if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 0.9)
+    if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth)
       this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
-    if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0.9)
+    if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0)
       this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-    if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 0.9)
+    if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth)
       this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
 
     if (this.paddleP1RelX < 0)
       this.paddleP1RelX = 0;
-    else if (this.paddleP1RelX > this.fieldWidth)
-      this.paddleP1RelX = this.fieldWidth;
+    else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
+      this.paddleP1RelX = this.fieldWidth - this.paddleWidth;
     if (this.paddleP2RelX < 0)
       this.paddleP2RelX = 0;
-    else if (this.paddleP2RelX > this.fieldWidth)
-      this.paddleP2RelX = this.fieldWidth;
+    else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
+      this.paddleP2RelX = this.fieldWidth - this.paddleWidth;
   }
   else if (this.winner === -1) {
     this.winner = 0;
