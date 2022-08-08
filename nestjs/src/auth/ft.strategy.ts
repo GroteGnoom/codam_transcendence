@@ -4,7 +4,6 @@ import {
 	Injectable,
 	Logger,
 } from '@nestjs/common';
-//import { AuthService } from './auth.service';
 import { Strategy } from 'passport-oauth2';
 import { stringify } from 'querystring';
 import { HttpService } from '@nestjs/axios';

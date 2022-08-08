@@ -10,7 +10,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 const util = require('node:util');
-import { AuthService } from './auth.service';
 import { SessionGuard } from './session.guard';
 import { UsersService } from '../users/users.service';
 import { GlobalService } from '../global.service';
@@ -28,8 +27,7 @@ declare module "express-session" {
 @Controller('auth')
 export class AuthController
 {  
-	constructor(private authService: AuthService, 
-			   private userService: UsersService) {}
+	constructor( private userService: UsersService) {}
 	private readonly logger = new Logger(AuthController.name);
 	@Get('ft')
 	@Redirect(get_frontend_host() + '/logged_in', 302)
@@ -41,7 +39,9 @@ export class AuthController
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
 
-		const userID = await this.authService.login(user);
+        const user2: any = user; //from String to string?
+		this.logger.log('type of  user2:', user2.constructor.name);
+		const userID = (await this.userService.findOrCreateUser(user2)).id;
 		req.session.logged_in = true;
 		req.session.userId = userID;
 		console.log("session id in authcontroller:", req.session.id);
