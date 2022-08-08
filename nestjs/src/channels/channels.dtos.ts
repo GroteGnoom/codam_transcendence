@@ -9,7 +9,7 @@ export enum ChannelType {
 
 export class CreateChannelDto {
 	@IsNotEmpty()
-	@MaxLength(20)
+	@MaxLength(10)
 	name: string;
 
 	password?: string;

@@ -46,18 +46,19 @@ export default function PinkPong() {
 			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 			if (!ctx)
 				console.log("error");
-		
+				
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		setTimeOut = false;
 		
 		console.log('Opening WebSocket');
 		webSocket.current = io(get_backend_host(), {withCredentials: true, 
-							   extraHeaders: 
-							   {"extraheader":"extra", 
-								Cookie: "name=value; name2=value2",
-								Definitely_not_a_cookie: "name=value; name2=value2",
-	   	}}); // open websocket connection with backend
+			extraHeaders: 
+			{"extraheader":"extra", 
+			Cookie: "name=value; name2=value2",
+			Definitely_not_a_cookie: "name=value; name2=value2",
+		}}); // open websocket connection with backend
+		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
 			"rightKeyPressed": false,
@@ -70,6 +71,19 @@ export default function PinkPong() {
 			webSocket.current.close();
 		}
 	}, []);
+
+	async function setPlayerNames(payload: any) {
+		await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+			.then((response) => {namePlayer1 = response.username})
+		await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+		.then((response) => {namePlayer2 = response.username})
+	}
 	
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
@@ -157,6 +171,11 @@ export default function PinkPong() {
 		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, textSize.toString() + 'px serif');
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
+		textSize = 24 * (fieldHeight / 1000);
+		//name P1
+		drawText(namePlayer1, getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3 + 50, textSize.toString() + 'px serif');
+		//name P2
+		drawText(namePlayer2, getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2 - 50, textSize.toString() + 'px serif');
 		//paddle P1
 		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, '#d154a9', '#d154a9');
 		//paddle P2

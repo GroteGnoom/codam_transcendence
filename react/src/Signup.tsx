@@ -38,14 +38,17 @@ export function Signup() {
         imgHash: Date.now(),
     });
     const [checked, setChecked] = useState(false);
-    const url = get_backend_host() + "/auth/ft";
+    const urlAuth = get_backend_host() + "/auth/ft";
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
+    const [started, setStarted] = useState(false);
     const navigate = useNavigate();
 
     //backend calls
     async function getUserInfoDatabase () {
         getLoggedIn();
+        if (isLoggedIn === false)
+            return;
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
@@ -124,7 +127,7 @@ export function Signup() {
             } else {
                 throw new Error(json.message);
             }
-        }).catch((error) => {
+        }).catch(() => {
             console.log("catched the error");
             return false;
         });
@@ -302,7 +305,7 @@ export function Signup() {
 
     useEffect(() => {
         if ( isLoggedIn ) {
-            getLoggedIn();
+            getUserInfoDatabase();
         }
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
@@ -316,6 +319,7 @@ export function Signup() {
     useEffect(() => {
         async function fetchData() { // sleep before fetching the data to show spinner
             await sleep(500);
+            setStarted(true);
             getUserInfoDatabase();
         }
         fetchData();
@@ -324,7 +328,7 @@ export function Signup() {
 
     return ( // holds the HTML code
         <ThemeProvider theme={pinkTheme}>
-            { intraName === "" ? // before fetchin the data, show spinner
+            { started === false ? // before fetchin the data, show spinner
                 ( <div className="menu"> <CircularProgress/> </div> )
             : isLoggedIn ? ( // only show this when logged in
                 <div>
@@ -334,7 +338,7 @@ export function Signup() {
             ) : ( // if not logged in, show login button
                 <div className="menu">
                     {/* TODO get backend server */}
-                    <a className="App-link" href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
+                    <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a> 
                 </div>
             )}
 

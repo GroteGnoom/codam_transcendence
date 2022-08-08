@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { get_frontend_host } from 'src/utils';
 import { getUserFromClient } from 'src/utils';
 import { MatchService } from './match.service';
+import { min } from 'class-validator';
 
 @WebSocketGateway({
 cors: {
@@ -25,9 +26,10 @@ constructor(
 server: Server;
 
 private PinkPong: boolean //pinkpong (true) or original pong (false) version
-  
-ballSpeed = 9;
+
+ballSpeed = 1;
 paddleSpeed = 15;
+maxAngle = 3 * Math.PI / 12;
 maxScore = 3;
 
 paddleP1RelX: number;
@@ -77,9 +79,14 @@ async handleStartGame(client: Socket, payload: any): Promise<void> {
   this.Player1 = payload.Player1;
   this.Player2 = payload.Player2;
   this.PinkPong = payload.PinkPong;
-  const match = await this.matchService.addMatch(this.Player1, this.Player2)
+  this.server.emit('playerNames', {
+    "Player1": this.Player1,
+    "Player2": this.Player2
+  });
+  const match = await this.matchService.addMatch(this.Player1, this.Player2);
   this.matchID = match.id;
-  this.loop();
+  this.getPositions();
+  setTimeout(this.loop.bind(this), 2000);
 }
 
 @SubscribeMessage('keyPressed')
@@ -160,13 +167,27 @@ ballIsBetweenPaddleP2Y() {
 loop() {
   this.interval = setInterval(this.getPositions.bind(this), 1000 / 60);
 }
-  
+
+min(a: number, b: number) {
+  if (a < b)
+    return a;
+  return b;
+}
+max(a: number, b: number) {
+  if (a > b)
+    return a;
+  return b;
+}
+
 getPositions() {
   if (this.winner === 0){
     /*	handle top side */
     if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
       /*	bounce top paddle */
-      this.ballVY = this.ballVY * -1;
+      let relativeHit = (this.paddleP1RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
+      let bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+      this.ballVY = this.ballSpeed * Math.cos(bounceAngle);
+      this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
     }
     else if (this.ballRelY < this.paddleP1RelY - 10) {
       /*	score a point */
@@ -178,7 +199,10 @@ getPositions() {
     /*	handle bottom side */
     if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
       /*	bounce bottom paddle */
-      this.ballVY = this.ballVY * -1;
+      let relativeHit = (this.paddleP2RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
+      let bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+      this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
+      this.ballVY = this.ballSpeed * (Math.cos(bounceAngle) * -1);
     }
     else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
       /*	score a point */
@@ -195,18 +219,30 @@ getPositions() {
     else if (this.ballRelX <= 0 && this.ballVX < 0) {
       this.ballVX = this.ballVX * -1;
     }
+
+   
+
     /*	calculate next position */
     this.ballRelX = this.ballRelX + this.ballVX;
     this.ballRelY = this.ballRelY + this.ballVY;
     /*	calculate paddle positions */
-    if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0.9)
+    if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0)
       this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-    if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 0.9)
+    if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth)
       this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
-    if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0.9)
+    if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0)
       this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-    if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 0.9)
+    if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth)
       this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
+
+    if (this.paddleP1RelX < 0)
+      this.paddleP1RelX = 0;
+    else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
+      this.paddleP1RelX = this.fieldWidth - this.paddleWidth;
+    if (this.paddleP2RelX < 0)
+      this.paddleP2RelX = 0;
+    else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
+      this.paddleP2RelX = this.fieldWidth - this.paddleWidth;
   }
   else if (this.winner === -1) {
     this.winner = 0;

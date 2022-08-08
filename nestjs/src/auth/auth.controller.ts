@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Controller,
 	Get, Logger, Redirect,
 	Req,
@@ -42,9 +43,23 @@ export class AuthController
 		const userID = await this.authService.login(user);
 		req.session.logged_in = true;
 		req.session.userId = userID;
-		console.log("session id in authcontroller:", req.session.id);
+		// console.log("session id in authcontroller:", req.session.id);
+		// if (GlobalService.users.has(req.session.id as string)){
+		// 	console.log("already an active session")
+		// 	throw new BadRequestException('Already an active session in another browser');
+		// }
+		
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
+	}
+
+	@Get('uniqueSession')
+	getUniqueSession(@Req() req: Request) {
+		for(let key of GlobalService.users.keys()) {
+			console.log(key);
+		}
+		this.logger.log("unique session?", GlobalService.users.has(req.session.id));
+		return (!GlobalService.users.has(req.session.id))
 	}
 
 	@UseGuards(SessionGuard)
@@ -62,7 +77,7 @@ export class AuthController
 
 	@Get('amiloggedin')
 	amILoggedIn(@Req() request: Request) {
-		this.logger.log("logged in?", request.session.logged_in);
+		// this.logger.log("logged in?", request.session.logged_in);
 		if (request.session.logged_in)
 			return true;
 		return false;

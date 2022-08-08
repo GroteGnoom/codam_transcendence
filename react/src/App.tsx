@@ -1,6 +1,6 @@
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Account from './account/Account';
 import UserInfo from './account/UserInfo';
@@ -14,6 +14,8 @@ import PinkPong from './PinkPong';
 import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import QR from './QR';
 import { Signup } from './Signup';
+import { get_backend_host, userStatus } from './utils';
+import { io } from 'socket.io-client';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -21,6 +23,17 @@ const pinkTheme = createTheme({ palette: { primary: pink } })
 function App() {
 	// const statusWebSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	const [statusWebSocket, setStatusWebsocket] = useState(null);
+
+	useEffect(() => {
+		if (!statusWebSocket) {
+			console.log("Opening status websocket")
+			const socket = io(get_backend_host() + "/status-ws", {
+				withCredentials: true,
+				path: "/status-ws/socket.io" 
+			})
+			setStatusWebsocket(socket as any)
+		}
+	}, []);
 
 	return (
 		<ThemeProvider theme={pinkTheme}>

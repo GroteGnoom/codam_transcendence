@@ -6,10 +6,11 @@ import { MatchGateway } from './match.gateway';
 import { PinkPongWaitingRoomGateway } from 'src/PinkPongWaitingroom/PinkPongWaitingroom.gateway';
 import { MatchController } from './match.controller';
 import { MatchService } from './match.service';
+import { GameStats } from 'src/typeorm/gameStats.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Match]), 
+    TypeOrmModule.forFeature([Match, GameStats]), 
     // UsersModule,
     // AuthModule
   ],
