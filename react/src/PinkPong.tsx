@@ -46,25 +46,25 @@ export default function PinkPong() {
 			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 			if (!ctx)
 				console.log("error");
-		
+				
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		setTimeOut = false;
 		
 		console.log('Opening WebSocket');
 		webSocket.current = io(get_backend_host(), {withCredentials: true, 
-							   extraHeaders: 
-							   {"extraheader":"extra", 
-								Cookie: "name=value; name2=value2",
-								Definitely_not_a_cookie: "name=value; name2=value2",
-	   	}}); // open websocket connection with backend
+			extraHeaders: 
+			{"extraheader":"extra", 
+			Cookie: "name=value; name2=value2",
+			Definitely_not_a_cookie: "name=value; name2=value2",
+		}}); // open websocket connection with backend
+		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
 			"rightKeyPressed": false,
 			"reset": false
 		})
 		webSocket.current.on("boardUpdated", getCoordinates ) // subscribe on backend events
-		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
 
 		return () => {
 			console.log('Closing WebSocket');
