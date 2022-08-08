@@ -49,25 +49,36 @@ interface HomeProps {
 
 const Home = (props : HomeProps) => {
 	const [li, setLi] = useState(false);
+	const [uniqueSession, setUniqueSession] = useState(false);
 
 	//backend calls
+	async function getUniqueSession() {
+		return await fetch(get_backend_host() + "/auth/uniqueSession", {
+			method: "GET",
+			credentials: 'include',
+		}).then(response => response.json())
+		.then((response) => {
+            setUniqueSession(response);
+		})
+	}
+
 	async function getLoggedIn() {
 		return await fetch(get_backend_host() + "/auth/amiloggedin/", {
 			method: "GET",
 			credentials: 'include',
 		})
-			.then(async (response) => {
-				const json = await response.json();
-				console.log(json)
-				if ( json && !props.statusWebsocket ){
-					console.log('Opening Status WebSocket');
-					props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
-						withCredentials: true,
-						path: "/status-ws/socket.io" 
-					}))
-				}
-				setLi(json);
-			});
+		.then(async (response) => { // TODO: is this the right place?
+			const json = await response.json();
+			console.log(json)
+			if ( json && !props.statusWebsocket ){
+				console.log('Opening Status WebSocket');
+				props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
+					withCredentials: true,
+					path: "/status-ws/socket.io" 
+				}))
+			}
+			setLi(json);
+		});
 	}
 
 	async function signOutUser() {
@@ -78,18 +89,18 @@ const Home = (props : HomeProps) => {
 	}
 
 	async function logOutUser() {
-		await fetch(get_backend_host() + "/auth/logout/", {
-			method: "GET",
-			credentials: 'include',
-		})
-		await fetch(get_backend_host() + "/users/signupuser", {
-            method: "PUT",
-            credentials: 'include',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                "status": userStatus.Offline,
-            })
-        })
+		// await fetch(get_backend_host() + "/auth/logout/", {
+		// 	method: "GET",
+		// 	credentials: 'include',
+		// })
+		// await fetch(get_backend_host() + "/users/signupuser", {
+        //     method: "PUT",
+        //     credentials: 'include',
+        //     headers: {'Content-Type':'application/json'},
+        //     body: JSON.stringify({
+        //         "status": userStatus.Offline,
+        //     })
+        // })
 	}
 
 	// effect hooks
@@ -100,12 +111,15 @@ const Home = (props : HomeProps) => {
 
 	useEffect(() => {
 		getLoggedIn();
+		getUniqueSession();
 	}, []); // will only be called on initial mount and unmount
 
 
 	return (
 		<ThemeProvider theme={pinkTheme}>
 			<main>
+				{ uniqueSession ?
+				null : <p>Pink Pong is already open in another browser</p> }
 				<div className="App">
 					<header className="App-header">
 						<ShowLogin />

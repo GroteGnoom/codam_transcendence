@@ -50,6 +50,15 @@ export class AuthController
 		return {url: get_frontend_host() + '/signup'};
 	}
 
+	@Get('uniqueSession')
+	getUniqueSession(@Req() req: Request) {
+		for(let key of GlobalService.users.keys()) {
+			console.log(key);
+		}
+		this.logger.log("unique session?", GlobalService.users.has(req.session.id));
+		return (!GlobalService.users.has(req.session.id))
+	}
+
 	@UseGuards(SessionGuard)
 	@Get('profile')
 	getProfile(@Req() req) {
