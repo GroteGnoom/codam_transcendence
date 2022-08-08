@@ -11,7 +11,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { SessionGuard } from './session.guard';
 import { UsersService } from '../users/users.service';
 import { GlobalService } from '../global.service';
