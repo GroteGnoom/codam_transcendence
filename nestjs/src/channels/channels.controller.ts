@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Po
 import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
 
-//@UseGuards(JwtAuthGuard)
 @Controller('channels')
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
@@ -33,7 +32,7 @@ export class ChannelsController {
 	}
 
     @Put('update/:name')
-	@UsePipes(ValidationPipe)   //validates body (not empty etc)
+	@UsePipes(ValidationPipe)
 	updateChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
         const userID = req.session.userId;
 		return this.channelsService.updateChannel(createChannelDto, userID);

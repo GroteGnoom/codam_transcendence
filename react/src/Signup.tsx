@@ -38,7 +38,7 @@ export function Signup() {
         imgHash: Date.now(),
     });
     const [checked, setChecked] = useState(false);
-    const url = get_backend_host() + "/auth/ft";
+    const urlAuth = get_backend_host() + "/auth/ft";
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
     const [started, setStarted] = useState(false);
@@ -338,7 +338,7 @@ export function Signup() {
             ) : ( // if not logged in, show login button
                 <div className="menu">
                     {/* TODO get backend server */}
-                    <a className="App-link" href={url}><Button className="button" variant="contained">Log in 42</Button></a> 
+                    <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a> 
                 </div>
             )}
 

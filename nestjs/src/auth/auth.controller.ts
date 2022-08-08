@@ -44,9 +44,21 @@ export class AuthController
 		const userID = await this.authService.login(user);
 		req.session.logged_in = true;
 		req.session.userId = userID;
-		console.log("session id in authcontroller:", req.session.id);
+		// console.log("session id in authcontroller:", req.session.id);
+		// if (GlobalService.users.has(req.session.id as string)){
+		// 	console.log("already an active session")
+		// }
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
+	}
+
+	@Get('uniqueSession')
+	getUniqueSession(@Req() req: Request) {
+		for(let key of GlobalService.users.keys()) {
+			console.log(key);
+		}
+		this.logger.log("unique session?", GlobalService.users.has(req.session.id));
+		return (!GlobalService.users.has(req.session.id))
 	}
 
 	@UseGuards(SessionGuard)
