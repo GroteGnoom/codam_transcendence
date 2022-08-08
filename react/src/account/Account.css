@@ -21,7 +21,12 @@ body {
     margin: 5px;
     width: 250px;
 }
-
+.menu .paper {
+    text-align: center;
+    margin: 5px;
+    width: 250px;
+    background-color:rgb(255, 171, 247);
+}
 .Account {
     font-family: sans-serif;
     text-align: center;

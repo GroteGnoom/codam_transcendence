@@ -233,9 +233,11 @@ export function Account() {
     function showAccount() {
         return (
             <div className="menu">
-                <Typography sx={{ fontWeight: 700 }} className="item" color="primary" variant="h5" gutterBottom component="div">
-                    CHANGE USER SETTINGS
-                </Typography>
+                <Paper className="paper">
+                    <Typography sx={{ fontWeight: 700 }} className="text" color="primary" variant="h5" gutterBottom component="div">
+                        CHANGE USER SETTINGS
+                    </Typography>
+                </Paper>
                 <Badge className="item"
                     overlap="circular"
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
