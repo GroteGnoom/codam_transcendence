@@ -127,7 +127,7 @@ export function Signup() {
             } else {
                 throw new Error(json.message);
             }
-        }).catch((error) => {
+        }).catch(() => {
             console.log("catched the error");
             return false;
         });

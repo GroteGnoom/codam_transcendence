@@ -26,8 +26,8 @@ constructor(
 server: Server;
 
 private PinkPong: boolean //pinkpong (true) or original pong (false) version
-  
-ballSpeed = 5;
+
+ballSpeed = 9;
 paddleSpeed = 15;
 maxAngle = 3 * Math.PI / 12;
 maxScore = 3;
@@ -81,7 +81,12 @@ async handleStartGame(client: Socket, payload: any): Promise<void> {
   this.PinkPong = payload.PinkPong;
   const match = await this.matchService.addMatch(this.Player1, this.Player2);
   this.matchID = match.id;
-  this.loop();
+  this.server.emit('playerNames', {
+    "Player1": this.Player1,
+    "Player2": this.Player2
+  });
+  this.getPositions();
+  setTimeout(this.loop.bind(this), 2000);
 }
 
 @SubscribeMessage('keyPressed')

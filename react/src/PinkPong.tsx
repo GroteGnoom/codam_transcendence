@@ -64,12 +64,26 @@ export default function PinkPong() {
 			"reset": false
 		})
 		webSocket.current.on("boardUpdated", getCoordinates ) // subscribe on backend events
+		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
 
 		return () => {
 			console.log('Closing WebSocket');
 			webSocket.current.close();
 		}
 	}, []);
+
+	async function setPlayerNames(payload: any) {
+		await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+			.then((response) => {namePlayer1 = response.username})
+		await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+		.then((response) => {namePlayer2 = response.username})
+	}
 	
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
@@ -157,6 +171,11 @@ export default function PinkPong() {
 		drawText(scoreP1.toString(), getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3, textSize.toString() + 'px serif');
 		//score P2
 		drawText(scoreP2.toString(), getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2, textSize.toString() + 'px serif');
+		textSize = 24 * (fieldHeight / 1000);
+		//name P1
+		drawText(namePlayer1, getFieldX() + fieldWidth / 2, getFieldY() + fieldHeight / 3 + 50, textSize.toString() + 'px serif');
+		//name P2
+		drawText(namePlayer2, getFieldX() + fieldWidth / 2, getFieldY() + (fieldHeight / 3) * 2 - 50, textSize.toString() + 'px serif');
 		//paddle P1
 		drawRectangle(paddleP1X, paddleP1Y, (paddleWidth * paddleSizeMultiplierP1), paddleHeight, '#d154a9', '#d154a9');
 		//paddle P2

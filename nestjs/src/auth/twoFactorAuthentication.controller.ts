@@ -86,11 +86,7 @@ export class TwoFactorAuthenticationController {
 			throw new UnauthorizedException('Wrong authentication code');
 		}
 		this.logger.log('2fa code is correct');
-		await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		request.session.tfa_validated = true;
-
-		//return request.session.tfa_validated;
-		this.logger.log('going to respond');
-		return "I am a banana";
+		return await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 	}
 }
