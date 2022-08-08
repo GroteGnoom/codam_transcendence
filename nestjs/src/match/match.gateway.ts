@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { get_frontend_host } from 'src/utils';
 import { getUserFromClient } from 'src/utils';
 import { MatchService } from './match.service';
+import { min } from 'class-validator';
 
 @WebSocketGateway({
 cors: {
@@ -162,6 +163,17 @@ loop() {
   this.interval = setInterval(this.getPositions.bind(this), 1000 / 60);
 }
 
+min(a: number, b: number) {
+  if (a < b)
+    return a;
+  return b;
+}
+max(a: number, b: number) {
+  if (a > b)
+    return a;
+  return b;
+}
+
 getPositions() {
   if (this.winner === 0){
     /*	handle top side */
@@ -202,18 +214,21 @@ getPositions() {
     else if (this.ballRelX <= 0 && this.ballVX < 0) {
       this.ballVX = this.ballVX * -1;
     }
+
+   
+
     /*	calculate next position */
     this.ballRelX = this.ballRelX + this.ballVX;
     this.ballRelY = this.ballRelY + this.ballVY;
     /*	calculate paddle positions */
     if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0.9)
-      this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
+      this.paddleP1RelX = this.min(0,this.paddleP1RelX - (this.paddleSpeed * 1));
     if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth - 0.9)
-      this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
+      this.paddleP1RelX = this.max(this.fieldWidth,this.paddleP1RelX + (this.paddleSpeed * 1));
     if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0.9)
-      this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
+      this.paddleP2RelX = this.min(0,this.paddleP2RelX - (this.paddleSpeed * 1));
     if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth - 0.9)
-      this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
+      this.paddleP2RelX = this.max(this.fieldWidth,this.paddleP2RelX + (this.paddleSpeed * 1));
   }
   else if (this.winner === -1) {
     this.winner = 0;
