@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { get_backend_host } from './utils';
+import { get_backend_host, userStatus } from './utils';
 import { io } from 'socket.io-client';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
@@ -77,6 +77,21 @@ const Home = (props : HomeProps) => {
 		})
 	}
 
+	async function logOutUser() {
+		await fetch(get_backend_host() + "/auth/logout/", {
+			method: "GET",
+			credentials: 'include',
+		})
+		await fetch(get_backend_host() + "/users/signupuser", {
+            method: "PUT",
+            credentials: 'include',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                "status": userStatus.Offline,
+            })
+        })
+	}
+
 	// effect hooks
 	// combination of componentDidMount and componentDidUpdate
 	useEffect(() => { // will be called after the DOM update (after render)
@@ -100,6 +115,7 @@ const Home = (props : HomeProps) => {
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/chat" }}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
+						<Button disabled={!li} className="button" onClick={() => logOutUser()} variant="contained">Log out</Button>
 						{/* TODO: add logout button */}
 					</header>
 				</div>
