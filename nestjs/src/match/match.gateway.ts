@@ -27,7 +27,7 @@ server: Server;
 
 private PinkPong: boolean //pinkpong (true) or original pong (false) version
 
-ballSpeed = 1;
+ballSpeed = 9;
 paddleSpeed = 15;
 maxAngle = 3 * Math.PI / 12;
 maxScore = 3;
