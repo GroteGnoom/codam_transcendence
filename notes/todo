@@ -1,9 +1,9 @@
-once nestjs/config has updated its dependencies, maybe we can upgrade to nestjs 9.0.0
+When starting up on a new computer, the pg_hba.conf is not set correctly (for every computer), so it could be that 0.0.0.0/0 is missing, and you'll get 
+ error: no pg_hba.conf entry for host "172.18.0.4", user "postgres", database "transcendence_db", no encryption
+ ..and also other problems, for which the proper solution is to delete all postgres_data
 
-check where entries are saved
-127.0.0.1:5000/users does show them, so they must be saved somewhere?
 
-Iris----
+Irir----
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] aantekingen frontend

@@ -11,7 +11,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 const util = require('node:util');
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
 import { SessionGuard } from './session.guard';
 import { UsersService } from '../users/users.service';
 import { GlobalService } from '../global.service';
@@ -51,6 +50,15 @@ export class AuthController
 		// }
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
+	}
+
+	@Get('uniqueSession')
+	getUniqueSession(@Req() req: Request) {
+		for(let key of GlobalService.users.keys()) {
+			console.log(key);
+		}
+		this.logger.log("unique session?", GlobalService.users.has(req.session.id));
+		return (!GlobalService.users.has(req.session.id))
 	}
 
 	@UseGuards(SessionGuard)

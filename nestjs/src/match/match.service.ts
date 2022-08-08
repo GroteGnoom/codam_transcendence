@@ -11,7 +11,7 @@ export class MatchService {
     ){}
 
     addMatch(player_1_id : number, player_2_id : number) {
-        const match = this.matchRepository.create({player_1 : {id : player_1_id}, player_2 : {id : player_2_id}});
+        const match = this.matchRepository.create({player_1 : {id : player_1_id}, player_2 : {id : player_2_id}, scoreP1 : 0, scoreP2 : 0 });
         return this.matchRepository.save(match);
     }
 
