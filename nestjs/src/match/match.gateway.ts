@@ -24,8 +24,9 @@ server: Server;
 
 private PinkPong: boolean //pinkpong (true) or original pong (false) version
   
-ballSpeed = 9;
+ballSpeed = 5;
 paddleSpeed = 15;
+maxAngle = 5 * Math.PI / 12;
 maxScore = 3;
 
 paddleP1RelX: number;
@@ -155,13 +156,16 @@ ballIsBetweenPaddleP2Y() {
 loop() {
   this.interval = setInterval(this.getPositions.bind(this), 1000 / 60);
 }
-  
+
 getPositions() {
   if (this.winner === 0){
     /*	handle top side */
     if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
       /*	bounce top paddle */
-      this.ballVY = this.ballVY * -1;
+      let relativeHit = (this.paddleP1RelY + (this.paddleWidth / 2)) - this.ballRelY;
+      let bounceAngle = relativeHit / (this.paddleWidth / 2) * this.maxAngle;
+      this.ballVX = this.ballSpeed * Math.cos(bounceAngle);
+      this.ballVY = (this.ballSpeed * Math.sin(bounceAngle)) * -1;
     }
     else if (this.ballRelY < this.paddleP1RelY - 10) {
       /*	score a point */
@@ -173,7 +177,10 @@ getPositions() {
     /*	handle bottom side */
     if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
       /*	bounce bottom paddle */
-      this.ballVY = this.ballVY * -1;
+      let relativeHit = (this.paddleP2RelY + (this.paddleWidth / 2)) - this.ballRelY;
+      let bounceAngle = relativeHit / (this.paddleWidth / 2) * this.maxAngle;
+      this.ballVX = this.ballSpeed * Math.cos(bounceAngle);
+      this.ballVY = (this.ballSpeed * Math.sin(bounceAngle)) * -1;
     }
     else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
       /*	score a point */
