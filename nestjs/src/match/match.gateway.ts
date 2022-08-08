@@ -78,7 +78,7 @@ async handleStartGame(client: Socket, payload: any): Promise<void> {
   this.Player1 = payload.Player1;
   this.Player2 = payload.Player2;
   this.PinkPong = payload.PinkPong;
-  const match = await this.matchService.addMatch(this.Player1, this.Player2)
+  const match = await this.matchService.addMatch(this.Player1, this.Player2);
   this.matchID = match.id;
   this.loop();
 }
