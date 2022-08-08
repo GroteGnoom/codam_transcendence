@@ -237,12 +237,12 @@ getPositions() {
 
     if (this.paddleP1RelX < 0)
       this.paddleP1RelX = 0;
-    else if (this.paddleP1RelX - (this.paddleWidth * this.paddleSizeMultiplierP1) > this.fieldWidth)
-      this.paddleP1RelX = this.fieldWidth;
+    else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
+      this.paddleP1RelX = this.fieldWidth - this.paddleWidth;
     if (this.paddleP2RelX < 0)
       this.paddleP2RelX = 0;
-    else if (this.paddleP2RelX - (this.paddleWidth * this.paddleSizeMultiplierP1) > this.fieldWidth)
-      this.paddleP2RelX = this.fieldWidth;
+    else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
+      this.paddleP2RelX = this.fieldWidth - this.paddleWidth;
   }
   else if (this.winner === -1) {
     this.winner = 0;
