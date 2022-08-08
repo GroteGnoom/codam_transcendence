@@ -1,46 +1,63 @@
-import react from 'react';
-import TextField from '@mui/material/TextField';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
+import { Alert } from "@mui/material";
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
 import { pink } from '@mui/material/colors';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Alert } from "@mui/material";
-import './Account.css'
-import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
-import { get_backend_host, userStatus } from '../utils'
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Snackbar from '@mui/material/Snackbar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import FormData from 'form-data';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Account.css';
+import { get_backend_host, userStatus } from '../utils';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
-class Account extends react.Component<{}, { users:[], username: string, intraName: any, status: userStatus, error: string }> { //set the props to empty object, and set the state to {vars and types}
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            users: [],
-            username: "",
-            intraName: "",
-            status: userStatus.Online,
-            error: ""
-        }
-        this.keyPress = this.keyPress.bind(this);
-    }
+export function Account() {
+    const [users, setUsers] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isSignedUp, setIsSignedUp] = useState(false);
+    const [username, setUsername] = useState("");
+    const [intraName, setIntraName] = useState("");
+    const [status, setStatus] = useState(userStatus.Online);
+    const [error, setError] = useState("");
+    const [event, setEvent] = useState("");
+    const [avatar, setAvatar] = useState({
+        imgSrc: get_backend_host() + "/users/avatar",
+        imgHash: Date.now(),
+    });
+    const [checked, setChecked] = useState(false);
+    const urlAuth = get_backend_host() + "/auth/ft";
+	const url2fa = get_backend_host() + "/2fa/generate";
+    const [tfaCode, setTfaCode] = useState("");
+    const [started, setStarted] = useState(false);
+    const [newTfa, setNewTfa] = useState(false);
+    const navigate = useNavigate();
 
-    async createUser() {
-        console.log("try create user...");
-        console.log("current users");
-        console.log(this.getUsers());
-        return await fetch(get_backend_host() + "/users/create", {
-            method: "POST",
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                "username": this.state.username,
-                "intraName": this.state.intraName,
-                "status": this.state.status
-            })
+    //backend calls
+    async function getUserInfoDatabase () {
+        getLoggedIn();
+        if (isLoggedIn === false)
+            return;
+        return await fetch(get_backend_host() + "/users/user", {
+            method: "GET",
+            credentials: 'include',
         })
-        .then(async (response) => {
+        .then(async (response) => {            
             const json = await response.json();
             if (response.ok) {
                 return json;
@@ -49,59 +66,19 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
             }
         })
         .then((response) => {
-            this.setState({ users: response })
+            console.log("found intraname: " + response.intraName);
+            console.log("found username: " + response.username);
+            console.log("found isTfaEnabled: " + response.isTfaEnabled);
+            setIntraName(response.intraName);
+            setUsername(response.username);
+            setIsSignedUp(response.isSignedUp);
+            setChecked(response.isTfaEnabled);
         })
-        .catch((err: Error) => this.setState({error: err.message}))
+        .catch((err: Error) => setError(err.message))
     }
 
-    async getUser() {
-        // return await fetch(get_backend_host() + `/users/id/${this.state.user.id}`, {
-        return await fetch(get_backend_host() + "/users/id/1", {
-            method: "GET" })
-        .then(async (response) => {
-            const json = await response.json();
-            if (response.ok) {
-                return json;
-            } else {
-                throw new Error(json.message)
-            }
-        })
-        .catch((err: Error) => this.setState({error: err.message}))
-    }
-
-    async changeUsername () {
-        return await fetch(get_backend_host() + "/users/setusername", {
-            method: "POST",
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                "username": this.state.username
-            })
-        })
-	}
-
-    async getUsers () {
-        return await fetch(get_backend_host() + "/users", {
-            method: "GET"} )
-        .then(async (response) => {
-            const json = await response.json();
-            if (response.ok) {
-                return json;
-            } else {
-                throw new Error(json.message)
-            }
-        })
-        .catch((err: Error) => this.setState({error: err.message}))
-    }
-
-    keyPress(e: any){
-        if(e.keyCode === 13){
-            console.log('enter pressed');
-            this.createUser()
-        }
-    }
-
-    async getIntraName () {
-        return await fetch(get_backend_host() + "/users/user/", { 
+    async function getLoggedIn () {
+        return await fetch(get_backend_host() + "/auth/amiloggedin/", { 
             method: "GET",
             credentials: 'include',
         })
@@ -114,69 +91,279 @@ class Account extends react.Component<{}, { users:[], username: string, intraNam
             }
         })
         .then((response) => {
-            this.setState({ intraName: response.intraName })
+            setIsLoggedIn(response);
         })
-        .catch((err: Error) => this.setState({error: err.message}))
+        .catch((err: Error) => setError(err.message))
     }
 
-    componentDidMount() {
-        this.getIntraName();
+    async function getUsers () {
+        return await fetch(get_backend_host() + "/users", {
+            method: "GET"} )
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then((response) => {
+            setUsers(response);
+        })
+        .catch((err: Error) => setError(err.message))
     }
 
-    // TODO: instead of class use new react method => just functions + useState and not componentDidMount etc.
-    // https://reactjs.org/docs/hooks-effect.html
-    // Initial mount
-    // useEffect(() => {
-    //     getChannels()
-    // }, []);
+    async function checkTfaCode () {
+        const data = new URLSearchParams();
+        data.append("twoFactorAuthenticationCode", tfaCode);
+        console.log('going to post ', tfaCode);
+        return await fetch(get_backend_host() + "/2fa/authenticate", {
+            method: "POST",
+            credentials: 'include',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: data,
+            mode: 'cors',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                console.log('response was OK');
+                setEvent("2-factor authentication successful"); // TODO: not needed??
+                return true;
+            } else {
+                throw new Error(json.message);
+            }
+        }).catch(() => {
+            console.log("catched the error");
+            return false;
+        });
+    }
 
-    // useEffect(() => {
+    async function saveUser () {
+        getLoggedIn();
+        console.log("try save user...");
+        console.log("current users");
+        console.log(users);
+        if (checked && newTfa) {
+            const checkTfa = await checkTfaCode();
+            if (checkTfa === false){
+                setError("2-factor authentication failed");
+                return;
+            }
+        }
+        return await fetch(get_backend_host() + "/users/updateuser", {
+            method: "PUT",
+            credentials: 'include',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                "username": username,
+                "intraName": intraName,
+                "status": status,
+                "isTfaEnabled": checked,
+            })
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then((response) => {
+            getUsers();
+            setIsSignedUp(true);
+            setEvent("User saved successfully");
+        })
+        .catch((err: Error) => setError(err.message))
+    }
 
-    // }, [channels])
+    async function saveAvatar(e: any){
+        getLoggedIn();
+        console.log(e.target.files[0]);
+        console.log(e.target.files[0].name);
+        console.log(e.target.files[0].size);
+        console.log(e.target.files[0].type);
+    
+        const file = e.target.files[0];
+        const form = new FormData();
+        form.append('file', file, file.name);
+        console.log(form);
+        console.log(typeof form);
 
-    render(){ // holds the HTML code
-        console.log(this.state.username);
-        console.log(this.state.intraName);
+        return await fetch(get_backend_host() + "/users/avatar", {
+            method: 'POST',
+            credentials: 'include',
+            body: form as any,
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then(() => {
+            setEvent("Avatar created successfully");
+            setAvatar({
+                imgSrc: get_backend_host() + "/users/avatar",
+                imgHash: Date.now() // this will change the src attribute of avatar loading
+            });
+        })
+        .catch((err: Error) => setError(err.message))
+    }
 
+    function keyRelease(e: any) {
+        if (e.key === 'Enter'){
+            saveUser();
+        }
+    }
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        getLoggedIn();
+        if (!checked) {
+            setChecked(true);
+            setNewTfa(true);
+        }
+        else
+            setChecked(false);
+    };
+
+    function showAccount() {
         return (
-            // render user etc. when database is updated!
-            <ThemeProvider theme={pinkTheme}>
-                <div className="menu">
-                        <TextField className="item"
-                            disabled defaultValue={this.state.intraName} id="filled-basic" label="Intraname" variant="filled" />
-                        <TextField className="item"
-                            helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
-                            onKeyDown={this.keyPress}
-                            onChange={(e) => this.setState({username: e.target.value})} />
-                        <Button className="item"
-                            variant="contained"
-                            startIcon={<PersonOutlineSharpIcon />}
-                            onClick={() => this.createUser()}
-                        > SIGN UP </Button>
+            <div className="menu">
+                <Typography sx={{ fontWeight: 700 }} className="item" color="primary" variant="h5" gutterBottom component="div">
+                    CHANGE USER SETTINGS
+                </Typography>
+                <Badge className="item"
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={
+                        // Avatar to make the Icon circular
+                        <Avatar
+                            style={{
+                                // border: '2px solid #fcc6ff', // not needed with avatar
+                                backgroundColor: '#fcc6ff'
+                            }}>
+                                <Button
+                                    component="label"
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={(e) => saveAvatar(e)}
+                                    />
+                                    <ChangeCircleIcon
+                                        fontSize='large'
+                                        onClick={() => getLoggedIn()}
+                                    />
+                                </Button>
+                        </Avatar>
+                    }
+                    >
+                    <Avatar className="item"
+                        alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
+                        src={`${avatar.imgSrc}?${avatar.imgHash}`}
+                        sx={{ width: 250, height: 250 }}
+                    />
+                </Badge>
+                <TextField className="item"
+                    disabled value={intraName || ''} id="filled-basic" label="Intraname" variant="filled" />
+                <TextField className="item"
+                    value={username || ''}
+                    helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
+                    onKeyUp={(e) => keyRelease(e)}
+                    onChange={(e) => setUsername(e.target.value)} />
+                <FormGroup className="item">
+                    <FormControlLabel control={<Switch
+                        checked={checked}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />} label="2-factor authentication" />
+                </FormGroup>
+                {/* show the following only when 2fa is enabled */}
+                {checked && newTfa && <p className="item">
+                        Google Authenticator QR
+                    </p>}
+                {checked && newTfa && <img
+                    className="item"
+                    src={url2fa}
+                    alt={""}
+                    />}
+                {checked && newTfa &&
+                    <TextField className="item"
+                    helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
+                    onChange={(e) => setTfaCode(e.target.value)}/>}
+                    {/* TODO: max_length text field */}
+                <Button className="item"
+                    variant="contained"
+                    // startIcon={<PersonOutlineSharpIcon />}
+                    onClick={() => saveUser()}
+                > Save changes </Button>
+            </div>
+        )
+    }
 
-                </div>
-                <Dialog open={this.state.error !== ""} >  {/*pop window for new error message */}
+    const sleep = (milliseconds : any) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+    // effect hooks
+    // combination of componentDidMount and componentDidUpdate
+    useEffect(() => { // will be called after the DOM update (after render)
+        console.log(username);
+        console.log(intraName);
+        getLoggedIn();
+    });
+
+    useEffect(() => {
+        if ( isLoggedIn ) {
+            getUserInfoDatabase();
+        }
+    }, [isLoggedIn]); // will only be called when isLoggedIn changes
+
+    useEffect(() => {
+        console.log("isSignedUp changed to: ", isSignedUp);
+        // if ( isLoggedIn && isSignedUp ) {
+        //     navigate('/');
+        // }
+    }, [isSignedUp]); // will only be called when isSignedUp changes
+
+    useEffect(() => {
+        async function fetchData() { // sleep before fetching the data to show spinner
+            await sleep(500);
+            setStarted(true);
+            getUserInfoDatabase();
+        }
+        fetchData();
+    }, []); // will only be called on initial mount and unmount
+
+
+    return ( // holds the HTML code
+        <ThemeProvider theme={pinkTheme}>
+            <div>
+                { showAccount() }
+            </div>
+
+            <Snackbar open={event !== ""} autoHideDuration={3000} onClose={() => setEvent("")}>
+                <Alert onClose={() => setEvent("")} severity="success" sx={{ width: '100%' }}>
+                    {event}
+                </Alert>
+            </Snackbar>
+
+            <Dialog open={error !== ""} >  {/*pop window for new error message */}
                 <DialogTitle>Error</DialogTitle>
                 <DialogContent>
                     <Alert severity="error">
-                        {this.state.error}
+                        {error}
                     </Alert>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => this.setState({error: ""})}>OK</Button> {/* TODO: enter to get out of dialog */}
+                    <Button variant="contained" onClick={() => setError("")}>OK</Button> {/* TODO: enter to get out of dialog */}
                 </DialogActions>
-                </Dialog>
-            </ThemeProvider>
-        )
-    }
+            </Dialog>
+        </ThemeProvider>
+    )
 }
-        
-export default Account;
-        
-        // {/* <form>
-        // <label>Enter your name:
-        //     <input type="text"
-        //     onChange={(e) => this.setState({username: e.target.value})}
-        //     />
-        // </label>
-        // </form> */}

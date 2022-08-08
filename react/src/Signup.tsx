@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 import { get_backend_host, userStatus } from './utils';
+import Switch from '@mui/material/Switch';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -251,7 +252,7 @@ export function Signup() {
                     <Avatar className="item"
                         alt={intraName} // first letter of alt (alternative) text is default avatar if loading src fails
                         src={`${avatar.imgSrc}?${avatar.imgHash}`}
-                        sx={{ width: 200, height: 200 }}
+                        sx={{ width: 250, height: 250 }}
                     />
                 </Badge>
                 <TextField className="item"
@@ -262,11 +263,11 @@ export function Signup() {
                     onKeyUp={(e) => keyRelease(e)}
                     onChange={(e) => setUsername(e.target.value)} />
                 <FormGroup className="item">
-                    <FormControlLabel control={<Checkbox
+                    <FormControlLabel control={<Switch
                         checked={checked}
                         onChange={handleChange}
                         inputProps={{ 'aria-label': 'controlled' }}
-                    />} label="Enable 2-factor authentication" />
+                    />} label="2-factor authentication" />
                 </FormGroup>
                 {/* show the following only when 2fa is enabled */}
                 {checked && <p className="item">

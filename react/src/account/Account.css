@@ -19,6 +19,7 @@ body {
 
 .menu .item{
     margin: 5px;
+    width: 250px;
 }
 
 .Account {

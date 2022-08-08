@@ -18,7 +18,7 @@ body {
 }
 
 .menu .item{
-    width: 200;
+    width: 250px;
     margin: 5px;
 }
 
@@ -26,10 +26,10 @@ body {
     align-items: center;
 }
 
-.menu >*{
+/* .menu >*{
     width: 200;
     margin: 5px;
-}
+} */
 
 .Account {
     font-family: sans-serif;
