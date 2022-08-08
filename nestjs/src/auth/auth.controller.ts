@@ -39,7 +39,8 @@ export class AuthController
 		this.logger.log('get on auth/ft user:', user);
 		this.logger.log('type of  user:', user.constructor.name);
 
-        const user2: any = user; //from String to string?
+        //This is required to make the types work, even though user and user2 are both String
+        const user2: any = user; 
 		this.logger.log('type of  user2:', user2.constructor.name);
 		const userID = (await this.userService.findOrCreateUser(user2)).id;
 		req.session.logged_in = true;

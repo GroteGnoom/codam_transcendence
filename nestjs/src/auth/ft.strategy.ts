@@ -1,6 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
 import {
-//	HttpService,
 	Injectable,
 	Logger,
 } from '@nestjs/common';
@@ -10,7 +9,6 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 const util = require('node:util');
 import { get_backend_host } from 'src/utils';
-// change these to be your ft client ID and secret
 const callbackURL = get_backend_host() + '/auth/ft';
 
 @Injectable()
@@ -57,49 +55,17 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		this.logger.log('clientID: ', client_id);
 		this.logger.log('clientSecret: ', client_secret);
 	}
+
 	async validate ( accessToken: string): Promise<string> {
 		this.logger.log('validate is called\n');
-		/*
-		   const data = this.httpService
-		   .get('https://api.intra.42.fr/v2/cursus/users', {
-headers: { Authorization: `Bearer ${accessToken}` },
-});
-this.logger.log('this is the data:', util.inspect(data, false, null, true));
-*/
 		const resp = await this.httpService .get('https://api.intra.42.fr/v2/me', {
 			//this.httpService .get('https://api.intra.42.fr/v2/users', {
 			headers: { Authorization: `Bearer ${accessToken}` },
 		}).toPromise();
 
-		//resp.then(resp => {this.logger.log("validation result:", resp.data.login);});
 		this.logger.log("validation result:", resp.data.login);
 
-
-		//.then(response =>{this.logger.log(response.data.login);});//.catch(error => {this.logger.log("niet gelukt", error);});
-		//}).toPromise().then(response =>{this.logger.log(response);});//.catch(error => {this.logger.log("niet gelukt", error);});
-		//this.logger.log('this is the data:', data.map(res => {return res.json();}));
 		return resp.data.login;
 
-		/*
-		   const intraID = data.data.id;
-		   const username = data.data.login;
-		   const validateUserDto = { intraID, username };
-		   return await this.authService.validateUser(validateUserDto);
-		   return "not actually validated";
-		   */
 	}
-
-/*
-   async validate(
-accessToken: string,
-): Promise<any> {
-this.logger.log('ft strategy validate called', data);
-const { data } = await this.http.get('https://api.intra.42.fr/v2/cursus', {
-headers: { Authorization: `Bearer ${ accessToken }` },
-})
-.toPromise();
-this.logger.log('this is the data:', data);
-return data;
-}
-*/
 }
