@@ -41,11 +41,14 @@ export function Signup() {
     const url = get_backend_host() + "/auth/ft";
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
+    const [started, setStarted] = useState(false);
     const navigate = useNavigate();
 
     //backend calls
     async function getUserInfoDatabase () {
         getLoggedIn();
+        if (isLoggedIn === false)
+            return;
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
@@ -302,7 +305,7 @@ export function Signup() {
 
     useEffect(() => {
         if ( isLoggedIn ) {
-            getLoggedIn();
+            getUserInfoDatabase();
         }
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
@@ -316,6 +319,7 @@ export function Signup() {
     useEffect(() => {
         async function fetchData() { // sleep before fetching the data to show spinner
             await sleep(500);
+            setStarted(true);
             getUserInfoDatabase();
         }
         fetchData();
@@ -324,7 +328,7 @@ export function Signup() {
 
     return ( // holds the HTML code
         <ThemeProvider theme={pinkTheme}>
-            { intraName === "" ? // before fetchin the data, show spinner
+            { started === false ? // before fetchin the data, show spinner
                 ( <div className="menu"> <CircularProgress/> </div> )
             : isLoggedIn ? ( // only show this when logged in
                 <div>

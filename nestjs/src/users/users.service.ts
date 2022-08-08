@@ -130,12 +130,13 @@ export class UsersService {
     }
     return avatar;
   }
-
   
   async setStatus(userID: number, status : userStatus){
     const user = await this.userRepository.findOne({
       where: { id: userID }
     });
+    if (!user)
+      return;
     user.status = status;
     return this.userRepository.save(user);
   }
