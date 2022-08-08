@@ -1,21 +1,18 @@
 import {
 	Controller,
-	Get,
-	Redirect,
+	Get, Logger, Redirect,
 	Req,
 	Res,
-	UseGuards,
-	Logger,
+	UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
-const util = require('node:util');
-import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { SessionGuard } from './session.guard';
-import { UsersService } from '../users/users.service';
-import { GlobalService } from '../global.service';
 import { get_frontend_host } from 'src/utils';
+import { GlobalService } from '../global.service';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
+import { SessionGuard } from './session.guard';
+const util = require('node:util');
 
 import "express-session";
 declare module "express-session" {
