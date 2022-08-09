@@ -38,13 +38,13 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
     renderLeaderboard = () => {
         console.log(this.state.userStats)
         const users = this.state.userStats.map((el: any, index: number) => (
-            <TableRow
+            <TableRow 
                 key={el.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
                 <TableCell align="center" >{`${index + 1}`}</TableCell>
                 <TableCell align="left" style={{ width: 300 }}>
-                    <Link to={{ pathname:`/userinfo/${el.user.id}`} }>
-                                {`${el.user.username}`}
+                    <Link to={ el.user && { pathname:`/userinfo/${el.user.id}`} }>
+                                {el.user && `${el.user.username}`}
                     </Link>
                 </TableCell>
                 <TableCell align="right" >{`${el.wins}`}</TableCell>

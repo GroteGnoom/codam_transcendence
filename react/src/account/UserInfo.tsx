@@ -182,51 +182,51 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         }
     }
 
-    renderMatchesRow(props: ListChildComponentProps) {
-        const { index, style } = props;
-        const el = this.state.matches[index];
+    // renderMatchesRow(props: ListChildComponentProps) {
+    //     const { index, style } = props;
+    //     const el = this.state.matches[index];
    
-        return (
-            <TableRow
-            key={index}
-            sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
-                <TableCell align="right" style={{ width: 300 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
-                                {`${el.player_1.username}`}
-                    </Link>
-                </TableCell>
-                <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
-                <TableCell align="center">{"-"}</TableCell>
-                <TableCell align="right">{`${el.scoreP2}`}</TableCell>
-                <TableCell align="left" style={{ width: 300 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
-                                {`${el.player_2.username}`}
-                    </Link>
-                </TableCell>
-            </TableRow>
-        );
-    }
+    //     return (
+    //         <TableRow
+    //         key={index}
+    //         sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
+    //             <TableCell align="right" style={{ width: 300 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
+    //                             {`${el.player_1.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //             <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
+    //             <TableCell align="center">{"-"}</TableCell>
+    //             <TableCell align="right">{`${el.scoreP2}`}</TableCell>
+    //             <TableCell align="left" style={{ width: 300 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
+    //                             {`${el.player_2.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //         </TableRow>
+    //     );
+    // }
 
-    renderMatches2 = () => {
-        return (
-            <Box
-              sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
-                <Typography variant="h6" component="div">
-                    Matches
-                </Typography>
-                <Divider />
-                <FixedSizeList
-                    height={400}
-                    width={360}
-                    itemSize={46}
-                    itemCount={this.state.matches.length}
-                    overscanCount={5}                    
-                >
-                {(props) => this.renderMatchesRow(props)}
-              </FixedSizeList>
-            </Box>
-          );
-    }
+    // renderMatches2 = () => {
+    //     return (
+    //         <Box
+    //           sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
+    //             <Typography variant="h6" component="div">
+    //                 Matches
+    //             </Typography>
+    //             <Divider />
+    //             <FixedSizeList
+    //                 height={400}
+    //                 width={360}
+    //                 itemSize={46}
+    //                 itemCount={this.state.matches.length}
+    //                 overscanCount={5}                    
+    //             >
+    //             {(props) => this.renderMatchesRow(props)}
+    //           </FixedSizeList>
+    //         </Box>
+    //       );
+    // }
 
 
 
@@ -397,11 +397,11 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                             <TableBody>
                                 <TableRow>
                                     <TableCell align="left" >Wins</TableCell>
-                                    <TableCell align="right">{this.state.user.gameStats.wins}</TableCell>
+                                    <TableCell align="right">{this.state.user.gameStats && this.state.user.gameStats.wins}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" >Losses</TableCell>
-                                    <TableCell align="right">{this.state.user.gameStats.losses}</TableCell>
+                                    <TableCell align="right">{(this.state.user.gameStats && this.state.user.gameStats.losses)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" >
@@ -426,15 +426,15 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                         <Divider />
                         {this.state.user && this.renderFriends()}
                     </Box>
-                    {/* <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, ml:16 }}>
+                    <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, ml:16 }}>
                         <Typography variant="h6" component="div">
                             Matches
                         </Typography>
                         <Divider />
                         {this.state.user && this.renderMatches()}
-                    </Box> */}
+                    </Box>
                     {/* {this.renderFriends2()} */}
-                    {this.renderMatches2()}
+                    {/* {this.renderMatches2()} */}
                 </Stack>
             </div>
         )
