@@ -1,14 +1,12 @@
+import { ConfigService } from '@nestjs/config';
 import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ConfigService } from '@nestjs/config';
-import { get_frontend_host } from 'src/utils';
-import { getUserFromClient } from 'src/utils';
+import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from './match.service';
-import { min } from 'class-validator';
 
 @WebSocketGateway({
 cors: {
@@ -27,7 +25,7 @@ server: Server;
 
 private PinkPong: boolean //pinkpong (true) or original pong (false) version
 
-ballSpeed = 1;
+ballSpeed = 9;
 paddleSpeed = 15;
 maxAngle = 3 * Math.PI / 12;
 maxScore = 3;

@@ -61,7 +61,7 @@ export class User {
 	@JoinTable()
     friends: User[]
 
-    @OneToOne(() => GameStats, (gameStats) => gameStats.user)
+    @OneToOne(() => GameStats, (gameStats) => gameStats.user, {cascade: true})
     @JoinColumn()
     gameStats: GameStats
 }

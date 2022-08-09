@@ -10,4 +10,14 @@ export class MatchController {
     getMatchHistory(@Param('id') playerID: number) {
         return this.matchService.getMatchHistory(playerID);
     }
+
+    @Get('leaderboard')
+    getLeaderboard() {
+        return this.matchService.getLeaderboard();
+    }
+
+    @Get('ranking/:id')
+    getRanking(@Param('id') playerID: number) {
+        return this.matchService.getRanking(Number(playerID));
+    }
 }

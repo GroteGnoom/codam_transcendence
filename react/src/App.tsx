@@ -16,6 +16,7 @@ import QR from './QR';
 import { Signup } from './Signup';
 import { get_backend_host, userStatus } from './utils';
 import { io } from 'socket.io-client';
+import Leaderboard from './account/Leaderboard';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -50,6 +51,7 @@ function App() {
 				<Route path={"/logged_in/:token"} element={<LoggedIn />} />
 				<Route path={"/signup"} element={<Signup />} />
 				<Route path={"/userInfo/:id"} element={<UserInfo statusWebsocket={statusWebSocket}/>} />
+				<Route path={"/leaderboard"} element={<Leaderboard />} />
 			</Routes>
 		</ThemeProvider>
 	);
