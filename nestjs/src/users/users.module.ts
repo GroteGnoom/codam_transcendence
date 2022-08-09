@@ -7,14 +7,14 @@ import {UsersController} from './users.controller';
 import {UsersService} from './users.service';
 import {DatabaseFilesService} from './databaseFiles.service';
 import { StatusGateway } from './status.gateway';
+import {uniqueUserConstraint} from './validators'
 
 @Module({
   imports : [
-    TypeOrmModule.forFeature([ User ]),
-    TypeOrmModule.forFeature([ DatabaseFile ])
+    TypeOrmModule.forFeature([ User, DatabaseFile ])
   ],
   controllers : [ UsersController ],
-  providers : [ UsersService, DatabaseFilesService, StatusGateway ],
+  providers : [ uniqueUserConstraint, UsersService, DatabaseFilesService, StatusGateway ],
   exports : [ UsersService, DatabaseFilesService ]
 })
 export class UsersModule {

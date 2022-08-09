@@ -13,7 +13,7 @@ async function bootstrap() {
 	let configService = configApp.get(ConfigService);
   const app = await NestFactory.create(AppModule, {logger: ['log']});
   app.use(cookieParser());
-  // useContainer(app.select(AppModule), { fallbackOnErrors: true }); // for custom validation
+  useContainer(app.select(AppModule), { fallbackOnErrors: true }); // for custom validation
   app.use(
 	  session({
 		  cookie: {
@@ -58,6 +58,7 @@ async function bootstrap() {
       credentials:true
     }
 	app.use(cors(corsOptions));
+	
 	await app.listen(5000);
 }
 bootstrap();

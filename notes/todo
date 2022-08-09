@@ -15,13 +15,15 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] add icon for custom avatar upload
 [V] save custom avatar in db
 [V] fix issignedup
-[ ] validation checks: image + username
+[ ] validation checks: image + username: max length, zichtbare characters (dus niet " ")
 [ ] when signed up, redirect to homepage and show buttons
 [ ] make account page
 [ ] make account page other users
 [ ] rvan: 2fa didn't work first sign up? error is send but 2fa code was found correct
 [ ] make loggin websocket
 [ ] do 2fa whenever enabled and when logging in
+[ ] internal server error: same username
+[ ] randomness random name generator: fetch if user already exists?
 
 flow:
 user authentication -> set username page -> create user

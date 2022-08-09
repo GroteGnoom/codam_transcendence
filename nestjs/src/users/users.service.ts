@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, Body } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ValidatorConstraint
@@ -6,12 +6,9 @@ import {
 import { User } from 'src/typeorm';
 import { UserDto } from 'src/users/users.dtos';
 import { Repository } from 'typeorm';
-
 import { userStatus } from '../typeorm/user.entity';
-
 import { DatabaseFilesService } from './databaseFiles.service';
 
-@ValidatorConstraint({name : 'UserExists', async : true})
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -20,20 +17,11 @@ export class UsersService {
       private readonly databaseFilesService: DatabaseFilesService,
   ) {}
 
-  async getOneOrFail(username: string): Promise<User> {
-    // some code which fetch user entity or throw exception
-    const User = await this.userRepository.findOneBy({username : username})
-    // if (!User)
-    // 	throw new Error("erreur")
-    return User;
-  }
-
   createUser(body: UserDto) {
     const newUser = this.userRepository.create(body);
     return this.userRepository.save(newUser).catch(
         (e) => { // TODO: this works, but postgres will trow an error; we
                  // probably want to validation uniqueness of username upfront;
-                 // besides, id plusses?
           if (/(intraName)[\s\S]+(already exists)/.test(e.detail)) {
             throw new BadRequestException(
                 'Account with this intraName already exists',
@@ -65,7 +53,7 @@ export class UsersService {
   }
 
   findUsersByName(username: string) {
-    return this.userRepository.findOneBy({username : username});
+    return this.userRepository.findOne({ where: {username : username} });
   }
 
   signOutUser(userId: number){
@@ -73,7 +61,7 @@ export class UsersService {
   }
 
   findUsersByIntraname(intraName: string) {
-    return this.userRepository.findOneBy({intraName : intraName});
+    return this.userRepository.findOne({ where: {intraName : intraName} });
   }
 
   signUpUser(userId: number, username: string) {

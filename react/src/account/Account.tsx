@@ -227,14 +227,14 @@ export function Account() {
             setNewTfa(true);
         }
         else
-            setChecked(false);
+        setChecked(false);
     };
 
     function showAccount() {
         return (
             <div className="menu">
                 <Paper className="paper">
-                    <Typography sx={{ fontWeight: 700 }} className="text" color="primary" variant="h5" gutterBottom component="div">
+                    <Typography sx={{ fontWeight: 700 }} className="item" color="primary" variant="h5" gutterBottom component="div">
                         CHANGE USER SETTINGS
                     </Typography>
                 </Paper>
@@ -256,7 +256,7 @@ export function Account() {
                                         accept="image/*"
                                         hidden
                                         onChange={(e) => saveAvatar(e)}
-                                    />
+                                        />
                                     <ChangeCircleIcon
                                         fontSize='large'
                                         onClick={() => getLoggedIn()}
@@ -303,7 +303,7 @@ export function Account() {
                     variant="contained"
                     // startIcon={<PersonOutlineSharpIcon />}
                     onClick={() => saveUser()}
-                > Save changes </Button>
+                    > Save changes </Button>
             </div>
         )
     }
@@ -334,12 +334,7 @@ export function Account() {
     }, [isSignedUp]); // will only be called when isSignedUp changes
 
     useEffect(() => {
-        async function fetchData() { // sleep before fetching the data to show spinner
-            await sleep(500);
-            setStarted(true);
-            getUserInfoDatabase();
-        }
-        fetchData();
+        getUserInfoDatabase();
     }, []); // will only be called on initial mount and unmount
 
 
