@@ -7,12 +7,15 @@ import {
 import { Server, Socket } from 'socket.io';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from './match.service';
+import { Session } from '@nestjs/common';
 
 @WebSocketGateway({
-cors: {
-  origin: get_frontend_host(),
-  credentials: true
-},
+  namespace: '/match-ws',
+  path: '/match-ws/socket.io',
+  cors: {
+    origin: get_frontend_host(),
+    credentials: true
+  },
 })
 export class MatchGateway {
 constructor(
@@ -69,6 +72,10 @@ paddleSizeMultiplierP2: number = 1;
 powerupStrength: number = 0.3;
 noSizeDownP1: number = 0;
 noSizeDownP2: number = 0;
+
+handleConnection(client: Socket, @Session() session) {
+  console.log("Handle connection match gateway");
+}
 
 @SubscribeMessage('startGame')
 async handleStartGame(client: Socket, payload: any): Promise<void> {

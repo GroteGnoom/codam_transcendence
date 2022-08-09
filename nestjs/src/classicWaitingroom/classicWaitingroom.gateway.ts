@@ -6,9 +6,11 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getUserFromClient, get_frontend_host } from 'src/utils';
+import { getUserFromClient, get_frontend_host, get_backend_host } from 'src/utils';
 
 @WebSocketGateway({
+  namespace: '/classicWaitingRoom-ws',
+  path: '/classicWaitingRoom-ws/socket.io',
   cors: {
     origin: get_frontend_host(),
     credentials: true
