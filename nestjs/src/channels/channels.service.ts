@@ -98,7 +98,11 @@ export class ChannelsService {
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
-        const hash = await bcrypt.hash(createChannelDto.password, 10);
+
+        let hash = undefined;       //in case no password, can be undefined
+        if (createChannelDto.password){
+            hash = await bcrypt.hash(createChannelDto.password, 10);
+        }
         return this.channelRepository.save({
             name: createChannelDto.name,
             password: hash,

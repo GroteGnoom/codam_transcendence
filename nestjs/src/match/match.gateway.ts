@@ -1,14 +1,12 @@
+import { ConfigService } from '@nestjs/config';
 import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ConfigService } from '@nestjs/config';
-import { get_frontend_host } from 'src/utils';
-import { getUserFromClient } from 'src/utils';
+import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from './match.service';
-import { min } from 'class-validator';
 
 @WebSocketGateway({
 cors: {

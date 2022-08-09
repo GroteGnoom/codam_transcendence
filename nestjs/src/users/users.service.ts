@@ -4,6 +4,7 @@ import {
   ValidatorConstraint
 } from 'class-validator';
 import { User } from 'src/typeorm';
+import { GameStats } from 'src/typeorm/gameStats.entity';
 import { UserDto } from 'src/users/users.dtos';
 import { Repository } from 'typeorm';
 
@@ -17,6 +18,7 @@ export class UsersService {
   private readonly logger = new Logger(UsersService.name);
   constructor(
       @InjectRepository(User) private readonly userRepository: Repository<User>,
+      @InjectRepository(GameStats) private readonly gameStatsRepository: Repository<GameStats>,
       private readonly databaseFilesService: DatabaseFilesService,
   ) {}
 
@@ -29,7 +31,8 @@ export class UsersService {
   }
 
   createUser(body: UserDto) {
-    const newUser = this.userRepository.create(body);
+    const gameStats = this.gameStatsRepository.create()
+    const newUser = this.userRepository.create({...body, gameStats: gameStats});
     return this.userRepository.save(newUser).catch(
         (e) => { // TODO: this works, but postgres will trow an error; we
                  // probably want to validation uniqueness of username upfront;
@@ -60,7 +63,7 @@ export class UsersService {
   findUsersById(id: number) {
     return this.userRepository.findOne( { 
       where: { id : id },
-      relations: ['friends']             
+      relations: ['friends', 'gameStats']             
     });
   }
 

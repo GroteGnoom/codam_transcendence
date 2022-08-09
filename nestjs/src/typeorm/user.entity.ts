@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import {DatabaseFile} from './databaseFile.entity';
+import { GameStats } from './gameStats.entity';
 
 export enum userStatus {
 	Online = "online",
@@ -59,4 +60,8 @@ export class User {
     @ManyToMany(() => User)
 	@JoinTable()
     friends: User[]
+
+    @OneToOne(() => GameStats, (gameStats) => gameStats.user, {cascade: true})
+    @JoinColumn()
+    gameStats: GameStats
 }

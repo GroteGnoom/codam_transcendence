@@ -7,10 +7,11 @@ import {UsersController} from './users.controller';
 import {UsersService} from './users.service';
 import {DatabaseFilesService} from './databaseFiles.service';
 import { StatusGateway } from './status.gateway';
+import { GameStats } from 'src/typeorm/gameStats.entity';
 
 @Module({
   imports : [
-    TypeOrmModule.forFeature([ User ]),
+    TypeOrmModule.forFeature([ User, GameStats ]),
     TypeOrmModule.forFeature([ DatabaseFile ])
   ],
   controllers : [ UsersController ],
