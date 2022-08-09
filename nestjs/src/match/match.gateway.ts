@@ -73,25 +73,30 @@ powerupStrength: number = 0.3;
 noSizeDownP1: number = 0;
 noSizeDownP2: number = 0;
 
+matchStarted: boolean = false;
+
 handleConnection(client: Socket, @Session() session) {
   console.log("Handle connection match gateway");
 }
 
 @SubscribeMessage('startGame')
 async handleStartGame(client: Socket, payload: any): Promise<void> {
-  this.userID = getUserFromClient(client, this.configService);
-  console.log("Start game message");
-  this.Player1 = payload.Player1;
-  this.Player2 = payload.Player2;
-  this.PinkPong = payload.PinkPong;
-  this.server.emit('playerNames', {
-    "Player1": this.Player1,
-    "Player2": this.Player2
-  });
-  const match = await this.matchService.addMatch(this.Player1, this.Player2);
-  this.matchID = match.id;
-  this.getPositions();
-  setTimeout(this.loop.bind(this), 2000);
+  if (this.matchStarted === false) {
+    this.matchStarted = true;
+    this.userID = getUserFromClient(client, this.configService);
+    console.log("Start game message");
+    this.Player1 = payload.Player1;
+    this.Player2 = payload.Player2;
+    this.PinkPong = payload.PinkPong;
+    this.server.emit('playerNames', {
+      "Player1": this.Player1,
+      "Player2": this.Player2
+    });
+    const match = await this.matchService.addMatch(this.Player1, this.Player2);
+    this.matchID = match.id;
+    this.getPositions();
+    setTimeout(this.loop.bind(this), 2000);
+  }
 }
 
 @SubscribeMessage('keyPressed')
@@ -283,6 +288,7 @@ resetGame() {
   this.paddleSizeMultiplierP2 = 1;
   this.noSizeDownP1 = 0;
   this.noSizeDownP2 = 0;
+  this.matchStarted = false;
 }
 
 setGame() {

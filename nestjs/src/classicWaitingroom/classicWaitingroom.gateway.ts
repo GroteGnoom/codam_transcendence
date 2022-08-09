@@ -69,8 +69,7 @@ export class ClassicWaitingRoomGateway {
       this.Player2 = await this.getUser(second);
       await this.server.emit("found2PlayersClassic", {
         "Player1": this.Player1,
-        "Player2": this.Player2,
-        "PinkPong": false
+        "Player2": this.Player2
       });
       this.waitingUsers.delete(first);
       this.waitingUsers.delete(second);
