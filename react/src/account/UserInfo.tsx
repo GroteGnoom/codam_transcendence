@@ -436,8 +436,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                     {/* {this.renderFriends2()} */}
                     {this.renderMatches2()}
                 </Stack>
-
-
             </div>
         )
     }

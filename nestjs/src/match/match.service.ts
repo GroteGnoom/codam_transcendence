@@ -25,7 +25,7 @@ export class MatchService {
             where: {user: {id: match.player_1.id }}
         })
         if (!player_1_stats) {
-            player_1_stats = this.gameStatsRepository.create({user: {id: match.player_1.id }})
+            player_1_stats = this.gameStatsRepository.create({user: {id: match.player_1.id}})
         }
         let player_2_stats = await this.gameStatsRepository.findOne({
             where: {user: {id: match.player_2.id }}
@@ -60,7 +60,7 @@ export class MatchService {
         .then((leaderboard) => 
             leaderboard.sort((statsA, statsB) => 
                 (statsB.wins - statsB.losses) - (statsA.wins - statsA.losses) || // if > 0, B comes before A
-                statsB.wins - statsA.wins // in case of a tie, the one with the most wins comes first
+                statsB.wins - statsA.wins // in case of a tie (in win-loss), the one with the most wins comes first
             )
         )   
     } 
@@ -68,7 +68,7 @@ export class MatchService {
     async getRanking(player_id : number) {   
         const leaderboard = await this.getLeaderboard() // array of gameStats entities
         const rank = leaderboard.findIndex((stats) => //returns index of first element where lambda is true
-            Number(stats.user.id) === player_id
+            stats.user && Number(stats.user.id) === player_id
         )
         return rank + 1
     }  
