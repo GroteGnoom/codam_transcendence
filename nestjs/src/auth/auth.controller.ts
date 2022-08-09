@@ -1,19 +1,18 @@
 import {
+	BadRequestException,
 	Controller,
-	Get,
-	Redirect,
+	Get, Logger, Redirect,
 	Req,
 	Res,
-	UseGuards,
-	Logger,
+	UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
-const util = require('node:util');
-import { SessionGuard } from './session.guard';
-import { UsersService } from '../users/users.service';
-import { GlobalService } from '../global.service';
 import { get_frontend_host } from 'src/utils';
+import { GlobalService } from '../global.service';
+import { UsersService } from '../users/users.service';
+import { SessionGuard } from './session.guard';
+const util = require('node:util');
 
 import "express-session";
 declare module "express-session" {
@@ -48,7 +47,9 @@ export class AuthController
 		// console.log("session id in authcontroller:", req.session.id);
 		// if (GlobalService.users.has(req.session.id as string)){
 		// 	console.log("already an active session")
+		// 	throw new BadRequestException('Already an active session in another browser');
 		// }
+		
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
 	}
@@ -77,7 +78,7 @@ export class AuthController
 
 	@Get('amiloggedin')
 	amILoggedIn(@Req() request: Request) {
-		this.logger.log("logged in?", request.session.logged_in);
+		// this.logger.log("logged in?", request.session.logged_in);
 		if (request.session.logged_in)
 			return true;
 		return false;

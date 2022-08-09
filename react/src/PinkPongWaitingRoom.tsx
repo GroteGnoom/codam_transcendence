@@ -9,35 +9,63 @@ import { PlaylistAddOutlined } from '@mui/icons-material';
 
 const PinkPongWaitingRoom = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
+    const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
 
     useEffect(() => {
     console.log('Opening WebSocket');
-    webSocket.current = io(get_backend_host(), {
-        withCredentials: true
+    webSocket.current = io(get_backend_host() + "/PinkPongWaitingRoom-ws", {
+        withCredentials: true,
+        path: "/PinkPongWaitingRoom-ws/socket.io"
+    });
+    webSocketMatch.current = io(get_backend_host() + "/match-ws", {
+        withCredentials: true,
+        path: "/match-ws/socket.io"
     });
 
     webSocket.current.emit("loggedInPinkPong", {
         "loggedIn": true
     });
 
-    function startGame(payload: any) {
-        webSocket.current.emit("startGame", {
-            "Player1": payload.Player1,
-            "Player2": payload.Player2,
-            "PinkPong": true
-        });
-        navigate("/pinkpong", { replace: true });
+    async function startGame(payload: any) {
+        let user:number = 0;
+        await fetch(get_backend_host() + `/users/user`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+        .then((response) => {user = response.id})
+
+        let P1:number = payload.Player1;
+        let P2:number = payload.Player2;
+
+        console.log("User: ", user);
+        console.log("Player1: ", P1);
+        console.log("Player2: ", P2);
+        
+        if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
+            console.log("Emit start game");
+            webSocketMatch.current.emit("startGame", {
+                "Player1": payload.Player1,
+                "Player2": payload.Player2,
+                "PinkPong": true
+            });
+            navigate("/pinkpong", { replace: true });
+        }
+        else {
+            console.log("Dit is niet de bedoeling...");
+        }
     }
 
     webSocket.current.on("found2PlayersPinkPong", startGame ) // subscribe on backend events
     webSocket.current.on("redirectHomePinkPong", redirHome ) // subscribe on backend events
 
     async function redirHome(payload: any) {
+        console.log("RedirHome");
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
+        console.log(await li);
         if (await li === false)
             navigate("/", { replace: true });
     }

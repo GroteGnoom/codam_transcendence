@@ -8,10 +8,11 @@ import {UsersService} from './users.service';
 import {DatabaseFilesService} from './databaseFiles.service';
 import { StatusGateway } from './status.gateway';
 import {uniqueUserConstraint} from './validators'
+import { GameStats } from 'src/typeorm/gameStats.entity';
 
 @Module({
   imports : [
-    TypeOrmModule.forFeature([ User, DatabaseFile ])
+    TypeOrmModule.forFeature([ User, DatabaseFile, GameStats ])
   ],
   controllers : [ UsersController ],
   providers : [ uniqueUserConstraint, UsersService, DatabaseFilesService, StatusGateway ],

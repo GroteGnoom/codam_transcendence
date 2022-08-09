@@ -52,12 +52,10 @@ export default function PinkPong() {
 		setTimeOut = false;
 		
 		console.log('Opening WebSocket');
-		webSocket.current = io(get_backend_host(), {withCredentials: true, 
-			extraHeaders: 
-			{"extraheader":"extra", 
-			Cookie: "name=value; name2=value2",
-			Definitely_not_a_cookie: "name=value; name2=value2",
-		}}); // open websocket connection with backend
+		webSocket.current = io(get_backend_host() + "/match-ws", {
+			withCredentials: true, 
+			path: "/match-ws/socket.io"
+		}); // open websocket connection with backend
 		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,

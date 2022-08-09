@@ -70,13 +70,13 @@ const Home = (props : HomeProps) => {
 		.then(async (response) => { // TODO: is this the right place?
 			const json = await response.json();
 			console.log(json)
-			if ( json && !props.statusWebsocket ){
-				console.log('Opening Status WebSocket');
-				props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
-					withCredentials: true,
-					path: "/status-ws/socket.io" 
-				}))
-			}
+			// if ( json && !props.statusWebsocket ){
+			// 	console.log('Opening Status WebSocket');
+			// 	props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
+			// 		withCredentials: true,
+			// 		path: "/status-ws/socket.io" 
+			// 	}))
+			// }
 			setLi(json);
 		});
 	}

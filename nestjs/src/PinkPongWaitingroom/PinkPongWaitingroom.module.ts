@@ -9,6 +9,6 @@ import { PinkPongWaitingRoomGateway } from './PinkPongWaitingroom.gateway';
     // AuthModule
   ],
   controllers: [],
-  providers: [PinkPongWaitingRoomGateway]
+  // providers: [PinkPongWaitingRoomGateway]
 })
 export class PinkPongWaitingRoomModule {}
