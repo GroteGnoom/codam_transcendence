@@ -105,7 +105,7 @@ setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean,
   }
   this.reset = reset;
   if (reset === true)
-    this.setGame();
+    this.resetGame();
 }
 
 /*  paddle size */
@@ -267,6 +267,17 @@ getPositions() {
   });
 }
 
+resetGame() {
+  console.log("reset");
+  this.winner = -1;
+  this.scoreP1 = 0;
+  this.scoreP2 = 0;
+  this.paddleSizeMultiplierP1 = 1;
+  this.paddleSizeMultiplierP2 = 1;
+  this.noSizeDownP1 = 0;
+  this.noSizeDownP2 = 0;
+}
+
 setGame() {
   if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
     this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
@@ -290,16 +301,6 @@ setGame() {
     this.ballVY = this.ballVY / length;
     this.ballVX = this.ballVX * this.ballSpeed;
     this.ballVY = this.ballVY * this.ballSpeed;
-  }
-  else if (this.reset === true) {
-    console.log("reset");
-    this.winner = -1;
-    this.scoreP1 = 0;
-    this.scoreP2 = 0;
-    this.paddleSizeMultiplierP1 = 1;
-    this.paddleSizeMultiplierP2 = 1;
-    this.noSizeDownP1 = 0;
-    this.noSizeDownP2 = 0;
   }
   else {
     if (this.scoreP1 === this.maxScore)

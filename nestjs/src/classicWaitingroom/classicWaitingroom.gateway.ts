@@ -19,7 +19,7 @@ export class ClassicWaitingRoomGateway {
   private readonly configService: ConfigService
 	) {}
 
-  waitingUsers: number[] = [];
+  waitingUsers = new Set<number>;
   logins: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -36,7 +36,7 @@ export class ClassicWaitingRoomGateway {
       this.server.close();
     }
     else {
-      this.waitingUsers.push(getUserFromClient(client, this.configService));
+      this.waitingUsers.add(getUserFromClient(client, this.configService));
       console.log("Pushed user");
     }
 	}
@@ -44,8 +44,7 @@ export class ClassicWaitingRoomGateway {
   @SubscribeMessage('playerLeftClassic')
   async handlePlayerLeaves(client: Socket, payload: any): Promise<void> {
     if (getUserFromClient(client, this.configService)) {
-      let index = this.waitingUsers.indexOf(getUserFromClient(client, this.configService));
-      this.waitingUsers.splice(index, 1);
+      this.waitingUsers.delete(getUserFromClient(client, this.configService));
     }
     console.log("Left: ", this.logins);
   }
@@ -60,16 +59,19 @@ export class ClassicWaitingRoomGateway {
   }
 
   async checkWaitingRoom() {
-    if (this.waitingUsers.length >= 2) {
+    if (this.waitingUsers.size >= 2) {
       console.log("Found 2 players");
-      this.Player1 = await this.getUser(this.waitingUsers[0]);
-      this.Player2 = await this.getUser(this.waitingUsers[1]);
+      const [first] = this.waitingUsers;
+      const [, second] = this.waitingUsers;
+      this.Player1 = await this.getUser(first);
+      this.Player2 = await this.getUser(second);
       await this.server.emit("found2PlayersClassic", {
         "Player1": this.Player1,
         "Player2": this.Player2,
         "PinkPong": false
       });
-      this.waitingUsers.splice(0, 2);
+      this.waitingUsers.delete(first);
+      this.waitingUsers.delete(second);
     }
   }
 }
