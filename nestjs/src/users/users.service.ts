@@ -83,6 +83,10 @@ export class UsersService {
     return this.userRepository.update(userId, {username : username, isSignedUp : true});
   }
 
+  updateUser(userId: number, username: string, isTfaEnabled: boolean) {
+    return this.userRepository.update(userId, {username : username, isTfaEnabled : isTfaEnabled});
+  }
+
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
     this.logger.log("called setTwoFactorAuthenticationSecret");
     /*

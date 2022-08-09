@@ -2,7 +2,7 @@ import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom";
-import Account from './account/Account';
+import { Account } from './account/Account';
 import UserInfo from './account/UserInfo';
 import './App.css';
 import Chat from './Chat/Chat';

@@ -20,6 +20,8 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [ ] make account page
 [ ] make account page other users
 [ ] rvan: 2fa didn't work first sign up? error is send but 2fa code was found correct
+[ ] make loggin websocket
+[ ] do 2fa whenever enabled and when logging in
 
 flow:
 user authentication -> set username page -> create user

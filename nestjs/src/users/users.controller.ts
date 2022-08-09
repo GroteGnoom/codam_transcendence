@@ -46,6 +46,12 @@ export class UsersController {
     return this.userService.signUpUser(req.session.userId, body.username);
   }
 
+  @Put('updateuser')
+  @UsePipes(ValidationPipe)
+  updateUser(@Req() req: any, @Body() body: UserDto) {
+    return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
+  }
+
   @Put('signoutuser')
   @UsePipes(ValidationPipe)
   signOutUser(@Req() req: any) {
