@@ -8,6 +8,8 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { get_backend_host } from "../utils";
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 
 
 //https://ui.dev/react-router-url-parameters
@@ -28,6 +30,7 @@ interface UserInfoState {
     isFriend: Boolean;
     matches: any[];   //array of match entities
     ranking?: number;
+    beenNumberOne: Boolean;
 }
 
 class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
@@ -40,6 +43,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             isFriend: false,
             matches: [],
             ranking: undefined,
+            beenNumberOne: false,
         }
     }
 
@@ -74,6 +78,9 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         .then((response) => {
             this.setState({ ranking: response });            
         })
+        if ( this.state.ranking === 1) {
+            this.setState({ beenNumberOne: true }); 
+        }
     }
 
     blockUser() {
@@ -326,30 +333,30 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
         return (
             <div className="menu">
+                <Stack direction="row">
                 { this.state.user &&
-                    <Avatar className="item"
+                        <Avatar
                             alt={this.state.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
                             src={`${avatar.imgSrc}?${avatar.imgHash}`}
-                            sx={{ width: 250, height: 250 }}
+                            sx={{ height: 120, width: 120 }}
                         />
-                }
-                <Stack direction="row">
+                    }
                     { this.state.user &&
-                        <Typography variant='h2' sx={ {m:3} }>
+                        <Typography variant='h2' sx={ {m:3, ml:5,} }>
                             {this.state.user.username}
                         </Typography>
                     }
                     { this.state.isFriend && 
-                            <IconButton type="submit" onClick={() => (this.unfriendUser())}
-                                color="secondary">
-                                <FavoriteIcon fontSize='large'/>
-                            </IconButton>
+                        <IconButton type="submit" onClick={() => (this.unfriendUser())}
+                            color="secondary">
+                            <FavoriteIcon fontSize='large'/>
+                        </IconButton>
                     }
                     { !this.state.isFriend && 
-                            <IconButton type="submit" onClick={() => (this.friendUser())}
-                                color="secondary">
-                                <FavoriteBorderIcon fontSize='large'/>
-                            </IconButton>
+                        <IconButton type="submit" onClick={() => (this.friendUser())}
+                            color="secondary">
+                            <FavoriteBorderIcon fontSize='large'/>
+                        </IconButton>
                     }
                     { !this.state.isBlocked && 
                         <IconButton type="submit" onClick={() => this.blockUser()}
@@ -362,52 +369,86 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                             UNBLOCK
                         </Button> 
                     }
-                    {this.state.user && 
-                    <Box sx={{bgcolor: '#f06292', ml:16 }}>
-                        <Typography variant="h6" component="div">
-                            Stats
-                        </Typography>
-                        <Divider />         
-                        <Table sx={{bgcolor: '#f48fb1'}} size='small'>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell align="left" >Wins</TableCell>
-                                    <TableCell align="right">{this.state.user.gameStats && this.state.user.gameStats.wins}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell align="left" >Losses</TableCell>
-                                    <TableCell align="right">{(this.state.user.gameStats && this.state.user.gameStats.losses)}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell align="left" >
-                                    <Link to={{ pathname:`/leaderboard`} }>
-                                        Ranking
-                                    </Link>                                        
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {this.state.ranking}                                        
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Box>}
+                    { this.state.user && 
+                        <Box sx={{bgcolor: '#f06292', ml:16 }}>
+                            <Typography variant="h6" component="div">
+                                Stats
+                            </Typography>
+                            <Divider />         
+                            <Table sx={{bgcolor: '#f48fb1'}} size='small'>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell align="left" >Wins</TableCell>
+                                        <TableCell  align="right">{this.state.user.gameStats 
+                                                    && this.state.user.gameStats.wins}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell align="left" >Losses</TableCell>
+                                        <TableCell  align="right">{(this.state.user.gameStats 
+                                                    && this.state.user.gameStats.losses)}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell align="left" >
+                                        <Link to={{ pathname:`/leaderboard`} }>
+                                            Ranking
+                                        </Link>                                        
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {this.state.ranking}                                        
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    }
+                    { this.state.user && 
+                        <Box sx={{bgcolor: '#f06292', ml:10 }}>
+                            <Typography variant="h6" component="div">
+                                Achievements
+                            </Typography>
+                            <Divider />         
+                            <Table sx={{bgcolor: '#f48fb1'}} size='small'>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell align="left" >Play a Game of PinkPong</TableCell>
+                                        <TableCell  align="right">
+                                                    {   (this.state.user.gameStats 
+                                                        && this.state.user.gameStats.wins === 0 
+                                                        || this.state.user.gameStats.losses === 0)
+                                                        &&  <StarOutlineIcon fontSize='small'/>
+                                                    }
+                                                    {   (this.state.user.gameStats 
+                                                        && this.state.user.gameStats.wins > 0 
+                                                        || this.state.user.gameStats.losses > 0)
+                                                        &&  <StarIcon fontSize='small'/>
+                                                    }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell align="left" >Won 3 Matches</TableCell>
+                                        <TableCell  align="right">                                                    
+                                                    {   (this.state.user.gameStats 
+                                                        && this.state.user.gameStats.wins >= 3)
+                                                        &&  <StarIcon fontSize='small'/>
+                                                    }
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell align="left" >First Place on Leaderboard</TableCell>
+                                        <TableCell  align="right">
+                                                    {   (this.state.beenNumberOne)
+                                                        &&  <StarIcon fontSize='small'/>
+                                                    }
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    }
                 </Stack>
-
                 <Stack direction="row">
-                    {/* <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, mr: 16}}>
-                        <Typography variant="h6" component="div">
-                            Friends
-                        </Typography>
-                        <Divider />
-                        {this.state.user && this.renderFriends()}
-                    </Box> */}
-                    {/* <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, ml:16 }}>
-                        <Typography variant="h6" component="div">
-                            Matches
-                        </Typography>
-                        <Divider />
-                        {this.state.user && this.renderMatches()}
-                    </Box> */}
                     {this.renderFriends()}
                     {this.renderMatches()}
                 </Stack>
