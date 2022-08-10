@@ -12,6 +12,9 @@ export class GameStats {
     @Column({default: 0})
     losses: number;
 
+    @Column({default: false})
+    beenNumberOne: boolean;
+
     @OneToOne(() => User, (user) => user.gameStats)
     user: User;
 }

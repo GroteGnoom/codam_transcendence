@@ -30,7 +30,6 @@ interface UserInfoState {
     isFriend: Boolean;
     matches: any[];   //array of match entities
     ranking?: number;
-    beenNumberOne: Boolean;
 }
 
 class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
@@ -43,7 +42,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             isFriend: false,
             matches: [],
             ranking: undefined,
-            beenNumberOne: false,
         }
     }
 
@@ -78,9 +76,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         .then((response) => {
             this.setState({ ranking: response });            
         })
-        if ( this.state.ranking === 1) {
-            this.setState({ beenNumberOne: true }); 
-        }
     }
 
     blockUser() {
@@ -338,58 +333,58 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                         <Avatar
                             alt={this.state.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
                             src={`${avatar.imgSrc}?${avatar.imgHash}`}
-                            sx={{ height: 120, width: 120 }}
+                            sx={{ height: 120, width: 120, mt:3}}
                         />
                     }
                     { this.state.user &&
-                        <Typography variant='h2' sx={ {m:3, ml:5,} }>
+                        <Typography variant='h2' sx={ {m:3, ml:5, mt:5} } style={{ color: '#f06292' }}>
                             {this.state.user.username}
                         </Typography>
                     }
                     { this.state.isFriend && 
                         <IconButton type="submit" onClick={() => (this.unfriendUser())}
-                            color="secondary">
-                            <FavoriteIcon fontSize='large'/>
+                            color="primary">
+                            <FavoriteIcon fontSize='large' />
                         </IconButton>
                     }
                     { !this.state.isFriend && 
                         <IconButton type="submit" onClick={() => (this.friendUser())}
-                            color="secondary">
-                            <FavoriteBorderIcon fontSize='large'/>
+                            color="primary">
+                            <FavoriteBorderIcon fontSize='large' style={{ color: '#f06292' }}/>
                         </IconButton>
                     }
                     { !this.state.isBlocked && 
                         <IconButton type="submit" onClick={() => this.blockUser()}
-                            color="secondary">
-                            <BlockIcon fontSize='large'/>
+                            color="primary">
+                            <BlockIcon fontSize='large' style={{ color: '#f06292' }}/>
                         </IconButton>
                     }
                     { this.state.isBlocked && 
-                        <Button variant="text" onClick={() => this.unblockUser()}>
+                        <Button variant="text" style={{ color: '#f06292' }} onClick={() => this.unblockUser()}>
                             UNBLOCK
                         </Button> 
                     }
                     { this.state.user && 
-                        <Box sx={{bgcolor: '#f06292', ml:16 }}>
+                        <Box sx={{bgcolor: '#f06292', ml:10 }}>
                             <Typography variant="h6" component="div">
                                 Stats
                             </Typography>
                             <Divider />         
                             <Table sx={{bgcolor: '#f48fb1'}} size='small'>
                                 <TableBody>
-                                    <TableRow>
+                                    <TableRow sx={{height:40}}>
                                         <TableCell align="left" >Wins</TableCell>
                                         <TableCell  align="right">{this.state.user.gameStats 
                                                     && this.state.user.gameStats.wins}
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow>
+                                    <TableRow sx={{height:40}}>
                                         <TableCell align="left" >Losses</TableCell>
                                         <TableCell  align="right">{(this.state.user.gameStats 
                                                     && this.state.user.gameStats.losses)}
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow>
+                                    <TableRow sx={{height:40}}>
                                         <TableCell align="left" >
                                         <Link to={{ pathname:`/leaderboard`} }>
                                             Ranking
@@ -411,35 +406,31 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                             <Divider />         
                             <Table sx={{bgcolor: '#f48fb1'}} size='small'>
                                 <TableBody>
-                                    <TableRow>
+                                    <TableRow sx={{height:40}}>
                                         <TableCell align="left" >Play a Game of PinkPong</TableCell>
                                         <TableCell  align="right">
-                                                    {   (this.state.user.gameStats 
-                                                        && this.state.user.gameStats.wins === 0 
-                                                        || this.state.user.gameStats.losses === 0)
-                                                        &&  <StarOutlineIcon fontSize='small'/>
-                                                    }
-                                                    {   (this.state.user.gameStats 
-                                                        && this.state.user.gameStats.wins > 0 
-                                                        || this.state.user.gameStats.losses > 0)
-                                                        &&  <StarIcon fontSize='small'/>
+                                                    {   ( this.state.user.gameStats.wins > 0 
+                                                        || this.state.user.gameStats.losses > 0) ?
+                                                        <StarIcon fontSize='small'  style={{ color: 'fuchsia' }}/> :
+                                                        <StarOutlineIcon fontSize='small' style={{ color: 'thistle' }}/>
                                                     }
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow>
-                                        <TableCell align="left" >Won 3 Matches</TableCell>
+                                    <TableRow sx={{height:40}}>
+                                        <TableCell align="left" >Win 3 Matches</TableCell>
                                         <TableCell  align="right">                                                    
-                                                    {   (this.state.user.gameStats 
-                                                        && this.state.user.gameStats.wins >= 3)
-                                                        &&  <StarIcon fontSize='small'/>
+                                                    {   this.state.user.gameStats.wins >= 3 ?
+                                                        <StarIcon fontSize='small' style={{ color: 'fuchsia' }}/> :
+                                                        <StarOutlineIcon fontSize='small'/>
                                                     }
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow>
+                                    <TableRow sx={{height:40}}>
                                         <TableCell align="left" >First Place on Leaderboard</TableCell>
                                         <TableCell  align="right">
-                                                    {   (this.state.beenNumberOne)
-                                                        &&  <StarIcon fontSize='small'/>
+                                                    {   (this.state.user.gameStats.beenNumberOne) ?
+                                                        <StarIcon fontSize='small' style={{ color: 'fuchsia' }}/> :
+                                                        <StarOutlineIcon fontSize='small'/>
                                                     }
                                         </TableCell>
                                     </TableRow>

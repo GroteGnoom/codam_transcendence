@@ -22,16 +22,16 @@ export class MatchService {
         });
 
         let player_1_stats = await this.gameStatsRepository.findOne({
-            where: {user: {id: match.player_1.id }}
+            where: { user: { id: match.player_1.id }}
         })
         if (!player_1_stats) {
-            player_1_stats = this.gameStatsRepository.create({user: {id: match.player_1.id }, wins:0, losses:0})
+            player_1_stats = this.gameStatsRepository.create({ user: {id: match.player_1.id }, wins:0, losses:0 })
         }
         let player_2_stats = await this.gameStatsRepository.findOne({
-            where: {user: {id: match.player_2.id }}
+            where: { user: { id: match.player_2.id }}
         })
         if (!player_2_stats) {
-            player_2_stats = this.gameStatsRepository.create({user: {id: match.player_2.id }, wins:0, losses:0})
+            player_2_stats = this.gameStatsRepository.create({ user: {id: match.player_2.id }, wins:0, losses:0 })
         }
         if (scoreP1 > scoreP2) {
             player_1_stats.wins++;
@@ -40,7 +40,10 @@ export class MatchService {
             player_1_stats.losses++;
             player_2_stats.wins++;
         }
-        this.gameStatsRepository.save([player_1_stats, player_2_stats]);
+        await this.gameStatsRepository.save([player_1_stats, player_2_stats]);
+        let numberOne = (await this.getLeaderboard())[0];   // for the leaderboard achievement
+        numberOne.beenNumberOne = true;
+        this.gameStatsRepository.save(numberOne);
         return this.matchRepository.save({id: matchID, scoreP1: scoreP1, scoreP2: scoreP2 });
     }
 
