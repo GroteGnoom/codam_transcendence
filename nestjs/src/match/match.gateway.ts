@@ -10,7 +10,7 @@ import { MatchService } from './match.service';
 import { Session } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 
-let matchID: number;
+// let matchID: number;
 let matchIDStr: string;
 
 @WebSocketGateway({
@@ -22,16 +22,31 @@ let matchIDStr: string;
   },
 })
 export class MatchGateway {
+  Player1:number;
+  Player2:number;
+  matchID:number;
+  PinkPong:boolean;
   constructor(
     private readonly configService: ConfigService,
     private readonly matchService: MatchService,
-	private userService: UsersService,
-  ) {}
+	  private userService: UsersService,
+    Player1:number,
+    Player2:number,
+    matchID:number,
+    PinkPong:boolean
+    ) {
+      console.log("Player1 constructor: ", Player1)
+      console.log("Player2 constructor: ", Player2)
+      this.Player1 = Player1;
+      this.Player2 = Player2;
+      this.matchID = matchID;
+      this.PinkPong = PinkPong;
+      console.log("Player1 this constructor: ", this.Player1)
+      console.log("Player2 this constructor: ", this.Player2)
+    }
 
   @WebSocketServer()
   server: Server;
-
-  private PinkPong: boolean //pinkpong (true) or original pong (false) version
 
   ballSpeed = 9;
   paddleSpeed = 15;
@@ -49,8 +64,6 @@ export class MatchGateway {
   rightKeyPressedP2 = false;
   reset = false;
 
-  Player1: number;
-  Player2: number;
   userID: number;
 
   interval: any;
@@ -81,34 +94,39 @@ export class MatchGateway {
   noSizeDownP2: number = 0;
 
   matchStarted: boolean = false;
-
+  
   handleConnection(client: Socket, @Session() session) {
     console.log("Handle connection match gateway");
   }
 
   @SubscribeMessage('startGame')
-  async handleStartGame(client: Socket, payload: any): Promise<void> {
+  async startGame(client: Socket, payload: any): Promise<void> {
     if (this.matchStarted === false) {
       this.matchStarted = true;
-      this.userID = getUserFromClient(client, this.configService);
 
       console.log("Start game message");
-      this.Player1 = payload.Player1;
-      this.Player2 = payload.Player2;
-      this.PinkPong = payload.PinkPong;
-      matchID = payload.id;
-      matchIDStr = Number(matchID).toString();
+    
+      console.log("Player1: ", this.Player1);
+      console.log("Player2: ", this.Player2);
+      const np1 = await this.userService.findUsersById(this.Player1);
+      console.log("NP1: ", np1);
+      this.userName1 = np1.username;
+      const np2 = await this.userService.findUsersById(this.Player2);
+      this.userName2 = np2.username;
+    
+      matchIDStr = this.matchID.toString();
       console.log("match ID: ", matchIDStr);
-
+    
       this.server.on("connection", socket => {
         socket.join(matchIDStr);
       });
-
-	  const np1 = await this.userService.findUsersById(this.Player1);
-	  this.userName1 = np1.username;
-	  const np2 = await this.userService.findUsersById(this.Player2);
-	  this.userName2 = np2.username;
-
+    
+      await this.server.to(matchIDStr).emit('playerNames', {
+        "Player1": this.Player1,
+        "Player2": this.Player2,
+        "matchID": matchIDStr
+      });
+    
       await this.getPositions();
       setTimeout(this.loop.bind(this), 2000);
     }
@@ -204,7 +222,9 @@ export class MatchGateway {
     return b;
   }
 
-  async getPositions() {
+
+  getPositions() {
+    // console.log("getPositions");
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
@@ -280,6 +300,7 @@ export class MatchGateway {
 
     // console.log(this.server.getMaxListeners())
 
+    // console.log("matchID: ", matchIDStr);
     this.server.to(matchIDStr).emit('boardUpdated', { 
       "ballRelX": this.ballRelX, 
       "ballRelY": this.ballRelY, 
@@ -300,7 +321,7 @@ export class MatchGateway {
   async resetGame() {
     console.log("reset");
     await this.server.emit('gameEnded', {
-      "id": matchID
+      "id": this.matchID
     });
     this.winner = -1;
     this.scoreP1 = 0;
@@ -341,7 +362,7 @@ export class MatchGateway {
         this.winner = 1;
       else
         this.winner = 2;
-      this.matchService.storeResult(matchID, this.scoreP1, this.scoreP2)
+      this.matchService.storeResult(this.matchID, this.scoreP1, this.scoreP2)
 
       clearInterval(this.interval);
       this.server.to(matchIDStr).emit('boardUpdated', { 

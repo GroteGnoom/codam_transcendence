@@ -16,6 +16,6 @@ import { UsersModule} from '../users/users.module';
     // AuthModule
   ],
   controllers: [MatchController],
-  providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway]
+  providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway, Number, Boolean]
 })
 export class MatchModule {}
