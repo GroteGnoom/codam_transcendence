@@ -3,7 +3,7 @@ import BlurOnIcon from '@mui/icons-material/BlurOn';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SportsTennisIcon from '@mui/icons-material/SportsTennis';
-import { Box, Button, Divider, IconButton, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Button, Divider, IconButton, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
@@ -39,7 +39,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             isBlocked: false,
             isFriend: false,
             matches: [],
-            ranking: undefined
+            ranking: undefined,
         }
     }
 
@@ -207,7 +207,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         );
     }
 
-    renderMatches2 = () => {
+    renderMatches = () => {
         return (
             <Box
               sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
@@ -216,7 +216,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 </Typography>
                 <Divider />
                 <FixedSizeList
-                    height={400}
+                    height={360}
                     width={360}
                     itemSize={46}
                     itemCount={this.state.matches.length}
@@ -230,134 +230,109 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
 
 
-    renderMatches = () => {
-        const matches = this.state.matches.map((el: any) => (
-            <TableRow
-                key={el.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-                <TableCell align="right" style={{ width: 300 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
-                                {`${el.player_1.username}`}
-                    </Link>
-                </TableCell>
-                <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
-                <TableCell align="center">{"-"}</TableCell>
-                <TableCell align="right">{`${el.scoreP2}`}</TableCell>
-                <TableCell align="left" style={{ width: 300 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
-                                {`${el.player_2.username}`}
-                    </Link>
-                </TableCell>
-            </TableRow>
-            ))
-            return (
-                <Table sx={{bgcolor: '#f48fb1'}}>
-                    <TableBody>
-                        {matches}
-                    </TableBody>
-                </Table>
-            );
-        }
-
-
-    // renderFriendsRow(props: ListChildComponentProps) {
-    //     const { index, style } = props;
-    //     const el = this.state.user.friends[index];
-    
+    // renderMatches = () => {
+    //     const matches = this.state.matches.map((el: any) => (
+    //         <TableRow
+    //             key={el.id}
+    //             sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+    //             <TableCell align="right" style={{ width: 300 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
+    //                             {`${el.player_1.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //             <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
+    //             <TableCell align="center">{"-"}</TableCell>
+    //             <TableCell align="right">{`${el.scoreP2}`}</TableCell>
+    //             <TableCell align="left" style={{ width: 300 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
+    //                             {`${el.player_2.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //         </TableRow>
+    //         ))
     //     return (
-    //         <ListItem key={index}>
-    //             { (el.status==="offline" && !(this.state.currentUser && el.id === this.state.currentUser.id)) &&
-    //                 <IconButton
-    //                 color="error" >
-    //                     <BlurOnIcon fontSize='small'/>
-    //                 </IconButton>
-    //             }
-    //             { (el.status==="online" || (this.state.currentUser && el.id === this.state.currentUser.id)) &&
-    //                 <IconButton
-    //                 color="success" >
-    //                     <BlurOnIcon fontSize='small'/>
-    //                 </IconButton>
-    //             }
-    //             { el.status==="inGame" &&
-    //                 <IconButton
-    //                 color="secondary" >
-    //                     <SportsTennisIcon fontSize='small'/>
-    //                 </IconButton>
-    //             }
-
-    //             <ListItemText >
-    //                 <Typography variant="body1">
-    //                     <Link to={{ pathname:`/userinfo/${el.id}`} }>
-    //                         {`${el.username}`}
-    //                     </Link>
-    //                 </Typography>
-    //             </ListItemText>         
-    //         </ListItem>
-    //     )
+    //         <Table sx={{bgcolor: '#f48fb1'}}>
+    //             <TableBody>
+    //                 {matches}
+    //             </TableBody>
+    //         </Table>
+    //     );
     // }
 
-    // renderFriends2 = () => {
-    //         return (
-    //             <Box
-    //               sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
-    //                 <Typography variant="h6" component="div">
-    //                     Friends
-    //                 </Typography>
-    //                 <Divider />
-    //                 <FixedSizeList
-    //                     height={400}
-    //                     width={360}
-    //                     itemSize={46}
-    //                     itemCount={10}//{this.state.user.friends.length}
-    //                     overscanCount={5}                    
-    //                 >
-    //                 {(props) => this.renderFriendsRow(props)}
-    //               </FixedSizeList>
-    //             </Box>
-    //           );
-    //     }
+
+    renderFriendsRow(props: ListChildComponentProps) {
+        const { index, style } = props;
+        const el = this.state.user.friends[index];
+    
+        return (
+            <ListItem key={index} sx={{bgcolor: '#f48fb1'}} >
+                { (el.status==="offline" && !(this.state.currentUser && el.id === this.state.currentUser.id)) &&
+                    <IconButton
+                    color="error" >
+                        <BlurOnIcon fontSize='small'/>
+                    </IconButton>
+                }
+                { (el.status==="online" || (this.state.currentUser && el.id === this.state.currentUser.id)) &&
+                    <IconButton
+                    color="success" >
+                        <BlurOnIcon fontSize='small'/>
+                    </IconButton>
+                }
+                { el.status==="inGame" &&
+                    <IconButton
+                    color="secondary" >
+                        <SportsTennisIcon fontSize='small'/>
+                    </IconButton>
+                }
+
+                <ListItemText >
+                    <Typography variant="body1">
+                        <Link to={{ pathname:`/userinfo/${el.id}`} }>
+                            {`${el.username}`}
+                        </Link>
+                    </Typography>
+                </ListItemText>         
+            </ListItem>
+        )
+    }
 
     renderFriends = () => {
-        const friends = this.state.user.friends.map((el: any) => (
-                <ListItem key={el.id}>
-                    { (el.status==="offline" && !(this.state.currentUser && el.id === this.state.currentUser.id)) &&
-                        <IconButton
-                        color="error" >
-                            <BlurOnIcon fontSize='small'/>
-                        </IconButton>
-                    }
-                    { (el.status==="online" || (this.state.currentUser && el.id === this.state.currentUser.id)) &&
-                        <IconButton
-                        color="success" >
-                            <BlurOnIcon fontSize='small'/>
-                        </IconButton>
-                    }
-                    { el.status==="inGame" &&
-                        <IconButton
-                        color="secondary" >
-                            <SportsTennisIcon fontSize='small'/>
-                        </IconButton>
-                    }
-
-                    <ListItemText >
-                        <Typography variant="body1">
-                            <Link to={{ pathname:`/userinfo/${el.id}`} }>
-                                {`${el.username}`}
-                            </Link>
-                        </Typography>
-                    </ListItemText>         
-                </ListItem>
-            ))  
-            return (
-                <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f48fb1' }}>
-                    {friends}
-                </List>
+        return (
+            <Box
+                sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
+                <Typography variant="h6" component="div">
+                    Friends
+                </Typography>
+                <Divider />
+                <FixedSizeList
+                    height={360}
+                    width={360}
+                    itemSize={46}
+                    itemCount={this.state.user ? this.state.user.friends.length : 0}
+                    overscanCount={5}                    
+                >
+                {(props) => this.renderFriendsRow(props)}
+                </FixedSizeList>
+            </Box>
             );
-        }
+    }
 
     render(){ 
+        
+        const avatar = {
+            imgSrc: get_backend_host() + `/users/avatar/${this.props.params.id}`,
+            imgHash: Date.now(), 
+        }
+
         return (
             <div className="menu">
+                { this.state.user &&
+                    <Avatar className="item"
+                            alt={this.state.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
+                            src={`${avatar.imgSrc}?${avatar.imgHash}`}
+                            sx={{ width: 250, height: 250 }}
+                        />
+                }
                 <Stack direction="row">
                     { this.state.user &&
                         <Typography variant='h2' sx={ {m:3} }>
@@ -397,11 +372,11 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                             <TableBody>
                                 <TableRow>
                                     <TableCell align="left" >Wins</TableCell>
-                                    <TableCell align="right">{this.state.user.gameStats.wins}</TableCell>
+                                    <TableCell align="right">{this.state.user.gameStats && this.state.user.gameStats.wins}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" >Losses</TableCell>
-                                    <TableCell align="right">{this.state.user.gameStats.losses}</TableCell>
+                                    <TableCell align="right">{(this.state.user.gameStats && this.state.user.gameStats.losses)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" >
@@ -419,13 +394,13 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 </Stack>
 
                 <Stack direction="row">
-                    <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, mr: 16}}>
+                    {/* <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, mr: 16}}>
                         <Typography variant="h6" component="div">
                             Friends
                         </Typography>
                         <Divider />
                         {this.state.user && this.renderFriends()}
-                    </Box>
+                    </Box> */}
                     {/* <Box sx={{minWidth:250, bgcolor: '#f06292', m:10, ml:16 }}>
                         <Typography variant="h6" component="div">
                             Matches
@@ -433,11 +408,9 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                         <Divider />
                         {this.state.user && this.renderMatches()}
                     </Box> */}
-                    {/* {this.renderFriends2()} */}
-                    {this.renderMatches2()}
+                    {this.renderFriends()}
+                    {this.renderMatches()}
                 </Stack>
-
-
             </div>
         )
     }

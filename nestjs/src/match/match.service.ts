@@ -53,22 +53,19 @@ export class MatchService {
         })   
     }  
 
-    getLeaderboard() {   
-        return this.gameStatsRepository.find({ 
-            relations: [ 'user' ],
-        })
-        .then((leaderboard) => 
-            leaderboard.sort((statsA, statsB) => 
-                (statsB.wins - statsB.losses) - (statsA.wins - statsA.losses) || // if > 0, B comes before A
-                statsB.wins - statsA.wins // in case of a tie, the one with the most wins comes first
-            )
-        )   
+    async getLeaderboard() {   
+        const leaderboard = await this.gameStatsRepository.find({
+            relations: ['user'],
+        });
+        return leaderboard.sort((statsA, statsB) => (statsB.wins - statsB.losses) - (statsA.wins - statsA.losses) || // if > 0, B comes before A
+            statsB.wins - statsA.wins // in case of a tie (in win-loss), the one with the most wins comes first
+        );   
     } 
 
     async getRanking(player_id : number) {   
         const leaderboard = await this.getLeaderboard() // array of gameStats entities
         const rank = leaderboard.findIndex((stats) => //returns index of first element where lambda is true
-            Number(stats.user.id) === player_id
+            stats.user && Number(stats.user.id) === player_id
         )
         return rank + 1
     }  

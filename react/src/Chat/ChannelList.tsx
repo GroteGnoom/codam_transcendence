@@ -204,6 +204,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         onChange={(event) => { this.setState({newChannel: event.target.value}) }}
                         value={this.state.newChannel}
                         autoFocus
+                        inputProps={{ maxLength: 20 }}
                         margin="dense"
                         id="name"
                         label="Channel name"
@@ -227,6 +228,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                             onChange={(event) => { this.setState({newChannelPassword: event.target.value}) }}
                             autoFocus
                             value={this.state.newChannelPassword}
+                            inputProps={{ maxLength: 20 }}
                             margin="dense"
                             id="name"
                             label="Password"

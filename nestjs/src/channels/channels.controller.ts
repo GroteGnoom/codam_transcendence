@@ -46,7 +46,7 @@ export class ChannelsController {
     @Put(':name/admin/:id')
     async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
-        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), userID);
+        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
         if (!channel) {
             throw new NotFoundException('Channel not found');
         } else {

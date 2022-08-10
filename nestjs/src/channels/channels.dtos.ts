@@ -12,6 +12,7 @@ export class CreateChannelDto {
 	@MaxLength(20)
 	name: string;
 
+	@MaxLength(20)
 	password?: string;
 
 	@IsNotEmpty()
