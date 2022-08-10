@@ -26,13 +26,14 @@ export default function PinkPong() {
 	let rightKeyPressed: boolean;
 
 	let setTimeOut: boolean;
+	let matchID: string;
 
 	/*	powerups */
 	let paddleSizeMultiplierP1: number = 1;
     let paddleSizeMultiplierP2: number = 1;
 
-	let namePlayer1: string = "naamspeler1"; //get the intraname from the id
-	let namePlayer2: string = "naamspeler2";
+	let namePlayer1: string = ""; //get the intraname from the id
+	let namePlayer2: string = "";
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
@@ -56,13 +57,16 @@ export default function PinkPong() {
 			withCredentials: true, 
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
-		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
+		
+		webSocket.current.on('playerNames', setPlayerNames) // subscribe on backend events
+		
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
 			"rightKeyPressed": false,
 			"reset": false
 		})
-		webSocket.current.on("boardUpdated", getCoordinates ) // subscribe on backend events
+		
+		webSocket.current.on("boardUpdated", getCoordinates) // subscribe on backend events
 
 		return () => {
 			console.log('Closing WebSocket');
@@ -71,16 +75,23 @@ export default function PinkPong() {
 	}, []);
 
 	async function setPlayerNames(payload: any) {
-		await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
-            method: 'GET',
-            credentials: 'include',
-        }).then((response) => response.json())
-			.then((response) => {namePlayer1 = response.username})
-		await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
-            method: 'GET',
-            credentials: 'include',
-        }).then((response) => response.json())
-		.then((response) => {namePlayer2 = response.username})
+		console.log("setPlayerNames", payload);
+		if (namePlayer1 === "" || namePlayer2 === "") {
+			matchID = payload.matchID;
+			console.log("match ID: ", matchID);
+			await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
+				method: 'GET',
+				credentials: 'include',
+			}).then((response) => response.json())
+				.then((response) => {namePlayer1 = response.username})
+			await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
+				method: 'GET',
+				credentials: 'include',
+			}).then((response) => response.json())
+			.then((response) => {namePlayer2 = response.username})
+			console.log("Player1: ", namePlayer1);
+			console.log("Player2: ", namePlayer2);
+		}
 	}
 	
 	function componentDidMount() {
@@ -109,8 +120,12 @@ export default function PinkPong() {
 			rightKeyPressed = false;
 			leftKeyPressed = true;
 		}
+
+		console.log("match ID: ", matchID);
+
+		let emitStr:string = "keyPressed";
 		
-		webSocket.current.emit("keyPressed", {
+		webSocket.current.emit(emitStr, {
 			"leftKeyPressed": leftKeyPressed,
 			"rightKeyPressed": rightKeyPressed,
 			"reset": false
@@ -118,6 +133,7 @@ export default function PinkPong() {
 	}
 	
 	function getCoordinates(payload: any) {
+		console.log("getCoordinates");
 		canvas.width = window.innerWidth - getScrollbarWidth();
 		canvas.height = window.innerHeight;
 
@@ -209,6 +225,7 @@ export default function PinkPong() {
 		ctx.beginPath();
 
 		ctx.font = font;
+		ctx.fillStyle = "#a30283";
 		ctx.fillText(text, x, y);
 		
 		ctx.closePath();

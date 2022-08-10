@@ -46,6 +46,7 @@ const ClassicWaitingRoom = () => {
             webSocketMatch.current.emit("startGame", {
                 "Player1": payload.Player1,
                 "Player2": payload.Player2,
+                "id": payload.id,
                 "PinkPong": false
             });
             navigate("/pinkpong", { replace: true });

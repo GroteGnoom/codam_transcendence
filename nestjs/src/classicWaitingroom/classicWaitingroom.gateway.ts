@@ -6,7 +6,9 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getUserFromClient, get_frontend_host, get_backend_host } from 'src/utils';
+import { getUserFromClient, get_frontend_host } from 'src/utils';
+import { MatchService } from '../match/match.service';
+import { MatchGateway } from 'src/match/match.gateway';
 
 @WebSocketGateway({
   namespace: '/classicWaitingRoom-ws',
@@ -18,10 +20,12 @@ import { getUserFromClient, get_frontend_host, get_backend_host } from 'src/util
 })
 export class ClassicWaitingRoomGateway {
   constructor (
-  private readonly configService: ConfigService
+  private readonly configService: ConfigService,
+  private readonly matchService: MatchService
 	) {}
 
   waitingUsers = new Set<number>;
+  currentGames = new Set<number>;
   logins: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -35,7 +39,7 @@ export class ClassicWaitingRoomGateway {
     if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomeClassic", {"client": client.id});
-      this.server.close();
+      // this.server.close();
     }
     else {
       this.waitingUsers.add(getUserFromClient(client, this.configService));
@@ -56,23 +60,35 @@ export class ClassicWaitingRoomGateway {
       this.checkWaitingRoom();
   }
 
+  @SubscribeMessage('gameEnded')
+  async handleGameEnded(client: Socket, payload: any): Promise<void> {
+    this.currentGames.delete(payload.id);
+    console.log("current classic games: ", this.currentGames.size);
+  }
+
   getUser(user:number) {
     return (user);
   }
 
   async checkWaitingRoom() {
-    if (this.waitingUsers.size >= 2) {
+    if (this.waitingUsers.size >= 1) {
       console.log("Found 2 players");
       const [first] = this.waitingUsers;
       const [, second] = this.waitingUsers;
       this.Player1 = await this.getUser(first);
       this.Player2 = await this.getUser(second);
+      const match = await this.matchService.addMatch(this.Player1, this.Player1);
+      const matchID:number = match.id;
+      console.log("match ID: ", matchID);
+      this.currentGames.add(matchID);
       await this.server.emit("found2PlayersClassic", {
         "Player1": this.Player1,
-        "Player2": this.Player2
+        "Player2": this.Player1,
+        "id": matchID
       });
       this.waitingUsers.delete(first);
       this.waitingUsers.delete(second);
+      console.log("current classic games: ", this.currentGames.size);
     }
   }
 }
