@@ -4,7 +4,8 @@ import {
 	Get, Logger, Redirect,
 	Req,
 	Res,
-	UseGuards
+	UseGuards,
+	Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
@@ -50,6 +51,17 @@ export class AuthController
 		// 	throw new BadRequestException('Already an active session in another browser');
 		// }
 		
+		GlobalService.users.set(req.session.id, Number(userID))
+		return {url: get_frontend_host() + '/signup'};
+	}
+
+	@Get('fake_ft:name') //TODO remove
+	@Redirect(get_frontend_host() + '/logged_in', 302)
+	async fakeLogin(@Req() req: Request, @Res() response:Response, @Param('name') intraname: string): Promise<any> { //the function name doesn't matter?
+		this.logger.log('fake login', intraname);
+		const userID = (await this.userService.findOrCreateUser(intraname)).id;
+		req.session.logged_in = true;
+		req.session.userId = userID;
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
 	}
