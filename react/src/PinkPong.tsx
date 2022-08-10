@@ -58,7 +58,6 @@ export default function PinkPong() {
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
 		
-		webSocket.current.on('playerNames', setPlayerNames) // subscribe on backend events
 		
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
@@ -74,26 +73,6 @@ export default function PinkPong() {
 		}
 	}, []);
 
-	async function setPlayerNames(payload: any) {
-		console.log("setPlayerNames", payload);
-		if (namePlayer1 === "" || namePlayer2 === "") {
-			matchID = payload.matchID;
-			console.log("match ID: ", matchID);
-			await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
-				method: 'GET',
-				credentials: 'include',
-			}).then((response) => response.json())
-				.then((response) => {namePlayer1 = response.username})
-			await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
-				method: 'GET',
-				credentials: 'include',
-			}).then((response) => response.json())
-			.then((response) => {namePlayer2 = response.username})
-			console.log("Player1: ", namePlayer1);
-			console.log("Player2: ", namePlayer2);
-		}
-	}
-	
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
 		document.addEventListener("keyup", handleKeyRelease, false);
@@ -165,6 +144,8 @@ export default function PinkPong() {
 			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
 			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
+			namePlayer1 = payload.namePlayer1;
+			namePlayer2 = payload.namePlayer2;
 		}
 	}
 

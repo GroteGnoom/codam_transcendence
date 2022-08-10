@@ -8,6 +8,7 @@ import { Server, Socket } from 'socket.io';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from './match.service';
 import { Session } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 
 let matchID: number;
 let matchIDStr: string;
@@ -23,7 +24,8 @@ let matchIDStr: string;
 export class MatchGateway {
   constructor(
     private readonly configService: ConfigService,
-    private readonly matchService: MatchService
+    private readonly matchService: MatchService,
+	private userService: UsersService,
   ) {}
 
   @WebSocketServer()
@@ -68,6 +70,9 @@ export class MatchGateway {
   paddleHeight = 15;
   ballWidth = 25;
 
+  userName1: string;
+  userName2: string;
+
   /* powerups are only available in PinkPong, not in the original */
   paddleSizeMultiplierP1: number = 1;
   paddleSizeMultiplierP2: number = 1;
@@ -99,11 +104,10 @@ export class MatchGateway {
         socket.join(matchIDStr);
       });
 
-      await this.server.to(matchIDStr).emit('playerNames', {
-        "Player1": this.Player1,
-        "Player2": this.Player2,
-        "matchID": matchIDStr
-      });
+	  const np1 = await this.userService.findUsersById(this.Player1);
+	  this.userName1 = np1.username;
+	  const np2 = await this.userService.findUsersById(this.Player2);
+	  this.userName2 = np2.username;
 
       await this.getPositions();
       setTimeout(this.loop.bind(this), 2000);
@@ -200,7 +204,7 @@ export class MatchGateway {
     return b;
   }
 
-  getPositions() {
+  async getPositions() {
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
@@ -275,6 +279,7 @@ export class MatchGateway {
     }
 
     // console.log(this.server.getMaxListeners())
+
     this.server.to(matchIDStr).emit('boardUpdated', { 
       "ballRelX": this.ballRelX, 
       "ballRelY": this.ballRelY, 
@@ -286,7 +291,9 @@ export class MatchGateway {
       "scoreP2": this.scoreP2,
       "winner": this.winner,
       "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
-      "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2
+      "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2,
+	  "namePlayer1" : this.userName1,
+	  "namePlayer2" : this.userName2,
     });
   }
 
