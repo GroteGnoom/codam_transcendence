@@ -42,12 +42,12 @@ export default function PinkPong() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 		if (!canvas)
-			console.log("error");
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-			if (!ctx)
-				console.log("error");
-				
+		console.log("error");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		if (!ctx)
+		console.log("error");
+		
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		setTimeOut = false;
@@ -58,7 +58,6 @@ export default function PinkPong() {
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
 		
-		webSocket.current.on('playerNames', setPlayerNames) // subscribe on backend events
 		
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
@@ -74,26 +73,6 @@ export default function PinkPong() {
 		}
 	}, []);
 
-	async function setPlayerNames(payload: any) {
-		console.log("setPlayerNames", payload);
-		if (namePlayer1 === "" || namePlayer2 === "") {
-			matchID = payload.matchID;
-			console.log("match ID: ", matchID);
-			await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
-				method: 'GET',
-				credentials: 'include',
-			}).then((response) => response.json())
-				.then((response) => {namePlayer1 = response.username})
-			await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
-				method: 'GET',
-				credentials: 'include',
-			}).then((response) => response.json())
-			.then((response) => {namePlayer2 = response.username})
-			console.log("Player1: ", namePlayer1);
-			console.log("Player2: ", namePlayer2);
-		}
-	}
-	
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
 		document.addEventListener("keyup", handleKeyRelease, false);
@@ -111,7 +90,6 @@ export default function PinkPong() {
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
-		console.log(event.key);
 		if (event.key === "ArrowRight") {
 			leftKeyPressed = false;
 			rightKeyPressed = true;
@@ -120,12 +98,8 @@ export default function PinkPong() {
 			rightKeyPressed = false;
 			leftKeyPressed = true;
 		}
-
-		console.log("match ID: ", matchID);
-
-		let emitStr:string = "keyPressed";
 		
-		webSocket.current.emit(emitStr, {
+		webSocket.current.emit("keyPressed", {
 			"leftKeyPressed": leftKeyPressed,
 			"rightKeyPressed": rightKeyPressed,
 			"reset": false
@@ -133,7 +107,6 @@ export default function PinkPong() {
 	}
 	
 	function getCoordinates(payload: any) {
-		console.log("getCoordinates");
 		canvas.width = window.innerWidth - getScrollbarWidth();
 		canvas.height = window.innerHeight;
 
@@ -165,6 +138,8 @@ export default function PinkPong() {
 			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
 			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
+			namePlayer1 = payload.namePlayer1;
+			namePlayer2 = payload.namePlayer2;
 		}
 	}
 
@@ -248,6 +223,20 @@ export default function PinkPong() {
 				})
 				delay(100);
 				console.log('Closing WebSocket EndGame');
+				webSocket.current.close();
+				console.log('Opening WebSocket');
+				webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
+					withCredentials: true, 
+					path: "/classicWaitingRoom-ws/socket.io"
+				}); // open websocket connection with backend
+				webSocket.current.emit("gameEnded", {});
+				webSocket.current.close();
+				console.log('Opening WebSocket');
+				webSocket.current = io(get_backend_host() + "/PinkPongWaitingRoom-ws", {
+					withCredentials: true, 
+					path: "/PinkPongWaitingRoom-ws/socket.io"
+				}); // open websocket connection with backend
+				webSocket.current.emit("gameEnded", {});
 				webSocket.current.close();
 				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}
