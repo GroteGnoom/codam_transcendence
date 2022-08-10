@@ -9,6 +9,6 @@ import { ClassicWaitingRoomGateway } from './classicWaitingroom.gateway';
     // AuthModule
   ],
   controllers: [],
-  providers: [ClassicWaitingRoomGateway]
+  // providers: [ClassicWaitingRoomGateway]
 })
 export class ClassicWaitingRoomModule {}

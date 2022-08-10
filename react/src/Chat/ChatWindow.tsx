@@ -77,9 +77,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         if (socketMessage.channel === this.props.channel.name) {
             console.log("Received a message for this channel")
             this.setState( { messages: [...this.state.messages, socketMessage.message] } );
-        } else {
-            console.log(`Message for ${socketMessage.channel} is not important` )
-        }        
+        }       
     }
 
     onUserMuted(payload: any, muted: boolean) {
@@ -225,6 +223,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                         <TextField onChange={(e) => this.setState({text: e.target.value})}
                                             onKeyDown={(e) => this.handleEnterKey(e)}
                                             disabled={this.state.muted}
+                                            inputProps={{ maxLength: 140 }}
                                             value={this.state.text}
                                             label="Type your message..."
                                             variant="outlined"/>

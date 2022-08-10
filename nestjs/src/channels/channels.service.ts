@@ -67,7 +67,11 @@ export class ChannelsService {
     }
 
     async createChannel(createChannelDto: CreateChannelDto, userID: number) {
-        if (createChannelDto.channelType == ChannelType.Protected &&
+        if (await this.channelRepository.findOne({where: {name: createChannelDto.name}})){
+            throw new BadRequestException(`ChannelName ${createChannelDto.name} already exist.`);
+        }
+
+        if (createChannelDto.channelType === ChannelType.Protected &&
                 !createChannelDto.password) {
             throw new BadRequestException('Must provide a password for a protected channel');
         }
@@ -121,11 +125,13 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['admins']
         });
-        if (!channel.admins.map((user) => user.id).includes(requester)) {
+        console.log("requester: ", requester)
+        console.log("id: ", id)
+        if (!channel.admins.map((user) => Number(user.id)).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
-        if (channel.admins.map((user) => user.id).includes(id)) {
-            return channel;
+        if (channel.admins.map((user) => Number(user.id)).includes(id)) {
+            throw new BadRequestException('User is already admin');
         }
         const admins = [...channel.admins, {id: id}];
         return this.channelRepository.save({name: channelName, admins: admins});

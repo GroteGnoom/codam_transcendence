@@ -25,13 +25,13 @@ export class MatchService {
             where: {user: {id: match.player_1.id }}
         })
         if (!player_1_stats) {
-            player_1_stats = this.gameStatsRepository.create({user: {id: match.player_1.id}})
+            player_1_stats = this.gameStatsRepository.create({user: {id: match.player_1.id }, wins:0, losses:0})
         }
         let player_2_stats = await this.gameStatsRepository.findOne({
             where: {user: {id: match.player_2.id }}
         })
         if (!player_2_stats) {
-            player_2_stats = this.gameStatsRepository.create({user: {id: match.player_2.id }})
+            player_2_stats = this.gameStatsRepository.create({user: {id: match.player_2.id }, wins:0, losses:0})
         }
         if (scoreP1 > scoreP2) {
             player_1_stats.wins++;

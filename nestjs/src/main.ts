@@ -43,7 +43,7 @@ async function bootstrap() {
           var originIsAllowed = allowed.indexOf(origin) !== -1;
 		  const match = url.hostname.match('f[01]r[0-9]s[0-9]+.codam.nl');
 		  if (match) {
-			  console.log('matched cluster computer');
+			//   console.log('matched cluster computer');
 			  originIsAllowed = true;
 		  }
           //console.log('ORIGIN: ', origin);

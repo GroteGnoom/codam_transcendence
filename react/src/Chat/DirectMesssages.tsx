@@ -86,7 +86,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
     handleChange = (event: SelectChangeEvent) => {
         this.setState({selectedMember: Number(event.target.value)});
-        console.log("selectedmember: ", this.state.selectedMember);
+        console.log("selectedmember: ", Number(event.target.value));
     };
 
     async getUsers(){
@@ -177,6 +177,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                         <Select
                             label="Member"
                             onChange={this.handleChange}
+                            value={`${this.state.selectedMember}`}
                             >
                             {listUsers}
                         </Select>
@@ -184,7 +185,11 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
-                    <Button variant="contained" onClick={() => this.createDirectMessage()}>Chat</Button>
+                    <Button disabled={!this.state.selectedMember}
+                            variant="contained" 
+                            onClick={() => this.createDirectMessage()}>
+                            Chat
+                    </Button>
                 </DialogActions>                
                 </Box>
             </Dialog>

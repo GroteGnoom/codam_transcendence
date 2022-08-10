@@ -34,6 +34,8 @@ export class ChannelsGateway {
   async handleSendMessage(client: Socket, payload: SocketMessage): Promise<void> {
       const userId = getUserFromClient(client, this.configService)
       const userIsMuted = await this.channelsService.checkIfMuted(payload.channel, userId)
+      if (payload.message.text.length > 140)
+        return;
       if (userIsMuted)
         return;
       payload.message = await this.channelsService.addMessage(payload.channel, userId, payload.message);

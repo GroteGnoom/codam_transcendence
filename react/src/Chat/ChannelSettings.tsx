@@ -217,6 +217,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             disabled
                             onChange={(event) => { }}
                             value={this.props.channel.name}
+                            inputProps={{ maxLength: 20 }}
                             autoFocus
                             margin="dense"  
                             id="name"
@@ -243,6 +244,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                             onChange={(event) => { this.setState({ settings: { ...this.state.settings, password: event.target.value } }) }}
                             autoFocus
                             value={this.state.settings.password}
+                            inputProps={{ maxLength: 20 }}
                             margin="dense"
                             id="name"
                             label="Password"

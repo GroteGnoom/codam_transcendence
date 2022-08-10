@@ -97,6 +97,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
                             color="primary"
                             sx={{ bgcolor: '#f48fb1' }}
                             label="Member"
+                            value={`${this.state.selectedMember}`}
                             onChange={this.handleChange}
                             >
                             {listUsers}
@@ -105,7 +106,11 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.handleClose}>Cancel</Button>
-                    <Button variant="contained" onClick={() => this.addMember()}>Add</Button>
+                    <Button disabled={!this.state.selectedMember} 
+                            variant="contained"
+                            onClick={() => this.addMember()}>
+                        Add
+                    </Button>
                 </DialogActions>
                 </Box>
             </Dialog>

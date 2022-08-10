@@ -7,12 +7,15 @@ import {
 import { Server, Socket } from 'socket.io';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from './match.service';
+import { Session } from '@nestjs/common';
 
 @WebSocketGateway({
-cors: {
-  origin: get_frontend_host(),
-  credentials: true
-},
+  namespace: '/match-ws',
+  path: '/match-ws/socket.io',
+  cors: {
+    origin: get_frontend_host(),
+    credentials: true
+  },
 })
 export class MatchGateway {
 constructor(
@@ -70,21 +73,30 @@ powerupStrength: number = 0.3;
 noSizeDownP1: number = 0;
 noSizeDownP2: number = 0;
 
+matchStarted: boolean = false;
+
+handleConnection(client: Socket, @Session() session) {
+  console.log("Handle connection match gateway");
+}
+
 @SubscribeMessage('startGame')
 async handleStartGame(client: Socket, payload: any): Promise<void> {
-  this.userID = getUserFromClient(client, this.configService);
-  console.log("Start game message");
-  this.Player1 = payload.Player1;
-  this.Player2 = payload.Player2;
-  this.PinkPong = payload.PinkPong;
-  this.server.emit('playerNames', {
-    "Player1": this.Player1,
-    "Player2": this.Player2
-  });
-  const match = await this.matchService.addMatch(this.Player1, this.Player2);
-  this.matchID = match.id;
-  this.getPositions();
-  setTimeout(this.loop.bind(this), 2000);
+  if (this.matchStarted === false) {
+    this.matchStarted = true;
+    this.userID = getUserFromClient(client, this.configService);
+    console.log("Start game message");
+    this.Player1 = payload.Player1;
+    this.Player2 = payload.Player2;
+    this.PinkPong = payload.PinkPong;
+    this.server.emit('playerNames', {
+      "Player1": this.Player1,
+      "Player2": this.Player2
+    });
+    const match = await this.matchService.addMatch(this.Player1, this.Player2);
+    this.matchID = match.id;
+    this.getPositions();
+    setTimeout(this.loop.bind(this), 2000);
+  }
 }
 
 @SubscribeMessage('keyPressed')
@@ -105,7 +117,7 @@ setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, reset: boolean,
   }
   this.reset = reset;
   if (reset === true)
-    this.setGame();
+    this.resetGame();
 }
 
 /*  paddle size */
@@ -267,6 +279,18 @@ getPositions() {
   });
 }
 
+resetGame() {
+  console.log("reset");
+  this.winner = -1;
+  this.scoreP1 = 0;
+  this.scoreP2 = 0;
+  this.paddleSizeMultiplierP1 = 1;
+  this.paddleSizeMultiplierP2 = 1;
+  this.noSizeDownP1 = 0;
+  this.noSizeDownP2 = 0;
+  this.matchStarted = false;
+}
+
 setGame() {
   if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
     this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
@@ -290,16 +314,6 @@ setGame() {
     this.ballVY = this.ballVY / length;
     this.ballVX = this.ballVX * this.ballSpeed;
     this.ballVY = this.ballVY * this.ballSpeed;
-  }
-  else if (this.reset === true) {
-    console.log("reset");
-    this.winner = -1;
-    this.scoreP1 = 0;
-    this.scoreP2 = 0;
-    this.paddleSizeMultiplierP1 = 1;
-    this.paddleSizeMultiplierP2 = 1;
-    this.noSizeDownP1 = 0;
-    this.noSizeDownP2 = 0;
   }
   else {
     if (this.scoreP1 === this.maxScore)

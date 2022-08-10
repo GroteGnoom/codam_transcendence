@@ -55,7 +55,7 @@ export class UsersService {
   async getAvatarId(id: number) {
     return (await this.userRepository.findOneBy({id : id})).avatarId;
   }
-
+  
   setUsername(userId: number, username: string) {
     return this.userRepository.update(userId, {username : username});
   }

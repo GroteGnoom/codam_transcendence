@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({
+  namespace: '/PinkPongWaitingRoom-ws',
+  path: '/PinkPongWaitingRoom-ws/socket.io',
   cors: {
     origin: get_frontend_host(),
     credentials: true
@@ -19,6 +21,7 @@ export class PinkPongWaitingRoomGateway {
   private readonly configService: ConfigService
 	) {}
 
+  waitingUsers = new Set<number>;
   logins: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -28,24 +31,24 @@ export class PinkPongWaitingRoomGateway {
   server: Server;
 
 	handleConnection(client: Socket, @Session() session) {
-    console.log("started pink pong waitingroom server", session);
-    this.client = getUserFromClient(client, this.configService);
-    if (!this.client) {
+    console.log("started PinkPong waitingroom server", session);
+    if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomePinkPong", {"client": client.id});
       this.server.close();
     }
+    else {
+      this.waitingUsers.add(getUserFromClient(client, this.configService));
+      console.log("Pushed user");
+    }
 	}
 
   @SubscribeMessage('playerLeftPinkPong')
-  async handlePlayerLeft(client: Socket, payload: any): Promise<void> {
+  async handlePlayerLeaves(client: Socket, payload: any): Promise<void> {
     if (getUserFromClient(client, this.configService)) {
-      if (this.logins === 2)
-        this.logins = 1;
-      else
-        this.logins = 0;
+      this.waitingUsers.delete(getUserFromClient(client, this.configService));
     }
-    console.log(this.logins);
+    console.log("Left: ", this.logins);
   }
 
   @SubscribeMessage('loggedInPinkPong')
@@ -53,28 +56,23 @@ export class PinkPongWaitingRoomGateway {
       this.checkWaitingRoom();
   }
 
-  checkWaitingRoom() {
-    if (this.logins === 0  || this.client != this.Player1)
-      this.logins = this.logins + 1;
-    console.log("PinkPong: ", this.logins);
-    if (this.logins === 2) {
-        console.log("Player1: ", this.Player1);
-        console.log("Client: ", this.client);
-        this.logins = 0;
-        this.Player2 = this.client;
-        this.client = 0;
-        console.log("2 players");
-        this.server.emit("found2PlayersPinkPong", {
-          "Player1": this.Player1,
-          "Player2": this.Player2,
-          "PinkPong": true
+  getUser(user:number) {
+    return (user);
+  }
+
+  async checkWaitingRoom() {
+    if (this.waitingUsers.size >= 2) {
+      console.log("Found 2 players");
+      const [first] = this.waitingUsers;
+      const [, second] = this.waitingUsers;
+      this.Player1 = await this.getUser(first);
+      this.Player2 = await this.getUser(second);
+      await this.server.emit("found2PlayersPinkPong", {
+        "Player1": this.Player1,
+        "Player2": this.Player2
       });
-      this.Player1 = 0;
-      this.Player2 = 0;
-    }
-    else {
-      this.Player1 = this.client;
-      this.client = 0;
+      this.waitingUsers.delete(first);
+      this.waitingUsers.delete(second);
     }
   }
 }

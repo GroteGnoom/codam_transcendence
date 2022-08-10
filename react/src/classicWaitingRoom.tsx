@@ -8,12 +8,18 @@ import {CircularProgress, Typography} from '@mui/material';
 
 const ClassicWaitingRoom = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
+    const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
 
     useEffect(() => {
     console.log('Opening WebSocket');
-    webSocket.current = io(get_backend_host(), {
-        withCredentials: true
+    webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
+        withCredentials: true,
+        path: "/classicWaitingRoom-ws/socket.io"
+    });
+    webSocketMatch.current = io(get_backend_host() + "/match-ws", {
+        withCredentials: true,
+        path: "/match-ws/socket.io"
     });
 
     webSocket.current.emit("loggedInClassic", {
@@ -37,7 +43,7 @@ const ClassicWaitingRoom = () => {
         
         if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
             console.log("Emit start game");
-            webSocket.current.emit("startGame", {
+            webSocketMatch.current.emit("startGame", {
                 "Player1": payload.Player1,
                 "Player2": payload.Player2,
                 "PinkPong": false
