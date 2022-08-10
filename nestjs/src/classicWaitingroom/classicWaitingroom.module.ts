@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { UsersModule } from 'src/users/users.module';
 import { MatchGateway } from 'src/match/match.gateway';
 import { ClassicWaitingRoomGateway } from './classicWaitingroom.gateway';
 
 @Module({
   imports: [
     // TypeOrmModule.forFeature([Channel, Message]), 
-    // UsersModule,
+    UsersModule
     // AuthModule
   ],
   controllers: [],

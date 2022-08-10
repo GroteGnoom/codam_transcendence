@@ -38,7 +38,7 @@ export class PinkPongWaitingRoomGateway {
     if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomePinkPong", {"client": client.id});
-      // this.server.close();
+      this.server.close();
     }
     else {
       this.waitingUsers.add(getUserFromClient(client, this.configService));
@@ -57,11 +57,6 @@ export class PinkPongWaitingRoomGateway {
   @SubscribeMessage('loggedInPinkPong')
   async handleLoggedIn(client: Socket, payload: any): Promise<void> {
       this.checkWaitingRoom();
-  }
-
-  @SubscribeMessage('gameEnded')
-  async handleGameEnded(client: Socket, payload: any): Promise<void> {
-    this.currentGames.delete(payload.id);
   }
 
   getUser(user:number) {
