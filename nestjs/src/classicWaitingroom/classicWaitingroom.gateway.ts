@@ -62,7 +62,7 @@ export class ClassicWaitingRoomGateway {
 
   @SubscribeMessage('gameEnded')
   async handleGameEnded(client: Socket, payload: any): Promise<void> {
-    this.currentGames.delete(payload.id);
+    this.currentGames.delete(payload.id) ;
     console.log("current classic games: ", this.currentGames.size);
   }
 
@@ -71,7 +71,7 @@ export class ClassicWaitingRoomGateway {
   }
 
   async checkWaitingRoom() {
-    if (this.waitingUsers.size >= 1) {
+    if (this.waitingUsers.size >= 2) {
       console.log("Found 2 players");
       const [first] = this.waitingUsers;
       const [, second] = this.waitingUsers;
@@ -83,7 +83,7 @@ export class ClassicWaitingRoomGateway {
       this.currentGames.add(matchID);
       await this.server.emit("found2PlayersClassic", {
         "Player1": this.Player1,
-        "Player2": this.Player1,
+        "Player2": this.Player2,
         "id": matchID
       });
       this.waitingUsers.delete(first);
