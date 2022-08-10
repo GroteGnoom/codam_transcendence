@@ -1,13 +1,13 @@
 PROJECT = transcendence
 
 ifdef SL
-ifeq ($(SL),stef)
-export SERVER_LOCATION = stef
+	ifeq ($(SL),stef)
+		export SERVER_LOCATION = stef
+	else
+		export SERVER_LOCATION = daniel
+	endif
 else
-export SERVER_LOCATION = daniel
-endif
-else
-export SERVER_LOCATION = local
+	export SERVER_LOCATION = local
 endif
 
 export MYHOSTNAME := $(shell hostname)

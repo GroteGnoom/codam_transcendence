@@ -1,7 +1,7 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, TextField, Typography } from "@mui/material";
+import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { io } from "socket.io-client";
@@ -24,6 +24,7 @@ interface ChatWindowState {
     messages: any[];
     text: string;
     addUserOpen: boolean;
+    gameInviteOpen: boolean;
     muted: boolean;
     blockedUsers: number[];
 }
@@ -37,6 +38,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             messages: [], 
             text: "",
             addUserOpen: false,
+            gameInviteOpen: false,
             muted: false,
             blockedUsers: [],
         }
@@ -85,6 +87,24 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             console.log("User muted", muted, payload)
             this.checkIfMuted() // todo find out who current user is in this component to compare
         }
+    }
+
+    async inviteClassicPong(){
+        this.webSocket.emit("sendMessage", { 
+            "channel": this.props.channel.name,
+            "message": {
+                "text": "Join me for a game of Classic Pong!"
+            }
+        })
+    }
+
+    async invitePinkPong(){
+        this.webSocket.emit("sendMessage", { 
+            "channel": this.props.channel.name,
+            "message": {
+                "text": "Join me for a game of PinkPong!"
+            }
+        })
     }
 
     openWebsocket() {
@@ -173,6 +193,11 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                 </ListItem> 
             )}
         );
+
+        const actions = [
+            { icon: <SportsEsportsIcon />, name: 'Classic' },
+            { icon: <SportsEsportsIcon />, name: 'Special' },
+        ];
         
         return (
             <Fragment>
@@ -193,7 +218,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                         </IconButton>
                                     }
                                 </Grid>
-                                <Grid xs={1} item>
+                                <Grid sx={{position: 'relative'}} xs={1} item>
                                     { this.props.channel.channelType !== "direct message" &&
                                         <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
                                             color="secondary">
@@ -201,10 +226,30 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                         </IconButton>
                                     }
                                     { this.props.channel.channelType === "direct message" && // challenge another player to a game
-                                        <IconButton //onClick={() => { this.props.openSettings(true) }}
-                                            color="secondary">
-                                                <SportsEsportsIcon />
-                                        </IconButton>
+                                        <SpeedDial
+                                        direction={'down'}
+                                        ariaLabel="SpeedDial tooltip example"
+                                        sx={{position: 'absolute', top: -40 }}
+                                        icon={<SportsEsportsIcon />}
+                                        onClose={() => { this.setState( {gameInviteOpen: false} ) }}
+                                        onOpen={() => { this.setState( {gameInviteOpen: true} ) }}
+                                        open={this.state.gameInviteOpen}
+                                        >
+                                        <SpeedDialAction
+                                            key={'Classic'}
+                                            icon={<SportsEsportsIcon />}
+                                            tooltipTitle={'Classic'}
+                                            tooltipOpen
+                                            onClick={() => this.inviteClassicPong()}
+                                            />
+                                        <SpeedDialAction
+                                            key={'Special'}
+                                            icon={<SportsEsportsIcon />}
+                                            tooltipTitle={'Special'}
+                                            tooltipOpen
+                                            onClick={() => this.invitePinkPong()}
+                                            />
+                                        </SpeedDial> 
                                     }
                                 </Grid>
                             </Grid>
