@@ -4,6 +4,8 @@ When starting up on a new computer, the pg_hba.conf is not set correctly (for ev
 
 put scrollbars back after playing a game
 
+add sessionguards to all backend endpoints
+
 Irir----
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd

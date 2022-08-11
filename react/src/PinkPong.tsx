@@ -58,14 +58,8 @@ export default function PinkPong() {
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
 		
-		
-		webSocket.current.emit('keyPressed', {
-			"leftKeyPressed": false,
-			"rightKeyPressed": false,
-			"reset": false
-		})
-		
 		webSocket.current.on("boardUpdated", getCoordinates) // subscribe on backend events
+		webSocket.current.on("matchID", getMatchID) // subscribe on backend events
 
 		return () => {
 			console.log('Closing WebSocket');
@@ -85,7 +79,7 @@ export default function PinkPong() {
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressed": leftKeyPressed,
 			"rightKeyPressed": rightKeyPressed,
-			"reset": false
+			"matchID": matchID
 		})
 	}
 
@@ -102,44 +96,63 @@ export default function PinkPong() {
 		webSocket.current.emit("keyPressed", {
 			"leftKeyPressed": leftKeyPressed,
 			"rightKeyPressed": rightKeyPressed,
-			"reset": false
+			"matchID": matchID
 		})
+	}
+
+	let player:number = -1;
+	async function getMatchID(payload: any) {
+		if (player === -1) {
+			await fetch(get_backend_host() + `/users/user`, { 
+				method: 'GET',
+				credentials: 'include',
+			}).then((response) => response.json())
+			.then((response) => {player = response.id})
+			console.log("player: ", player);
+			console.log("payload.userID: ", payload.userID);
+		}
+		if (Number(player) === Number(payload.userID)) {
+			matchID = payload.matchID;
+			console.log("matchID: ", matchID);
+		}
 	}
 	
 	function getCoordinates(payload: any) {
-		canvas.width = window.innerWidth - getScrollbarWidth();
-		canvas.height = window.innerHeight;
-
-		if (canvas.width / 3 * 2 < canvas.height)
-		{
-			fieldWidth = canvas.width * 0.9;
-			fieldHeight = fieldWidth / 3 * 2;
-		}
-		else
-		{
-			fieldHeight = canvas.height * 0.9;
-			fieldWidth = fieldHeight * 1.5;
-		}
-		paddleWidth = 100 * (fieldWidth / 1500);
-		ballWidth = 25 * (fieldWidth / 1500);
-		paddleHeight = 15 * (fieldHeight / 1000);
-
-		if (payload.winner !== 0 && payload.winner !== -1) {
-			console.log("EndGame");
-			EndGame(payload.winner, payload.scoreP1, payload.scoreP2);
-		}
-		else if (payload.winner === 0) {
-			ballX = getFieldX() + payload.ballRelX * (fieldWidth / 1500);
-			ballY = getFieldY() + payload.ballRelY * (fieldHeight / 1000);
-			paddleP1X = getFieldX() + payload.paddleP1RelX * (fieldWidth / 1500);
-			paddleP1Y = getFieldY() + payload.paddleP1RelY * (fieldHeight / 1000);
-			paddleP2X = getFieldX() + payload.paddleP2RelX * (fieldWidth / 1500);
-			paddleP2Y = getFieldY() + payload.paddleP2RelY * (fieldHeight / 1000);
-			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
-			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
-			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
-			namePlayer1 = payload.namePlayer1;
-			namePlayer2 = payload.namePlayer2;
+		if (payload.matchID === matchID) {
+			canvas.width = window.innerWidth - getScrollbarWidth();
+			canvas.height = window.innerHeight;
+	
+			if (canvas.width / 3 * 2 < canvas.height)
+			{
+				fieldWidth = canvas.width * 0.9;
+				fieldHeight = fieldWidth / 3 * 2;
+			}
+			else
+			{
+				fieldHeight = canvas.height * 0.9;
+				fieldWidth = fieldHeight * 1.5;
+			}
+			paddleWidth = 100 * (fieldWidth / 1500);
+			ballWidth = 25 * (fieldWidth / 1500);
+			paddleHeight = 15 * (fieldHeight / 1000);
+	
+			if (payload.winner !== 0 && payload.winner !== -1) {
+				console.log("EndGame");
+				EndGame(payload.winner, payload.scoreP1, payload.scoreP2);
+			}
+			else if (payload.winner === 0) {
+				ballX = getFieldX() + payload.ballRelX * (fieldWidth / 1500);
+				ballY = getFieldY() + payload.ballRelY * (fieldHeight / 1000);
+				paddleP1X = getFieldX() + payload.paddleP1RelX * (fieldWidth / 1500);
+				paddleP1Y = getFieldY() + payload.paddleP1RelY * (fieldHeight / 1000);
+				paddleP2X = getFieldX() + payload.paddleP2RelX * (fieldWidth / 1500);
+				paddleP2Y = getFieldY() + payload.paddleP2RelY * (fieldHeight / 1000);
+				paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
+				paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
+				draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
+				namePlayer1 = payload.namePlayer1;
+				namePlayer2 = payload.namePlayer2;
+			}
 		}
 	}
 
