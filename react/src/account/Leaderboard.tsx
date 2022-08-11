@@ -1,4 +1,4 @@
-import { Box, Divider, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Avatar, Box, Divider, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
@@ -36,21 +36,35 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
     }
 
     renderLeaderboard = () => {
-        console.log(this.state.userStats)
-        const users = this.state.userStats.map((el: any, index: number) => (
-            <TableRow 
-                key={el.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-                <TableCell align="center" >{`${index + 1}`}</TableCell>
-                <TableCell align="left" style={{ width: 300 }}>
-                    <Link to={ el.user && { pathname:`/userinfo/${el.user.id}`} }>
-                                {el.user && `${el.user.username}`}
-                    </Link>
-                </TableCell>
-                <TableCell align="right" >{`${el.wins}`}</TableCell>
-                <TableCell align="right">{`${el.losses}`}</TableCell>
-            </TableRow>
-            ))
+        console.log(this.state.userStats)   //array of gamestat entities
+        const players = this.state.userStats.map((el: any, index: number) => {
+            const avatar = {
+                imgSrc: get_backend_host() + `/users/avatar/${el.user.id}`,
+                imgHash: Date.now(), 
+            }
+
+            return (
+                <TableRow 
+                    key={el.id}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
+                    <TableCell align="center" >{`${index + 1}`}</TableCell>
+                    <TableCell align="right" style={{ width: 40 }}>
+                        <Avatar
+                            alt={el.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
+                            src={`${avatar.imgSrc}?${avatar.imgHash}`}
+                            sx={{ height: 50, width: 50 }}
+                        />
+                    </TableCell>
+                    <TableCell align="left" style={{ width: 300 }}>
+                        <Link to={ el.user && { pathname:`/userinfo/${el.user.id}`} }>
+                                    {el.user && `${el.user.username}`}
+                        </Link>
+                    </TableCell>
+                    <TableCell align="right" >{`${el.wins}`}</TableCell>
+                    <TableCell align="right">{`${el.losses}`}</TableCell>
+                </TableRow>
+            )
+        })
         return (
             <Table sx={{bgcolor: '#f48fb1', maxWidth: '80%'}}>
                 <TableHead>
@@ -58,6 +72,11 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
                         <TableCell>                
                             <Typography variant='h6'>
                                 Ranking
+                            </Typography>  
+                        </TableCell>
+                        <TableCell>                
+                            <Typography variant='h6'>
+                                
                             </Typography>  
                         </TableCell>
                         <TableCell>                
@@ -78,7 +97,7 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {users}
+                    {players}
                 </TableBody>
             </Table>
         );

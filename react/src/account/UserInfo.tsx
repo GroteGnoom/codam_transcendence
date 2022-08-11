@@ -212,14 +212,14 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     renderMatches = () => {
         return (
             <Box
-              sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: '#f06292', m:10, ml:16 }}>
+              sx={{ width: '100%', height: 400, maxWidth: 400, bgcolor: '#f06292', m:10, ml:16 }}>
                 <Typography variant="h6" component="div">
                     Matches
                 </Typography>
                 <Divider />
                 <FixedSizeList
                     height={360}
-                    width={360}
+                    width={400}
                     itemSize={46}
                     itemCount={this.state.matches.length}
                     overscanCount={5}                    

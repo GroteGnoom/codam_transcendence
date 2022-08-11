@@ -1,20 +1,20 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
-import { io } from "socket.io-client";
+import { Link } from 'react-router-dom';
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import { Link } from 'react-router-dom';
 
 const ENTER_KEY_CODE = 13;
 
 
 interface ChatWindowProps { 
+    channelsWebSocket: any;
     channel: Channel;
     openSettings: any;
     setError: any;
@@ -30,7 +30,6 @@ interface ChatWindowState {
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
-    private webSocket: any = undefined;
 
     constructor(props: ChatWindowProps){
         super(props);
@@ -90,48 +89,43 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async inviteClassicPong(){
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of Classic Pong!"
+                "text": "Join me for a game of <a href='leaderboard'>Classic Pong!</a>", //<a> is HTML link element (anchor)
+                "invite": true
             }
         })
     }
 
     async invitePinkPong(){
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of PinkPong!"
+                "text": "Join me for a game of <a href='leaderboard'>PinkPong!</a>",
+                "invite": true
             }
         })
     }
 
-    openWebsocket() {
-        if (!this.webSocket) {
-            console.log('Opening WebSocket');
-            this.webSocket = io(get_backend_host() + "/channels-ws", {
-                withCredentials: true, 
-                path: "/channels-ws/socket.io" 
-            });
-            this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
-            this.webSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
-            this.webSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
-        }
+    subscribeWebsocketEvents() {
+        this.props.channelsWebSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
+        this.props.channelsWebSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
+        this.props.channelsWebSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
     }
 
     componentDidMount() {
-        console.log("Mounting", this.props.channel)
+        console.log("Mounting", this.props.channel);
         this.getBlockedUsers().then(() =>
             this.getMessages()
         )
-        this.openWebsocket()
+        this.subscribeWebsocketEvents()
         this.checkIfMuted()
     }
 
     componentWillUnmount() {
-        console.log("Closing websocket")
-        this.webSocket.close()
+        // console.log("Closing websocket")
+        // this.props.channelsWebSocket.close()
     }
 
     componentDidUpdate(prevProps: ChatWindowProps, prevState: ChatWindowState) { 
@@ -143,7 +137,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async postMessage() {
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
                 "text": this.state.text
@@ -186,9 +180,18 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                 {`${msg.sender.username}`}
                             </Link>
                         </Typography>
-                        <Typography variant="h6">
-                            {`${msg.text} `}
-                        </Typography>
+                        {msg.invite &&
+                            <Typography variant="h6"
+                                dangerouslySetInnerHTML={{
+                                    __html: `${msg.text} ` // make links work https://stackoverflow.com/questions/66028355/material-ui-styles-and-html-markdown 
+                                }}>
+                            </Typography>
+                        }
+                        {!msg.invite &&
+                            <Typography variant="h6">
+                                {msg.text}
+                            </Typography> 
+                        }
                     </div>
                 </ListItem> 
             )}

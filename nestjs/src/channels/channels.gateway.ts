@@ -42,6 +42,12 @@ export class ChannelsGateway {
       this.server.emit('recMessage', payload);
   }
 
+  broadcastNewDM(channel: string) {
+    this.server.emit('newDM', {
+      channel: channel,
+    });
+  }
+
   broadcastMuteUser(channel: string, userId: number) {
     this.server.emit('userMuted', {
       channel: channel,

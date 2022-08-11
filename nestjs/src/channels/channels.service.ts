@@ -281,7 +281,7 @@ export class ChannelsService {
     }
 
     async addMessage(channel: string, sender: number, message: MessageDto) {
-        const newMessage: Message = this.messageRepository.create({sender: {id: sender}, text: message.text}); // will create id and date for message
+        const newMessage: Message = this.messageRepository.create({sender: {id: sender}, text: message.text, invite: message.invite}); // will create id and date for message
         newMessage.channel = channel;
 		await this.messageRepository.save(newMessage);
         return this.messageRepository.findOne({
@@ -298,14 +298,16 @@ export class ChannelsService {
         });
     }
 
-    createDirectMessage(user : number , other : number) {
-        return this.channelRepository.save({ // create new Channel object (direct mesage)
+    async createDirectMessage(user : number , other : number) {
+        const newDM = await this.channelRepository.save({ // create new Channel object (direct mesage)
             name: `dm-${user}-${other}`,
             owner: user,
             admins: [{id: user}, {id: other}],
             members: [this.newMember(user), this.newMember(other)],
             channelType: ChannelType.dm,
         });
+        this.channelGateway.broadcastNewDM(newDM.name)
+        return newDM;
     }
 
     private newMember(userId: number) {

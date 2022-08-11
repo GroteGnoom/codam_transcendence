@@ -18,6 +18,9 @@ export class Message {
     @Column()
     text: string;
 
+    @Column({ default: false })
+    invite: boolean;
+
     @CreateDateColumn()
     date: Date;
 }
