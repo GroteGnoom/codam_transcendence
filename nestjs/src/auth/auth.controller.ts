@@ -50,7 +50,6 @@ export class AuthController
 		// 	console.log("already an active session")
 		// 	throw new BadRequestException('Already an active session in another browser');
 		// }
-		
 		GlobalService.users.set(req.session.id, Number(userID))
 		return {url: get_frontend_host() + '/signup'};
 	}
@@ -67,12 +66,12 @@ export class AuthController
 	}
 
 	@Get('uniqueSession')
-	getUniqueSession(@Req() req: Request) {
+	async getUniqueSession(@Req() req: Request) {
 		for(let key of GlobalService.users.keys()) {
 			console.log(key);
 		}
-		this.logger.log("unique session?", GlobalService.users.has(req.session.id));
-		return (!GlobalService.users.has(req.session.id))
+		this.logger.log("unique session?", await GlobalService.users.has(req.session.id));
+		return (!(await GlobalService.users.has(req.session.id)))
 	}
 
 	@UseGuards(SessionGuard)

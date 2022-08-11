@@ -110,3 +110,7 @@ File storage---
 https://wanago.io/2021/11/01/api-nestjs-storing-files-postgresql-database/
 https://eliteionic.com/tutorials/handling-file-uploads-in-ionic-web/#1-create-a-new-nodeexpress-server
 
+SQL injections---
+https://dev.to/yoshi_yoshi/typeorm-prevent-sql-injection-with-node-js-react-typescript-in-2021-1go4
+ORM frameworks treat the value, name as prepared statements, not partial SQL syntaxes:
+https://en.wikipedia.org/wiki/Prepared_statement

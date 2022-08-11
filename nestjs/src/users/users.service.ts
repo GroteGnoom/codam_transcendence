@@ -19,13 +19,22 @@ export class UsersService {
       private readonly databaseFilesService: DatabaseFilesService,
   ) {}
 
-  createUser(body: UserDto) {
-    const gameStats = this.gameStatsRepository.create()
-    const newUser = this.userRepository.create({...body, gameStats: gameStats});
+  async usernameAlreadyExists(userId: number, username: string) {
+    const [users, usersCount] = await this.userRepository.findAndCount({where: {username: username}});
+    if (usersCount > 1)
+      return true;
+    if (usersCount == 1 && users[0].id !== userId)
+      return true;
+    return false;
+  }
+
+  async createUser(body: UserDto) {
+    const gameStats = await this.gameStatsRepository.create()
+    const newUser = await this.userRepository.create({...body, gameStats: gameStats});
+    if (await this.usernameAlreadyExists(newUser.id, newUser.username))
+      throw new BadRequestException('Account with this username already exists');
     return this.userRepository.save(newUser).catch(
-        (e) => { // TODO: this works, but postgres will trow an error; we
-                 // probably want to validation uniqueness of username upfront;
-          if (/(intraName)[\s\S]+(already exists)/.test(e.detail)) {
+        (e) => {if (/(intraName)[\s\S]+(already exists)/.test(e.detail)) {
             throw new BadRequestException(
                 'Account with this intraName already exists',
             );
@@ -41,17 +50,19 @@ export class UsersService {
   getUsers() { return this.userRepository.find(); }
 
   async getAvatarId(id: number) {
-    return (await this.userRepository.findOneBy({id : id})).avatarId;
+    return (await this.userRepository.findOneBy({id : id})).avatarId; // returns all users with id: id
   }
   
   setUsername(userId: number, username: string) {
+    if (this.usernameAlreadyExists(userId, username))
+      throw new BadRequestException('Account with this username already exists');
     return this.userRepository.update(userId, {username : username});
   }
 
   findUsersById(id: number) {
-    return this.userRepository.findOne( { 
+    return this.userRepository.findOne( { // returns first user with id: id
       where: { id : id },
-      relations: ['friends', 'gameStats']             
+      relations: ['friends', 'gameStats']
     });
   }
 
@@ -67,11 +78,16 @@ export class UsersService {
     return this.userRepository.findOne({ where: {intraName : intraName} });
   }
 
-  signUpUser(userId: number, username: string) {
+  async signUpUser(userId: number, username: string) {
+    if (await this.usernameAlreadyExists(userId, username)){
+      throw new BadRequestException('Account with this username already exists');
+    }
     return this.userRepository.update(userId, {username : username, isSignedUp : true});
   }
 
-  updateUser(userId: number, username: string, isTfaEnabled: boolean) {
+  async updateUser(userId: number, username: string, isTfaEnabled: boolean) {
+    if (await this.usernameAlreadyExists(userId, username))
+      throw new BadRequestException('Account with this username already exists');
     return this.userRepository.update(userId, {username : username, isTfaEnabled : isTfaEnabled});
   }
 
@@ -101,6 +117,7 @@ export class UsersService {
   }
 
   // adds user logged in through intra
+  // intraname is only set here; it is not possible to change later
   async findOrCreateUser(intraName: string) {
     const user = await this.userRepository.findOneBy({intraName : intraName});
     if (user)
@@ -126,9 +143,9 @@ export class UsersService {
     return avatar;
   }
   
-  async setStatus(userID: number, status : userStatus){
+  async setStatus(userId: number, status : userStatus){
     const user = await this.userRepository.findOne({
-      where: { id: userID }
+      where: { id: userId }
     });
     if (!user)
       return;

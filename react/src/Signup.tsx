@@ -69,7 +69,7 @@ export function Signup() {
             setUsername(response.username);
             setIsSignedUp(response.isSignedUp);
         })
-        .catch((err: Error) => setError(err.message))
+        .catch((error: Error) => setError(error.message))
     }
 
     async function getLoggedIn () {
@@ -88,7 +88,7 @@ export function Signup() {
         .then((response) => {
             setIsLoggedIn(response);
         })
-        .catch((err: Error) => setError(err.message))
+        .catch((error: Error) => setError(error.message))
     }
 
     async function getUsers () {
@@ -105,7 +105,7 @@ export function Signup() {
         .then((response) => {
             setUsers(response);
         })
-        .catch((err: Error) => setError(err.message))
+        .catch((error: Error) => setError(error.message))
     }
 
     async function checkTfaCode () {
@@ -161,7 +161,8 @@ export function Signup() {
             if (response.ok) {
                 return json;
             } else {
-                throw new Error(json.message)
+                console.log(json.message);
+                throw new Error(json.message);
             }
         })
         .then((response) => {
@@ -169,7 +170,7 @@ export function Signup() {
             setIsSignedUp(true);
             setEvent("User created successfully");
         })
-        .catch((err: Error) => setError(err.message))
+        .catch((error: Error) => setError(error.message))
     }
 
     async function saveAvatar(e: any){
@@ -205,7 +206,7 @@ export function Signup() {
                 imgHash: Date.now() // this will change the src attribute of avatar loading
             });
         })
-        .catch((err: Error) => setError(err.message))
+        .catch((error: Error) => setError(error.message))
     }
 
     function keyRelease(e: any) {
@@ -259,6 +260,7 @@ export function Signup() {
                     disabled value={intraName || ''} id="filled-basic" label="Intraname" variant="filled" />
                 <TextField className="item"
                     value={username || ''}
+                    inputProps={{ maxLength: 30 }}
                     helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
                     onKeyUp={(e) => keyRelease(e)}
                     onChange={(e) => setUsername(e.target.value)} />
@@ -280,9 +282,9 @@ export function Signup() {
                     />}
                 {checked && 
                     <TextField className="item"
+                    inputProps={{ maxLength: 6 }}
                     helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
                     onChange={(e) => setTfaCode(e.target.value)}/>}
-                    {/* TODO: max_length text field */}
                 <Button className="item"
                     variant="contained"
                     startIcon={<PersonOutlineSharpIcon />}

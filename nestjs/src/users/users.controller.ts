@@ -7,13 +7,12 @@ import {
   StreamableFile,
   UploadedFile, UseInterceptors,
   UsePipes,
-  ValidationPipe
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDto } from 'src/users/users.dtos';
 import { UsersService } from 'src/users/users.service';
 import { Readable } from 'stream';
-
+import { UserValidationPipe } from './uservalidation.pipe'
 import { DatabaseFilesService } from './databaseFiles.service';
 
 @Controller('users')
@@ -34,32 +33,32 @@ export class UsersController {
   }
 
   @Post('create')
-  @UsePipes(ValidationPipe)
+  @UsePipes(UserValidationPipe)
   createUser(@Body() body: UserDto) {
-    this.logger.log('Creating user...')
+    this.logger.log('Creating user...');
     return this.userService.createUser(body);
   }
 
   @Put('signupuser')
-  @UsePipes(ValidationPipe)
+  @UsePipes(UserValidationPipe)
   signUpUser(@Req() req: any, @Body() body: UserDto) {
+    this.logger.log('Signup user...');
     return this.userService.signUpUser(req.session.userId, body.username);
   }
 
   @Put('updateuser')
-  @UsePipes(ValidationPipe)
+  @UsePipes(UserValidationPipe)
   updateUser(@Req() req: any, @Body() body: UserDto) {
     return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
   }
 
   @Put('signoutuser')
-  @UsePipes(ValidationPipe)
   signOutUser(@Req() req: any) {
     return this.userService.signOutUser(req.session.userId);
   }
 
   @Post('setusername')
-  @UsePipes(ValidationPipe)
+  @UsePipes(UserValidationPipe)
   setUsername(@Req() req: any, username: string) {
     this.logger.log("setUsername called");
     return this.userService.setUsername(req.session.userId, username);

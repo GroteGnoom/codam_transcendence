@@ -12,9 +12,8 @@ import {UsersService} from './users.service';
 @Injectable()
 export class uniqueUserConstraint implements ValidatorConstraintInterface {
   constructor(private readonly userService: UsersService) {}
-  // private readonly logger = new Logger(UsersController.name);
-  
-  async validate(username: any, args: ValidationArguments) {
+
+  async validate(username: any) {
     const user = await this.userService.findUsersByName(username);
     if (user)
       return false;
