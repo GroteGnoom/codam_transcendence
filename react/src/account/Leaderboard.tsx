@@ -5,8 +5,7 @@ import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { get_backend_host } from "../utils";
 
 
-interface LeaderboardProps { 
-}
+interface LeaderboardProps {}
 
 interface LeaderboardState { 
     userStats: any[];    
@@ -67,7 +66,7 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
         })
         return (
             <Table sx={{bgcolor: '#f48fb1', maxWidth: '80%'}}>
-                <TableHead>
+                <TableHead sx={{bgcolor: '#e91e63', maxWidth: '80%'}}>
                     <TableRow>
                         <TableCell>                
                             <Typography variant='h6'>

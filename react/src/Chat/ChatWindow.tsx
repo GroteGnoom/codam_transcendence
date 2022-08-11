@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
 const ENTER_KEY_CODE = 13;
 
@@ -123,11 +124,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.checkIfMuted()
     }
 
-    componentWillUnmount() {
-        // console.log("Closing websocket")
-        // this.props.channelsWebSocket.close()
-    }
-
     componentDidUpdate(prevProps: ChatWindowProps, prevState: ChatWindowState) { 
         if (
             !prevProps.channel || !this.props.channel ||
@@ -176,7 +172,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} }>
+                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#ec407a' }}>
                                 {`${msg.sender.username}`}
                             </Link>
                         </Typography>
@@ -217,7 +213,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     { this.props.channel.channelType !== "direct message" &&
                                         <IconButton onClick={() => { this.props.openSettings(true) }}
                                             color="secondary">
-                                                <SettingsIcon />
+                                                <SettingsIcon style={{ color: '#ec407a' }}/>
                                         </IconButton>
                                     }
                                 </Grid>
@@ -225,29 +221,30 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     { this.props.channel.channelType !== "direct message" &&
                                         <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
                                             color="secondary">
-                                                <PersonAddIcon />
+                                                <PersonAddIcon style={{ color: '#ec407a' }}/>
                                         </IconButton>
                                     }
                                     { this.props.channel.channelType === "direct message" && // challenge another player to a game
                                         <SpeedDial
                                         direction={'down'}
                                         ariaLabel="SpeedDial tooltip example"
-                                        sx={{position: 'absolute', top: -40 }}
+                                        sx={{position: 'absolute', top: -40, }}
                                         icon={<SportsEsportsIcon />}
                                         onClose={() => { this.setState( {gameInviteOpen: false} ) }}
                                         onOpen={() => { this.setState( {gameInviteOpen: true} ) }}
                                         open={this.state.gameInviteOpen}
                                         >
                                         <SpeedDialAction
+                                            // FabProps={{ sx: { bgcolor: '#fcc6ff','&:hover': { bgcolor: '#fcc6ff', }} }}
                                             key={'Classic'}
-                                            icon={<SportsEsportsIcon />}
+                                            icon={<VideogameAssetIcon style={{ color: '#f06292' }}/>}
                                             tooltipTitle={'Classic'}
                                             tooltipOpen
                                             onClick={() => this.inviteClassicPong()}
                                             />
                                         <SpeedDialAction
                                             key={'Special'}
-                                            icon={<SportsEsportsIcon />}
+                                            icon={<SportsEsportsIcon style={{ color: '#f06292' }}/>}
                                             tooltipTitle={'Special'}
                                             tooltipOpen
                                             onClick={() => this.invitePinkPong()}
@@ -281,7 +278,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     <IconButton type="submit" onClick={() => this.postMessage()}
                                         disabled={this.state.muted}
                                         color="secondary">
-                                            <SendIcon />
+                                            <SendIcon style={{ color: '#ec407a' }}/>
                                     </IconButton>
                                 </Grid>
                             </Grid>

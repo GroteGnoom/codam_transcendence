@@ -147,7 +147,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
         )
 
         return (
-        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f48fb1' }} >
             {channel}
         </List>
         );

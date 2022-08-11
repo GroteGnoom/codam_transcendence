@@ -48,7 +48,7 @@ const Chat = () => {
 		<main>
 			<Stack direction="row">
 				<Stack direction="column">
-					<ChannelList openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
+					<ChannelList channelsWebSocket={channelsWebSocket} openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
 					<DirectMessage channelsWebSocket={channelsWebSocket} openChat={setActiveChannel} activeChannel={activeChannel} setError={setError} />
 					</Stack>
 					{activeChannel && <ChatWindow channelsWebSocket={channelsWebSocket} channel={activeChannel} openSettings={openSettings} setError={setError}/>}

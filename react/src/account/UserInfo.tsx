@@ -11,7 +11,6 @@ import { get_backend_host } from "../utils";
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 
-
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
 function withParams(Component: any) {
@@ -230,8 +229,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
           );
     }
 
-
-
     // renderMatches = () => {
     //     const matches = this.state.matches.map((el: any) => (
     //         <TableRow
@@ -412,7 +409,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                                                     {   ( this.state.user.gameStats.wins > 0 
                                                         || this.state.user.gameStats.losses > 0) ?
                                                         <StarIcon fontSize='small'  style={{ color: 'fuchsia' }}/> :
-                                                        <StarOutlineIcon fontSize='small' style={{ color: 'thistle' }}/>
+                                                        <StarOutlineIcon fontSize='small' style={{ color: 'LightPink' }}/>
                                                     }
                                         </TableCell>
                                     </TableRow>
@@ -421,7 +418,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                                         <TableCell  align="right">                                                    
                                                     {   this.state.user.gameStats.wins >= 3 ?
                                                         <StarIcon fontSize='small' style={{ color: 'fuchsia' }}/> :
-                                                        <StarOutlineIcon fontSize='small'/>
+                                                        <StarOutlineIcon fontSize='small' style={{ color: 'LightPink' }}/>
                                                     }
                                         </TableCell>
                                     </TableRow>
@@ -430,7 +427,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                                         <TableCell  align="right">
                                                     {   (this.state.user.gameStats.beenNumberOne) ?
                                                         <StarIcon fontSize='small' style={{ color: 'fuchsia' }}/> :
-                                                        <StarOutlineIcon fontSize='small'/>
+                                                        <StarOutlineIcon fontSize='small' style={{ color: 'LightPink' }}/>
                                                     }
                                         </TableCell>
                                     </TableRow>

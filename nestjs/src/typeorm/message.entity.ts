@@ -9,9 +9,6 @@ export class Message {
     @ManyToOne(() => User, { eager:true })
     sender: User;
 
-    // @ManyToOne(() => Channel, (channel: Channel) => channel.messages)
-    // channel: string;
-
     @Column()
     channel: string;
     
