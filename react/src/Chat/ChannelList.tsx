@@ -18,7 +18,8 @@ import { get_backend_host } from '../utils';
 import { Channel } from './Chat.types';
 
 
-interface ChannelListProps { 
+interface ChannelListProps {
+    channelsWebSocket: any;
     openChat: any;
     activeChannel?: Channel;
     setError: (err: string) => void;
@@ -54,10 +55,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             channelToJoin: undefined,
             passwordToJoin: "",
         };
-    }
-
-    componentDidMount() {
-        this.getChannels()
     }
 
     // Backend calls
@@ -149,6 +146,10 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         // if (this.state.channels.find((el) => el.members.includes()))
     }
 
+    subscribeWebsocketEvents(){
+        this.props.channelsWebSocket.on("newChannel", () => {this.getChannels()});
+    }
+
     handleClickOpen = () => {
         this.setState( {open: true} );
     };
@@ -156,6 +157,12 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     handleClose = () => {
         this.setState( {open: false} );
     };
+
+    componentDidMount() {
+        this.getChannels()
+         //get notified when a new channel is created
+        .then(() => this.subscribeWebsocketEvents())
+    }
 
     renderChannels = () => {
         const channel = this.state.channels.map((el) => (
@@ -181,7 +188,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         )
 
         return (
-        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f48fb1' }} >
             {channel}
         </List>
         );
@@ -191,7 +198,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         return (
         <div>
             <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
-            <Typography variant="h5" component="div" align="center" color="secondary">
+            <Typography variant="h5" component="div" align="center">
                 Channels
             </Typography>
             {this.renderChannels()}
@@ -204,6 +211,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         onChange={(event) => { this.setState({newChannel: event.target.value}) }}
                         value={this.state.newChannel}
                         autoFocus
+                        inputProps={{ maxLength: 20 }}
                         margin="dense"
                         id="name"
                         label="Channel name"
@@ -227,6 +235,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                             onChange={(event) => { this.setState({newChannelPassword: event.target.value}) }}
                             autoFocus
                             value={this.state.newChannelPassword}
+                            inputProps={{ maxLength: 20 }}
                             margin="dense"
                             id="name"
                             label="Password"

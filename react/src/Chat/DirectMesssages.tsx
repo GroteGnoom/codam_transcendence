@@ -6,6 +6,7 @@ import { get_backend_host } from '../utils';
 
 
 interface DirectMessageProps { 
+    channelsWebSocket: any;
     openChat: any;
     activeChannel?: Channel;
     setError: (err: string) => void;
@@ -21,7 +22,6 @@ interface DirectMessageState {
 }
 
 class DirectMessage extends React.Component<DirectMessageProps, DirectMessageState> {
-
     constructor(props: any) {
         super(props);
         this.state = { 
@@ -31,10 +31,11 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             users: [],
             selectedMember: 0,
             currentUser: undefined,
-
-            // openJoinWindow: false,
-            // channelToJoin: undefined,
         };
+    }
+
+    subscribeWebsocketEvents(){
+        this.props.channelsWebSocket.on("newDM", () => {this.getChats()});
     }
 
     componentDidMount() {
@@ -42,10 +43,13 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
         this.getUsers()
         this.getCurrentUser()
         .then(() => this.getChats())
+
+        //get notified when a new dm is created
+        .then(() => this.subscribeWebsocketEvents())
     }
 
     addDisplayName(channel: Channel) {
-        var displayName = channel.name;
+        let displayName = channel.name;
         const otherMember = channel.members.filter((member) => member.user.id !== this.state.currentUser.id)
         if (otherMember.length > 0) {
             displayName = otherMember[0].user.username;
@@ -86,7 +90,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
     handleChange = (event: SelectChangeEvent) => {
         this.setState({selectedMember: Number(event.target.value)});
-        console.log("selectedmember: ", this.state.selectedMember);
+        console.log("selectedmember: ", Number(event.target.value));
     };
 
     async getUsers(){
@@ -143,7 +147,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
         )
 
         return (
-        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f06292' }} >
+        <List sx={{width: '100%', maxWidth: 250, bgcolor: '#f48fb1' }} >
             {channel}
         </List>
         );
@@ -177,6 +181,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                         <Select
                             label="Member"
                             onChange={this.handleChange}
+                            value={`${this.state.selectedMember}`}
                             >
                             {listUsers}
                         </Select>
@@ -184,7 +189,11 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose}>Cancel</Button>
-                    <Button variant="contained" onClick={() => this.createDirectMessage()}>Chat</Button>
+                    <Button disabled={!this.state.selectedMember}
+                            variant="contained" 
+                            onClick={() => this.createDirectMessage()}>
+                            Chat
+                    </Button>
                 </DialogActions>                
                 </Box>
             </Dialog>

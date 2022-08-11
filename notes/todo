@@ -2,6 +2,7 @@ When starting up on a new computer, the pg_hba.conf is not set correctly (for ev
  error: no pg_hba.conf entry for host "172.18.0.4", user "postgres", database "transcendence_db", no encryption
  ..and also other problems, for which the proper solution is to delete all postgres_data
 
+put scrollbars back after playing a game
 
 Irir----
 [V] uitzoeken: async, await, promises asynchronous programming how does it work?

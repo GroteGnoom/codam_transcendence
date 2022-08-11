@@ -35,7 +35,6 @@ export class ChannelsService {
         // })
     }
 
-
     getChannels(userID: number){
         return this.channelRepository.find({
             where : [
@@ -60,14 +59,17 @@ export class ChannelsService {
 
     getChats(userID: number) { //gets direct messages
         return this.channelRepository.find({
-            //where: {channelType: ChannelType.dm, admins: [{id: 35}]}, testing
             where: {channelType: ChannelType.dm, admins: [{id: userID}]},
             relations: ['members', 'admins']
         });
     }
 
     async createChannel(createChannelDto: CreateChannelDto, userID: number) {
-        if (createChannelDto.channelType == ChannelType.Protected &&
+        if (await this.channelRepository.findOne({where: {name: createChannelDto.name}})){
+            throw new BadRequestException(`ChannelName ${createChannelDto.name} already exist.`);
+        }
+
+        if (createChannelDto.channelType === ChannelType.Protected &&
                 !createChannelDto.password) {
             throw new BadRequestException('Must provide a password for a protected channel');
         }
@@ -76,7 +78,7 @@ export class ChannelsService {
         // Increasing it by one doubles the time. The bigger the cost factor, the more difficult it is to reverse the hash with brute-forcing. 
         // Generally speaking, 10 salt rounds should be fine.
         const hash = await bcrypt.hash(createChannelDto.password, 10);  //ten salt
-        return this.channelRepository.save({ // create new Channel object
+        const newChannel = await this.channelRepository.save({ // create new Channel object
             name: createChannelDto.name,
             owner: userID,
             admins: [{id: userID}],
@@ -84,6 +86,20 @@ export class ChannelsService {
             password: hash,
             channelType: createChannelDto.channelType,
         });
+        this.channelGateway.broadcastNewChannel(newChannel.name)
+        return newChannel;
+    }
+
+    async createDirectMessage(user : number , other : number) {
+        const newDM = await this.channelRepository.save({ // create new Channel object (direct mesage)
+            name: `dm-${user}-${other}`,
+            owner: user,
+            admins: [{id: user}, {id: other}],
+            members: [this.newMember(user), this.newMember(other)],
+            channelType: ChannelType.dm,
+        });
+        this.channelGateway.broadcastNewDM(newDM.name)
+        return newDM;
     }
 
     async updateChannel(createChannelDto: CreateChannelDto, requester: number) {
@@ -110,7 +126,6 @@ export class ChannelsService {
         });
     }
 
-
     removeChannelByName(name: string) {
         this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
         return this.channelRepository.delete({name: name});     // then delete channel
@@ -121,11 +136,13 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['admins']
         });
-        if (!channel.admins.map((user) => user.id).includes(requester)) {
+        console.log("requester: ", requester)
+        console.log("id: ", id)
+        if (!channel.admins.map((user) => Number(user.id)).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
-        if (channel.admins.map((user) => user.id).includes(id)) {
-            return channel;
+        if (channel.admins.map((user) => Number(user.id)).includes(id)) {
+            throw new BadRequestException('User is already admin');
         }
         const admins = [...channel.admins, {id: id}];
         return this.channelRepository.save({name: channelName, admins: admins});
@@ -239,7 +256,7 @@ export class ChannelsService {
         channel.members.forEach((member) => {
             if (member.user.id == id) {
                 member.isMuted = true;
-                member.mutedUntil = new Date(new Date().getTime() + 10 * 1000); // 10 seconds for testing
+                member.mutedUntil = new Date(new Date().getTime() + 30 * 1000); // 10 seconds for testing
                 this.channelGateway.broadcastMuteUser(channelName, id);
             } 
         })
@@ -275,7 +292,12 @@ export class ChannelsService {
     }
 
     async addMessage(channel: string, sender: number, message: MessageDto) {
-        const newMessage: Message = this.messageRepository.create({sender: {id: sender}, text: message.text}); // will create id and date for message
+        const newMessage: Message = this.messageRepository.create({
+            sender: {id: sender},
+            text: message.text,
+            invite: message.invite
+        }); // will create id and date for message
+
         newMessage.channel = channel;
 		await this.messageRepository.save(newMessage);
         return this.messageRepository.findOne({
@@ -284,21 +306,9 @@ export class ChannelsService {
     }
 
     getMessages(channel: string) {
-        //return this.messageRepository.findBy({channel: channel});
-
         return this.messageRepository.find({
             where : {channel: channel},
             order: { date: "ASC" } // "DESC"
-        });
-    }
-
-    createDirectMessage(user : number , other : number) {
-        return this.channelRepository.save({ // create new Channel object (direct mesage)
-            name: `dm-${user}-${other}`,
-            owner: user,
-            admins: [{id: user}, {id: other}],
-            members: [this.newMember(user), this.newMember(other)],
-            channelType: ChannelType.dm,
         });
     }
 

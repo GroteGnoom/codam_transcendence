@@ -26,13 +26,14 @@ export default function PinkPong() {
 	let rightKeyPressed: boolean;
 
 	let setTimeOut: boolean;
+	let matchID: string;
 
 	/*	powerups */
 	let paddleSizeMultiplierP1: number = 1;
     let paddleSizeMultiplierP2: number = 1;
 
-	let namePlayer1: string = "naamspeler1"; //get the intraname from the id
-	let namePlayer2: string = "naamspeler2";
+	let namePlayer1: string = ""; //get the intraname from the id
+	let namePlayer2: string = "";
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	let navigate = useNavigate();
@@ -41,12 +42,12 @@ export default function PinkPong() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 		if (!canvas)
-			console.log("error");
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-			if (!ctx)
-				console.log("error");
-				
+		console.log("error");
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+		if (!ctx)
+		console.log("error");
+		
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		setTimeOut = false;
@@ -56,13 +57,15 @@ export default function PinkPong() {
 			withCredentials: true, 
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
-		webSocket.current.on("playerNames", setPlayerNames ) // subscribe on backend events
+		
+		
 		webSocket.current.emit('keyPressed', {
 			"leftKeyPressed": false,
 			"rightKeyPressed": false,
 			"reset": false
 		})
-		webSocket.current.on("boardUpdated", getCoordinates ) // subscribe on backend events
+		
+		webSocket.current.on("boardUpdated", getCoordinates) // subscribe on backend events
 
 		return () => {
 			console.log('Closing WebSocket');
@@ -70,19 +73,6 @@ export default function PinkPong() {
 		}
 	}, []);
 
-	async function setPlayerNames(payload: any) {
-		await fetch(get_backend_host() + `/users/id/${payload.Player1}`, { 
-            method: 'GET',
-            credentials: 'include',
-        }).then((response) => response.json())
-			.then((response) => {namePlayer1 = response.username})
-		await fetch(get_backend_host() + `/users/id/${payload.Player2}`, { 
-            method: 'GET',
-            credentials: 'include',
-        }).then((response) => response.json())
-		.then((response) => {namePlayer2 = response.username})
-	}
-	
 	function componentDidMount() {
 		document.addEventListener("keydown", handleKeyPress, false);
 		document.addEventListener("keyup", handleKeyRelease, false);
@@ -100,7 +90,6 @@ export default function PinkPong() {
 	}
 
 	function handleKeyPress(event: KeyboardEvent) {
-		console.log(event.key);
 		if (event.key === "ArrowRight") {
 			leftKeyPressed = false;
 			rightKeyPressed = true;
@@ -149,6 +138,8 @@ export default function PinkPong() {
 			paddleSizeMultiplierP1 = payload.paddleSizeMultiplierP1;
 			paddleSizeMultiplierP2 = payload.paddleSizeMultiplierP2;
 			draw(ballX, ballY, paddleP1X, paddleP1Y, paddleP2X, paddleP2Y, payload.scoreP1, payload.scoreP2);
+			namePlayer1 = payload.namePlayer1;
+			namePlayer2 = payload.namePlayer2;
 		}
 	}
 
@@ -209,6 +200,7 @@ export default function PinkPong() {
 		ctx.beginPath();
 
 		ctx.font = font;
+		ctx.fillStyle = "#a30283";
 		ctx.fillText(text, x, y);
 		
 		ctx.closePath();
@@ -231,6 +223,20 @@ export default function PinkPong() {
 				})
 				delay(100);
 				console.log('Closing WebSocket EndGame');
+				webSocket.current.close();
+				console.log('Opening WebSocket');
+				webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
+					withCredentials: true, 
+					path: "/classicWaitingRoom-ws/socket.io"
+				}); // open websocket connection with backend
+				webSocket.current.emit("gameEnded", {});
+				webSocket.current.close();
+				console.log('Opening WebSocket');
+				webSocket.current = io(get_backend_host() + "/PinkPongWaitingRoom-ws", {
+					withCredentials: true, 
+					path: "/PinkPongWaitingRoom-ws/socket.io"
+				}); // open websocket connection with backend
+				webSocket.current.emit("gameEnded", {});
 				webSocket.current.close();
 				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}

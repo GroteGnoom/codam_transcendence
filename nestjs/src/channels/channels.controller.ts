@@ -31,6 +31,12 @@ export class ChannelsController {
 		return this.channelsService.createChannel(createChannelDto, userID);
 	}
 
+    @Post('dm/:id')
+    async createDirectMessage(@Req() req: any, @Param('id') other: number) {
+        const userID = req.session.userId;
+        return this.channelsService.createDirectMessage(userID, other);
+    }
+
     @Put('update/:name')
 	@UsePipes(ValidationPipe)
 	updateChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
@@ -44,9 +50,9 @@ export class ChannelsController {
     }
 
     @Put(':name/admin/:id')
-    async addAdminToChannel(@Res() res, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
+    async addAdminToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
-        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), userID);
+        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
         if (!channel) {
             throw new NotFoundException('Channel not found');
         } else {
@@ -66,7 +72,7 @@ export class ChannelsController {
 	}
 
     @Put(':name/member/:id')
-    async addMemberToChannel(@Res() res, @Param('name') name: string, @Param('id') newMember: number) {
+    async addMemberToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newMember: number) {
         const channel = await this.channelsService.addMemberToChannel(name, Number(newMember));
         if (!channel) {
             throw new NotFoundException('Channel not found');
@@ -76,52 +82,46 @@ export class ChannelsController {
     }
 
     @Get(':name/is-member')
-    async checkIfMember(@Req() req, @Param('name') name: string) {
+    async checkIfMember(@Req() req: any, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMember(name, userID);
     }
 
     @Put(':name/join')
-    async joinChannel(@Req() req, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
+    async joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
         const userID = req.session.userId;
         const password = joinChannelDto.password;
         return this.channelsService.joinChannel(name, userID, password);
     }
 
     @Delete(':name/member/self')
-    removeSelfFromChannel(@Req() req, @Param('name') name: string) {
+    removeSelfFromChannel(@Req() req: any, @Param('name') name: string) {
         const userID = req.session.userId;
         console.log("Removing self from channel")
         return this.channelsService.leaveFromChannel(name, userID);
     }
 
     @Delete(':name/member/:id')
-    removeMemberFromChannel(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+    removeMemberFromChannel(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
         const userID = req.session.userId;
         return this.channelsService.removeMemberFromChannel(name, Number(member), userID);
     }
 
     @Put(':name/mute/:id')
-    async muteMember(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+    async muteMember(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
         const userID = req.session.userId;
         return this.channelsService.muteMemberInChannel(name, Number(member), userID);
     }
 
     @Get(':name/is-muted')
-    async checkIfMuted(@Req() req, @Param('name') name: string) {
+    async checkIfMuted(@Req() req: any, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMuted(name, userID);
     }
 
     @Put(':name/ban/:id')
-    async banMember(@Req() req, @Param('name') name: string, @Param('id') member: number) {
+    async banMember(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
         const userID = req.session.userId;
         return this.channelsService.banMemberFromChannel(name, Number(member), userID);
-    }
-
-    @Post('dm/:id')
-    async createDirectMessage(@Req() req, @Param('id') other: number) {
-        const userID = req.session.userId;
-        return this.channelsService.createDirectMessage(userID, other);
     }
 }

@@ -7,6 +7,7 @@ import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
+import { MatchService } from '../match/match.service';
 
 @WebSocketGateway({
   namespace: '/PinkPongWaitingRoom-ws',
@@ -18,10 +19,12 @@ import { getUserFromClient, get_frontend_host } from 'src/utils';
 })
 export class PinkPongWaitingRoomGateway {
   constructor (
-  private readonly configService: ConfigService
+  private readonly configService: ConfigService,
+  private readonly matchService: MatchService
 	) {}
 
   waitingUsers = new Set<number>;
+  currentGames = new Set<number>;
   logins: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -67,9 +70,13 @@ export class PinkPongWaitingRoomGateway {
       const [, second] = this.waitingUsers;
       this.Player1 = await this.getUser(first);
       this.Player2 = await this.getUser(second);
+      const match = await this.matchService.addMatch(this.Player1, this.Player2);
+      const matchID:number = match.id;
+      this.currentGames.add(matchID);
       await this.server.emit("found2PlayersPinkPong", {
         "Player1": this.Player1,
-        "Player2": this.Player2
+        "Player2": this.Player2,
+        "id": matchID
       });
       this.waitingUsers.delete(first);
       this.waitingUsers.delete(second);

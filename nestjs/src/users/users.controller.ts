@@ -90,6 +90,21 @@ export class UsersController {
     return new StreamableFile(stream);
   }
 
+  @Get('avatar/:id')
+  async getAvatarForUSer(@Param('id') id: number, @Response({passthrough : true})
+                                             res): Promise<StreamableFile> {
+    const avatarId = await this.userService.getAvatarId(id);
+    if (avatarId === null)
+      return null;
+    const file = await this.databaseFilesService.getFileById(avatarId);
+    const stream = Readable.from(file.data);
+    res.set({
+      'Content-Type' : 'image',
+      'Content-Disposition' : `inline;// filename="${file.filename}"`,
+    });
+    return new StreamableFile(stream);
+  }
+
 
   // Endpoint needed for chat
 
