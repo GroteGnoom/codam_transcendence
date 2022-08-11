@@ -1,20 +1,21 @@
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
-import { io } from "socket.io-client";
+import { Link } from 'react-router-dom';
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import { Link } from 'react-router-dom';
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
 const ENTER_KEY_CODE = 13;
 
 
 interface ChatWindowProps { 
+    channelsWebSocket: any;
     channel: Channel;
     openSettings: any;
     setError: any;
@@ -30,7 +31,6 @@ interface ChatWindowState {
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
-    private webSocket: any = undefined;
 
     constructor(props: ChatWindowProps){
         super(props);
@@ -90,48 +90,38 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async inviteClassicPong(){
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of Classic Pong!"
+                "text": "Join me for a game of <a href='leaderboard'>Classic Pong!</a>", //<a> is HTML link element (anchor)
+                "invite": true
             }
         })
     }
 
     async invitePinkPong(){
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of PinkPong!"
+                "text": "Join me for a game of <a href='leaderboard'>PinkPong!</a>",
+                "invite": true
             }
         })
     }
 
-    openWebsocket() {
-        if (!this.webSocket) {
-            console.log('Opening WebSocket');
-            this.webSocket = io(get_backend_host() + "/channels-ws", {
-                withCredentials: true, 
-                path: "/channels-ws/socket.io" 
-            });
-            this.webSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
-            this.webSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
-            this.webSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
-        }
+    subscribeWebsocketEvents() {
+        this.props.channelsWebSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
+        this.props.channelsWebSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
+        this.props.channelsWebSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
     }
 
     componentDidMount() {
-        console.log("Mounting", this.props.channel)
+        console.log("Mounting", this.props.channel);
         this.getBlockedUsers().then(() =>
             this.getMessages()
         )
-        this.openWebsocket()
+        this.subscribeWebsocketEvents()
         this.checkIfMuted()
-    }
-
-    componentWillUnmount() {
-        console.log("Closing websocket")
-        this.webSocket.close()
     }
 
     componentDidUpdate(prevProps: ChatWindowProps, prevState: ChatWindowState) { 
@@ -143,7 +133,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async postMessage() {
-        this.webSocket.emit("sendMessage", { 
+        this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
                 "text": this.state.text
@@ -182,13 +172,22 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} }>
+                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#ec407a' }}>
                                 {`${msg.sender.username}`}
                             </Link>
                         </Typography>
-                        <Typography variant="h6">
-                            {`${msg.text} `}
-                        </Typography>
+                        {msg.invite &&
+                            <Typography variant="h6"
+                                dangerouslySetInnerHTML={{
+                                    __html: `${msg.text} ` // make links work https://stackoverflow.com/questions/66028355/material-ui-styles-and-html-markdown 
+                                }}>
+                            </Typography>
+                        }
+                        {!msg.invite &&
+                            <Typography variant="h6">
+                                {msg.text}
+                            </Typography> 
+                        }
                     </div>
                 </ListItem> 
             )}
@@ -214,7 +213,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     { this.props.channel.channelType !== "direct message" &&
                                         <IconButton onClick={() => { this.props.openSettings(true) }}
                                             color="secondary">
-                                                <SettingsIcon />
+                                                <SettingsIcon style={{ color: '#ec407a' }}/>
                                         </IconButton>
                                     }
                                 </Grid>
@@ -222,29 +221,30 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     { this.props.channel.channelType !== "direct message" &&
                                         <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
                                             color="secondary">
-                                                <PersonAddIcon />
+                                                <PersonAddIcon style={{ color: '#ec407a' }}/>
                                         </IconButton>
                                     }
                                     { this.props.channel.channelType === "direct message" && // challenge another player to a game
                                         <SpeedDial
                                         direction={'down'}
                                         ariaLabel="SpeedDial tooltip example"
-                                        sx={{position: 'absolute', top: -40 }}
+                                        sx={{position: 'absolute', top: -40, }}
                                         icon={<SportsEsportsIcon />}
                                         onClose={() => { this.setState( {gameInviteOpen: false} ) }}
                                         onOpen={() => { this.setState( {gameInviteOpen: true} ) }}
                                         open={this.state.gameInviteOpen}
                                         >
                                         <SpeedDialAction
+                                            // FabProps={{ sx: { bgcolor: '#fcc6ff','&:hover': { bgcolor: '#fcc6ff', }} }}
                                             key={'Classic'}
-                                            icon={<SportsEsportsIcon />}
+                                            icon={<VideogameAssetIcon style={{ color: '#f06292' }}/>}
                                             tooltipTitle={'Classic'}
                                             tooltipOpen
                                             onClick={() => this.inviteClassicPong()}
                                             />
                                         <SpeedDialAction
                                             key={'Special'}
-                                            icon={<SportsEsportsIcon />}
+                                            icon={<SportsEsportsIcon style={{ color: '#f06292' }}/>}
                                             tooltipTitle={'Special'}
                                             tooltipOpen
                                             onClick={() => this.invitePinkPong()}
@@ -278,7 +278,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     <IconButton type="submit" onClick={() => this.postMessage()}
                                         disabled={this.state.muted}
                                         color="secondary">
-                                            <SendIcon />
+                                            <SendIcon style={{ color: '#ec407a' }}/>
                                     </IconButton>
                                 </Grid>
                             </Grid>
