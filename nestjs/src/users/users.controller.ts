@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get, Logger, Param, Post,
@@ -7,6 +8,7 @@ import {
   StreamableFile,
   UploadedFile, UseInterceptors,
   UsePipes,
+  UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDto } from 'src/users/users.dtos';
@@ -14,6 +16,7 @@ import { UsersService } from 'src/users/users.service';
 import { Readable } from 'stream';
 import { UserValidationPipe } from './uservalidation.pipe'
 import { DatabaseFilesService } from './databaseFiles.service';
+import { TwoFactorAuthenticationController } from 'src/auth/twoFactorAuthentication.controller';
 
 @Controller('users')
 export class UsersController {
@@ -68,7 +71,13 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file'))
   async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
     this.logger.log("id: ", req.session.userId);
+    this.logger.log("file size: ", file.size);
     this.logger.log("filename: ", file.originalname);
+    this.logger.log("mimetype: ", file.mimetype);
+    if (!file.mimetype.includes("image"))
+      throw new UnsupportedMediaTypeException("Unsupported Media Type: type must be `image`");
+    if (file.size > 2000000)
+      throw new BadRequestException("Maximum allowed file size for upload is 2MB");
     return this.userService.addAvatar(req.session.userId, file.buffer,
                                       file.originalname);
   }

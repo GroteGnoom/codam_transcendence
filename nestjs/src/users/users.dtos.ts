@@ -4,7 +4,7 @@ import {IsUniqueUser, IsNotBlank} from './validators';
 
 export class UserDto { // Nestjs Data Transfer Object = a class that defines the values of the body from the request
   @IsNotEmpty()
-  @IsNotBlank({message: 'username should not be empty'})
+  @IsNotBlank({message: 'Username must not be empty'})
   @MaxLength(30)
   username: string;
 
