@@ -16,7 +16,7 @@ import { GameStats } from 'src/typeorm/gameStats.entity';
   ],
   controllers : [ UsersController ],
   providers : [ uniqueUserConstraint, UsersService, DatabaseFilesService, StatusGateway ],
-  exports : [ UsersService, DatabaseFilesService ]
+  exports : [ UsersService, DatabaseFilesService]
 })
 export class UsersModule {
 }

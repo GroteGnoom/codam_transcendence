@@ -5,7 +5,7 @@ import { GameStats } from './gameStats.entity';
 export enum userStatus {
 	Online = "online",
 	Offline = "offline",
-	InGame = "inGame",
+	// InGame = "inGame",
 }
 @Entity()
 export class User {
@@ -64,4 +64,7 @@ export class User {
     @OneToOne(() => GameStats, (gameStats) => gameStats.user, {cascade: true})
     @JoinColumn()
     gameStats: GameStats
+
+	@Column({ default: false })
+	inGame: boolean;
 }

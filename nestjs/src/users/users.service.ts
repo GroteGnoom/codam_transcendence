@@ -29,8 +29,8 @@ export class UsersService {
   }
 
   async createUser(body: UserDto) {
-    const gameStats = await this.gameStatsRepository.create()
-    const newUser = await this.userRepository.create({...body, gameStats: gameStats});
+    const gameStats = this.gameStatsRepository.create()
+    const newUser = this.userRepository.create({...body, gameStats: gameStats});
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
       throw new BadRequestException('Account with this username already exists');
     return this.userRepository.save(newUser).catch(
@@ -187,8 +187,6 @@ export class UsersService {
     if (user.friends.map((user) => user.id).includes(friend)) {
       return user;
     }
-    // const friends = [...user.friends, this.newFriend(friend)];
-    // return this.userRepository.save({id: userId, friends: friends});
     user.friends = [...user.friends, this.newFriend(friend)];
     return this.userRepository.save(user);
   }
@@ -198,8 +196,6 @@ export class UsersService {
       where: { id: userId },
       relations: ['friends']
     });
-    // const friends = user.friends.filter((user) => user.id != friend)
-    // return this.userRepository.save({id: userId, friends: friends}); 
     user.friends = user.friends.filter((user) => Number(user.id) !== friend)
     return this.userRepository.save(user);
   }

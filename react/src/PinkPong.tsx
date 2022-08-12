@@ -251,7 +251,7 @@ export default function PinkPong() {
 				}); // open websocket connection with backend
 				webSocket.current.emit("gameEnded", {});
 				webSocket.current.close();
-				document.body.style.overflow = "auto";
+				document.body.style.overflow = "auto";		//puts scroll back in browser :)
 				navigate("/", { replace: true });}, 3000); //Reroute to home page after 5 seconds
 		}
 	}

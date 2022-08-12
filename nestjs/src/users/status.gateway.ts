@@ -49,4 +49,11 @@ export class StatusGateway {
             status: userStatus.Offline,
         });
     }
+
+    inGameStatus(playerID: number, inGame: boolean) {
+        this.server.emit('inGameStatusUpdate', {
+            userID: playerID,
+            inGame: inGame,
+        });
+    }
 }

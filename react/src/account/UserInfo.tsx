@@ -3,13 +3,13 @@ import BlurOnIcon from '@mui/icons-material/BlurOn';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SportsTennisIcon from '@mui/icons-material/SportsTennis';
-import { Avatar, Badge, Box, Button, Divider, IconButton, List, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import { Avatar, Box, Button, Divider, IconButton, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { get_backend_host } from "../utils";
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
@@ -161,6 +161,17 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         })     
     }
 
+    updateInGameStatus(socketMessage: any){   //subscribed to statusInGameUpdate events through ws
+        const user = this.state.user;
+        console.log(socketMessage)
+        user.friends.forEach((el: any) => {
+            if (socketMessage.userID === Number(el.id)){
+                el.inGame = socketMessage.inGame;
+                this.setState( { user : user } );
+            }
+        })     
+    }
+
     componentDidUpdate(prevProps: UserInfoProps, prevState: UserInfoState) { 
         if (
             !prevProps.params || !this.props.params ||
@@ -180,7 +191,12 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         if (this.props.statusWebsocket){
             console.log("subscribe to status ws", this.props.statusWebsocket)
             this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
+            this.props.statusWebsocket.on("inGameStatusUpdate", (payload: any) => {this.updateInGameStatus(payload)} )
         }
+    }
+
+    componentWillUnmount() {
+        this.props.statusWebsocket.off("statusUpdate")
     }
 
     renderMatchesRow(props: ListChildComponentProps) {
@@ -190,8 +206,9 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         return (
             <TableRow
             key={index}
+            style={style}
             sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
-                <TableCell align="right" style={{ width: 300 }}>
+                <TableCell align="right" style={{ width: 150 }}>
                     <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
                                 {`${el.player_1.username}`}
                     </Link>
@@ -199,7 +216,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
                 <TableCell align="center">{"-"}</TableCell>
                 <TableCell align="right">{`${el.scoreP2}`}</TableCell>
-                <TableCell align="left" style={{ width: 300 }}>
+                <TableCell align="left" style={{ width: 150 }}>
                     <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
                                 {`${el.player_2.username}`}
                     </Link>
@@ -211,14 +228,14 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     renderMatches = () => {
         return (
             <Box
-              sx={{ width: '100%', height: 400, maxWidth: 400, bgcolor: '#f06292', m:10, ml:16 }}>
+              sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: '#f06292', m:10, ml:16 }}>
                 <Typography variant="h6" component="div">
                     Matches
                 </Typography>
                 <Divider />
                 <FixedSizeList
                     height={360}
-                    width={400}
+                    width={500}
                     itemSize={46}
                     itemCount={this.state.matches.length}
                     overscanCount={5}                    
@@ -264,20 +281,20 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         const el = this.state.user.friends[index];
     
         return (
-            <ListItem key={index} sx={{bgcolor: '#f48fb1'}} >
+            <ListItem key={index} style={style} sx={{bgcolor: '#f48fb1'}} >
                 { (el.status==="offline" && !(this.state.currentUser && el.id === this.state.currentUser.id)) &&
                     <IconButton
                     color="error" >
                         <BlurOnIcon fontSize='small'/>
                     </IconButton>
                 }
-                { (el.status==="online" || (this.state.currentUser && el.id === this.state.currentUser.id)) &&
+                { ((el.status==="online" && !el.inGame) || (this.state.currentUser && el.id === this.state.currentUser.id)) &&
                     <IconButton
                     color="success" >
                         <BlurOnIcon fontSize='small'/>
                     </IconButton>
                 }
-                { el.status==="inGame" &&
+                { el.inGame && el.status==="online" &&
                     <IconButton
                     color="secondary" >
                         <SportsTennisIcon fontSize='small'/>
@@ -317,7 +334,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     render(){ 
-        
         const avatar = {
             imgSrc: get_backend_host() + `/users/avatar/${this.props.params.id}`,
             imgHash: Date.now(), 

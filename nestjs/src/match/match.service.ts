@@ -1,18 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseFilters } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameStats } from 'src/typeorm/gameStats.entity';
 import { Match } from 'src/typeorm/match.entity';
+import { User } from 'src/typeorm/user.entity';
+import { StatusGateway } from 'src/users/status.gateway';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class MatchService {
     constructor( 
         @InjectRepository(Match) private readonly matchRepository: Repository<Match>,
-        @InjectRepository(GameStats) private readonly gameStatsRepository: Repository<GameStats>
+        @InjectRepository(GameStats) private readonly gameStatsRepository: Repository<GameStats>,
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private readonly statusGateway: StatusGateway,
     ){}
 
-    addMatch(player_1_id : number, player_2_id : number) {
+    async addMatch(player_1_id : number, player_2_id : number) {
         const match = this.matchRepository.create({player_1 : {id : player_1_id}, player_2 : {id : player_2_id}, scoreP1: 0, scoreP2: 0});
+        await this.setGameStatus(player_1_id, player_2_id, true, match.id)
         return this.matchRepository.save(match);
     }
 
@@ -20,6 +25,7 @@ export class MatchService {
         const match = await this.matchRepository.findOne({
             where: {id: matchID}
         });
+        await this.setGameStatus(Number(match.player_1.id), Number(match.player_2.id), false, 0)
 
         let player_1_stats = await this.gameStatsRepository.findOne({
             where: { user: { id: match.player_1.id }}
@@ -71,5 +77,17 @@ export class MatchService {
             stats.user && Number(stats.user.id) === player_id
         )
         return rank + 1
-    }  
+    } 
+
+    private async setGameStatus (player_1_id : number, player_2_id : number, status: boolean, match_id: number) {
+        let player_1 = await this.userRepository.findOneBy({id : player_1_id})
+        let player_2 = await this.userRepository.findOneBy({id : player_2_id})
+        player_1.inGame = status;
+        player_2.inGame = status;
+        this.userRepository.save(player_1)
+        this.userRepository.save(player_2)
+
+        this.statusGateway.inGameStatus(player_1_id, status) // currently in or out a game
+        this.statusGateway.inGameStatus(player_2_id, status)  
+    }
 }
