@@ -43,11 +43,12 @@ export function Signup() {
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
     const [started, setStarted] = useState(false);
+    const [dataFetched, setDataFetched] = useState(false);
     const navigate = useNavigate();
 
     //backend calls
     async function getUserInfoDatabase () {
-        getLoggedIn();
+        console.log("i am being called");
         if (isLoggedIn === false)
             return;
         return await fetch(get_backend_host() + "/users/user", {
@@ -68,6 +69,7 @@ export function Signup() {
             setIntraName(response.intraName);
             setUsername(response.username);
             setIsSignedUp(response.isSignedUp);
+            setDataFetched(true);
         })
         .catch((error: Error) => setError(error.message))
     }
@@ -165,7 +167,7 @@ export function Signup() {
                 throw new Error(json.message);
             }
         })
-        .then((response) => {
+        .then(() => {
             getUsers();
             setIsSignedUp(true);
             setEvent("User created successfully");
@@ -216,6 +218,7 @@ export function Signup() {
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("juperdijupert");
         getLoggedIn();
         setChecked(event.target.checked);
     };
@@ -299,14 +302,27 @@ export function Signup() {
     }
 
     // effect hooks
+    useEffect(() => {
+        async function fetchData() { // sleep before fetching the data to show spinner
+            await sleep(500);
+            setStarted(true);
+            console.log("started!");
+            getUserInfoDatabase();
+        }
+        console.log("lets sleeep");
+        fetchData();
+    }, []); // will only be called on initial mount and unmount
+
     // combination of componentDidMount and componentDidUpdate
     useEffect(() => { // will be called after the DOM update (after render)
         console.log(username);
         console.log(intraName);
-        getLoggedIn();
+        if (started === true)
+            getLoggedIn();
     });
 
     useEffect(() => {
+        console.log("isLoggedIn changed to: ", isLoggedIn);
         if ( isLoggedIn ) {
             getUserInfoDatabase();
         }
@@ -319,31 +335,23 @@ export function Signup() {
         }
     }, [isSignedUp]); // will only be called when isSignedUp changes
 
-    useEffect(() => {
-        async function fetchData() { // sleep before fetching the data to show spinner
-            await sleep(500);
-            setStarted(true);
-            getUserInfoDatabase();
-        }
-        fetchData();
-    }, []); // will only be called on initial mount and unmount
-
-
     return ( // holds the HTML code
         <ThemeProvider theme={pinkTheme}>
-            { started === false ? // before fetchin the data, show spinner
-                ( <div className="menu"> <CircularProgress/> </div> )
-            : isLoggedIn ? ( // only show this when logged in
+            { !started && // before fetchin the data, show spinner
+                <div className="menu"> <CircularProgress/> </div>
+            }
+            { started && !isLoggedIn && // if not logged in, show login button
+                <div className="menu">
+                    <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a>
+                    {/* TODO: 2fa */}
+                </div>
+            }
+            { started && dataFetched && isLoggedIn && // only show this when logged in and data fetched
                 <div>
                     {!isSignedUp && showSignup()}
                     {/* <Button variant="contained" onClick={() => redir()}>please go backkkk</Button> */}
                 </div>
-            ) : ( // if not logged in, show login button
-                <div className="menu">
-                    {/* TODO get backend server */}
-                    <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a> 
-                </div>
-            )}
+            }
 
             <Snackbar open={event !== ""} autoHideDuration={3000} onClose={() => setEvent("")}>
                 <Alert onClose={() => setEvent("")} severity="success" sx={{ width: '100%' }}>
