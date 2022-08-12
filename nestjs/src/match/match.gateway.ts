@@ -335,6 +335,25 @@ export class MatchGateway {
     console.log("Handle connection match gateway");
   }
 
+  emitGames() {
+	  let gameArray = [];
+	  this.currentGameStates.forEach((gameState, matchID) => {
+		  console.log('pushing match');
+		  gameArray.push({Player1: gameState.Player1,
+						 Player2: gameState.Player2, 
+		  });
+	  });
+	  console.log('emitting array');
+	  console.log('gameArray', gameArray);
+	  //var gameArray = Array.from(this.currentGameStates.values());
+	  this.server.emit('matches', gameArray);
+  }
+
+  @SubscribeMessage('getGames')
+  getGames(client: Socket, payload: any): void {
+	  this.emitGames();
+  }
+
   @SubscribeMessage('startGame')
   async startGame(client: Socket, payload: any): Promise<void> {
     const player = getUserFromClient(client, this.configService);
@@ -354,14 +373,16 @@ export class MatchGateway {
       this.currentGameStates.set(matchID, new gameState(this.userService, payload.Player1, payload.Player2, matchID, payload.PinkPong));
       
       console.log("currentGameState size: ", this.currentGameStates.size);
+	  console.log('emitting matches');
+	  this.emitGames();
     }
   }
 
   slowLoop() {
     this.currentGameStates.forEach((gameState, matchID) => {
-    const emitMessage = gameState.getPlayers();
-    this.server.emit('matchID', {"matchID": matchID, "userID": emitMessage.Player1});
-    this.server.emit('matchID', {"matchID": matchID, "userID": emitMessage.Player2});
+		const emitMessage = gameState.getPlayers();
+		this.server.emit('matchID', {"matchID": matchID, "userID": emitMessage.Player1});
+		this.server.emit('matchID', {"matchID": matchID, "userID": emitMessage.Player2});
     });
     
   }
@@ -375,6 +396,7 @@ export class MatchGateway {
       if (emitMessage.winner === 1 || emitMessage.winner === 2) {
         this.matchService.storeResult(emitMessage.matchID, emitMessage.scoreP1, emitMessage.scoreP2);
         this.currentGameStates.delete(matchID);
+		this.emitGames();
       }
     });
   }
