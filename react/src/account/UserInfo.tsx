@@ -192,7 +192,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             console.log("subscribe to status ws", this.props.statusWebsocket)
             this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
             this.props.statusWebsocket.on("inGameStatusUpdate", (payload: any) => {this.updateInGameStatus(payload)} )
-        }
+        } // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
+
     }
 
     componentWillUnmount() {
@@ -209,7 +210,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             style={style}
             sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
                 <TableCell align="right" style={{ width: 150 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
+                    <Link to={{ pathname:`/userinfo/${el.player_1.id}`} } style={{ color: '#e91e63' }}>
                                 {`${el.player_1.username}`}
                     </Link>
                 </TableCell>
@@ -217,7 +218,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 <TableCell align="center">{"-"}</TableCell>
                 <TableCell align="right">{`${el.scoreP2}`}</TableCell>
                 <TableCell align="left" style={{ width: 150 }}>
-                    <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
+                    <Link to={{ pathname:`/userinfo/${el.player_2.id}`} } style={{ color: '#e91e63' }}>
                                 {`${el.player_2.username}`}
                     </Link>
                 </TableCell>
@@ -303,12 +304,12 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
                 <ListItemText >
                     <Typography variant="body1">
-                        <Link to={{ pathname:`/userinfo/${el.id}`} }>
+                        <Link to={{ pathname:`/userinfo/${el.id}`} } style={{ color: '#e91e63' }}>
                             {`${el.username}`}
                         </Link>
                     </Typography>
                 </ListItemText>         
-            </ListItem>
+            </ListItem> 
         )
     }
 
@@ -399,7 +400,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                                     </TableRow>
                                     <TableRow sx={{height:40}}>
                                         <TableCell align="left" >
-                                        <Link to={{ pathname:`/leaderboard`} }>
+                                        <Link to={{ pathname:`/leaderboard`} } style={{ color: '#e91e63' }}>
                                             Ranking
                                         </Link>                                        
                                         </TableCell>

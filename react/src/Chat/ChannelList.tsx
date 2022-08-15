@@ -179,8 +179,8 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             <ListItemButton onClick={this.handleClickOpen}>
                 <ListItemText primary="add channel" />
                 <ListItemAvatar>
-                    <Avatar sx={{ width: 24, height: 24 }}>
-                        <AddIcon color='secondary' fontSize='small' sx={{ color: 'darkpink' }}/>
+                    <Avatar sx={{ width: 24, height: 24 }} >
+                        <AddIcon fontSize='small' style={{ color: '#e91e63' }}/>
                     </Avatar>
                 </ListItemAvatar>
             </ListItemButton>
@@ -197,7 +197,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
     render(){
         return (
         <div>
-            <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
+            <Box sx={{ width: 250, bgcolor: '#e91e63', m:5 }}>
             <Typography variant="h5" component="div" align="center">
                 Channels
             </Typography>

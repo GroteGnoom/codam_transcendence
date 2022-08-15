@@ -79,7 +79,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         if (socketMessage.channel === this.props.channel.name) {
             console.log("Received a message for this channel")
             this.setState( { messages: [...this.state.messages, socketMessage.message] } );
-        }       
+        }           
     }
 
     onUserMuted(payload: any, muted: boolean) {
@@ -93,7 +93,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of <a href='leaderboard'>Classic Pong!</a>", //<a> is HTML link element (anchor)
+                "text": "Join me for a game of <a href='leaderboard'>Classic Pong! </a>", //<a> is HTML link element (anchor)
                 "invite": true
             }
         })
@@ -172,7 +172,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#ec407a' }}>
+                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#e91e63' }}>
                                 {`${msg.sender.username}`}
                             </Link>
                         </Typography>
