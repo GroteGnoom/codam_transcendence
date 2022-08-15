@@ -47,6 +47,7 @@ function App() {
 				<Route path={"/check_2fa"} element={<CheckTfa />} />
 				<Route path={"/show_qr"} element={<QR />} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />
+				<Route path={"/pinkpong/:spectateMatchID"} element={<PinkPong />} />
 				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
 				<Route path={"/inviteWaitingroomClassic"} element={<InviteWaitingRoomClassic />} />
 				<Route path={"/inviteWaitingroomPinkPong"} element={<InviteWaitingRoomPinkPong />} />

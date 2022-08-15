@@ -341,6 +341,7 @@ export class MatchGateway {
 		  console.log('pushing match');
 		  gameArray.push({Player1: gameState.Player1,
 						 Player2: gameState.Player2, 
+						 matchID: gameState.matchID,
 		  });
 	  });
 	  console.log('emitting array');
