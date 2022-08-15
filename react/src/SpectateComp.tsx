@@ -1,14 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
-import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
-import {CircularProgress, Typography} from '@mui/material';
-import { PlaylistAddOutlined } from '@mui/icons-material';
-import React, { Fragment } from 'react';
+import { Typography } from '@mui/material';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
-
-// const pinkTheme = createTheme({ palette: { primary: pink } })
 
 interface SpectateProps {
 }

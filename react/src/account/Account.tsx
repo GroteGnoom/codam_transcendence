@@ -52,7 +52,7 @@ export function Account() {
     async function getUserInfoDatabase () {
         getLoggedIn();
         if (isLoggedIn === false)
-            return;
+            navigate("/", { replace: true });
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',

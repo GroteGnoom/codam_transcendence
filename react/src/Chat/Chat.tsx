@@ -7,9 +7,11 @@ import ChatWindow from './ChatWindow';
 import DirectMessage from "./DirectMesssages";
 import { io } from "socket.io-client";
 import { get_backend_host } from "../utils";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
 	const [channelsWebSocket, setChannelsWebsocket] = useState(null);
+	let navigate = useNavigate();
 
 	useEffect(() => {
 		if (!channelsWebSocket) {
@@ -18,8 +20,21 @@ const Chat = () => {
 				withCredentials: true,
 				path: "/channels-ws/socket.io" 
 			})
+			socket.on("redirectHomeChat", redirHome) 
 			setChannelsWebsocket(socket as any)
 		}
+		
+		async function redirHome(payload: any) {
+			console.log("RedirHome");
+			const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+				method: 'GET',
+				credentials: 'include',
+			}).then(response => response.json());
+			console.log(await li);
+			if (await li === false)
+				navigate("/", { replace: true });
+		}
+
 		return () => {
             console.log('Closing WebSocket');
 			if (channelsWebSocket){

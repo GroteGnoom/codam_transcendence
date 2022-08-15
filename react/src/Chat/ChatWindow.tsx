@@ -45,6 +45,18 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         }
     }
 
+    // async redirHome(payload: any) {
+    //     console.log("RedirHome");
+    //     const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+	// 		method: 'GET',
+	// 		credentials: 'include',
+	// 	}).then(response => response.json());
+    //     console.log(await li);
+    //     const { navigation } = this.props;
+    //     if (await li === false)
+    //         navigation("/", { replace: true });
+    // }
+
     async getMessages(){
         return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/messages`, { 
             method: 'GET',
