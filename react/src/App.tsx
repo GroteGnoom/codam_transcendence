@@ -12,6 +12,8 @@ import Home from './Home';
 import LoggedIn from './LoggedIn';
 import PinkPong from './PinkPong';
 import PinkPongWaitingRoom from './PinkPongWaitingRoom';
+import InviteWaitingRoomClassic from './inviteWaitingRoomClassic';
+import InviteWaitingRoomPinkPong from './inviteWaitingRoomPinkPong';
 import QR from './QR';
 import { Signup } from './Signup';
 import { get_backend_host, userStatus } from './utils';
@@ -46,6 +48,8 @@ function App() {
 				<Route path={"/show_qr"} element={<QR />} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />
 				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
+				<Route path={"/inviteWaitingroomClassic"} element={<InviteWaitingRoomClassic />} />
+				<Route path={"/inviteWaitingroomPinkPong"} element={<InviteWaitingRoomPinkPong />} />
 				<Route path={"/PinkPongWaitingroom"} element={<PinkPongWaitingRoom />} />
 				<Route path={"/Spectate"} element={<Spectate />} />
 				<Route path={"/chat"} element={<Chat />} />

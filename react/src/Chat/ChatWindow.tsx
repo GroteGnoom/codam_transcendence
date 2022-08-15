@@ -95,12 +95,10 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of <a href='leaderboard'>Classic Pong!</a>", //<a> is HTML link element (anchor)
+                "text": "Join me for a game of <a href='inviteWaitingRoomClassic'>Classic Pong!</a>", //<a> is HTML link element (anchor)
                 "invite": true
             }
         })
-        console.log("Go to inviteWaitingRoomClassic");
-        //emit 
         const { navigation } = this.props;
         navigation("/inviteWaitingroomClassic", { replace: true });
     }
@@ -109,10 +107,12 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of <a href='leaderboard'>PinkPong!</a>",
+                "text": "Join me for a game of <a href='inviteWaitingRoomPinkPong'>PinkPong!</a>",
                 "invite": true
             }
         })
+        const { navigation } = this.props;
+        navigation("/inviteWaitingroomPinkPong", { replace: true });
     }
     
     subscribeWebsocketEvents() {

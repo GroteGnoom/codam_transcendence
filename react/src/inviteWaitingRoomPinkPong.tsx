@@ -3,10 +3,11 @@ import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
+import { truncate } from 'fs/promises';
 
 // const pinkTheme = createTheme({ palette: { primary: pink } })
 
-const InviteWaitingRoomClassic = () => {
+const InviteWaitingRoomPinkPong = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
@@ -42,7 +43,7 @@ const InviteWaitingRoomClassic = () => {
     // getPlayer1();
 
     webSocket.current.emit("loggedInInvite", {
-        "PinkPong": false
+        "PinkPong": true
     });
 
     console.log("Emitted loggedInInvite");
@@ -67,7 +68,7 @@ const InviteWaitingRoomClassic = () => {
             webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
-                "PinkPong": false
+                "PinkPong": true
             });
             navigate("/pinkpong", { replace: true });
         }
@@ -109,4 +110,4 @@ const InviteWaitingRoomClassic = () => {
     )
 }
 
-export default InviteWaitingRoomClassic;
+export default InviteWaitingRoomPinkPong;

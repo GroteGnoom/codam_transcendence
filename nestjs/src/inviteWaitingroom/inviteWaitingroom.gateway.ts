@@ -19,12 +19,14 @@ import { UsersService } from 'src/users/users.service';
     credentials: true
   },
 })
-export class inviteWaitingRoomGateway {
+export class InviteWaitingRoomGateway {
   constructor (
   private readonly configService: ConfigService,
   private readonly matchService: MatchService,
   private readonly userService: UsersService
-	) {}
+	) {
+    console.log("invite gateway constructor");
+  }
 
   waitingUsers = new Set<number>;
   logins: number = 0;
@@ -37,7 +39,7 @@ export class inviteWaitingRoomGateway {
   server: Server;
 
 	handleConnection(client: Socket, @Session() session) {
-    console.log("started classic waitingroom server", session);
+    console.log("started invite waitingroom server", session);
     if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomeInvite", {"client": client.id});
@@ -50,7 +52,7 @@ export class inviteWaitingRoomGateway {
 	}
 
   @SubscribeMessage('playerLeftInvite')
-  async handlePlayerLeaves(client: Socket, payload: any): Promise<void> {
+  async handlePlayerLeavesInvite(client: Socket, payload: any): Promise<void> {
     if (getUserFromClient(client, this.configService)) {
       this.waitingUsers.delete(getUserFromClient(client, this.configService));
     }
@@ -58,13 +60,18 @@ export class inviteWaitingRoomGateway {
   }
 
   @SubscribeMessage('loggedInInvite')
-  async handleLoggedIn(client: Socket, payload: any): Promise<void> {
-      if (!this.Player1 && !this.Player2) {
-        this.Player1 = payload.Player1;
-        this.Player2 = payload.Player2;
-        this.PinkPong = payload.PinkPong;
-      }
-      this.checkWaitingRoom();
+  async handleLoggedInInvite(client: Socket, payload: any): Promise<void> {
+    console.log("Emit received");
+    if (!this.Player1 && !this.Player2) {
+      this.Player1 = getUserFromClient(client, this.configService);
+    }
+    else
+      this.Player2 = getUserFromClient(client, this.configService)
+    this.PinkPong = payload.PinkPong;
+    console.log("PinkPong: ", this.PinkPong);
+    console.log("Player1: ", this.Player1);
+    console.log("Player2: ", this.Player2);
+    this.checkWaitingRoom();
   }
 
   async checkWaitingRoom() {
