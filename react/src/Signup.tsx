@@ -343,8 +343,15 @@ export function Signup() {
             { started && !isLoggedIn && // if not logged in, show login button
                 <div className="menu">
                     <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a>
-                    {/* TODO: 2fa */}
+                    { isLoggedIn && // if 2fa enabled, show 2fa
+                        <div>
+
+                        </div>
+                    }
                 </div>
+            }
+            {
+
             }
             { started && dataFetched && isLoggedIn && // only show this when logged in and data fetched
                 <div>
