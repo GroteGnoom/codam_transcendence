@@ -8,7 +8,6 @@ import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from '../match/match.service';
-import { MatchGateway } from 'src/match/match.gateway';
 import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
@@ -43,7 +42,6 @@ export class InviteWaitingRoomGateway {
     if (!getUserFromClient(client, this.configService)) {
       console.log("Redirect to home page");
       this.server.emit("redirectHomeInvite", {"client": client.id});
-      // this.server.close();
     }
     else {
       this.waitingUsers.add(getUserFromClient(client, this.configService));

@@ -3,17 +3,11 @@ import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
-import { truncate } from 'fs/promises';
-
-// const pinkTheme = createTheme({ palette: { primary: pink } })
 
 const InviteWaitingRoomPinkPong = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
-
-    // let Player1: Number = 0;
-    // let Player2: Number = 0;
 
     useEffect(() => {
     console.log('Opening WebSocket');
@@ -25,22 +19,6 @@ const InviteWaitingRoomPinkPong = () => {
         withCredentials: true,
         path: "/match-ws/socket.io"
     });
-
-    //get Player2
-
-    // const getPlayer1 = async () => {
-    //     if (!Player1) {
-    //         await fetch(get_backend_host() + `/users/user`, { 
-    //             method: 'GET',
-    //             credentials: 'include',
-    //         }).then((response) => response.json())
-    //         .then((response) => {Player1 = response.id})
-    //     }
-    //     if (Player1 !== 0 && Player1 === Player2)
-    //         Player1 = 0;
-    // }
-
-    // getPlayer1();
 
     webSocket.current.emit("loggedInInvite", {
         "PinkPong": true
