@@ -6,10 +6,8 @@ import { Account } from './account/Account';
 import UserInfo from './account/UserInfo';
 import './App.css';
 import Chat from './Chat/Chat';
-import CheckTfa from './CheckTfa';
 import ClassicWaitingRoom from './classicWaitingRoom';
 import Home from './Home';
-import LoggedIn from './LoggedIn';
 import PinkPong from './PinkPong';
 import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import InviteWaitingRoomClassic from './inviteWaitingRoomClassic';
@@ -44,7 +42,6 @@ function App() {
 		 	Status websocket connected: {statusWebSocket ? "YES": "NO"}
 			<Routes>
 				<Route path={"/"} element={<Home statusWebsocket={statusWebSocket} setStatusWebsocket={setStatusWebsocket}/>} />
-				<Route path={"/show_qr"} element={<QR />} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />
 				<Route path={"/pinkpong/:spectateMatchID"} element={<PinkPong />} />
 				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
@@ -54,7 +51,6 @@ function App() {
 				<Route path={"/Spectate"} element={<Spectate />} />
 				<Route path={"/chat"} element={<Chat />} />
 				<Route path={"/account"} element={<Account />} />
-				<Route path={"/logged_in/:token"} element={<LoggedIn />} />
 				<Route path={"/signup"} element={<Signup />} />
 				<Route path={"/userinfo/:id"} element={<UserInfo statusWebsocket={statusWebSocket}/>} />
 				<Route path={"/leaderboard"} element={<Leaderboard />} />

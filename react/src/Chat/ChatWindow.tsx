@@ -131,7 +131,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         this.props.channelsWebSocket.on("recMessage", (payload: any) => {this.onReceiveMessage(payload)} )
         this.props.channelsWebSocket.on("userMuted", (payload: any) => {this.onUserMuted(payload, true)} )
         this.props.channelsWebSocket.on("userUnmuted", (payload: any) => {this.onUserMuted(payload, false)} )
-        // this.props.channelsWebSocket.on("redirectHomeChat", this.redirHome)
     }
 
     componentDidMount() {
