@@ -50,9 +50,25 @@ export function Account() {
 
     //backend calls
     async function getUserInfoDatabase () {
+        fetch(get_backend_host() + "/auth/amiloggedin/", { 
+            method: "GET",
+            credentials: 'include',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .then(async (response) => {
+			console.log('response: ', response);
+			if (!response) {
+				navigate("/", { replace: true });
+			}
+		});
         getLoggedIn();
-        if (isLoggedIn === false)
-            navigate("/", { replace: true });
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
