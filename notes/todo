@@ -26,10 +26,13 @@ https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 [V] make account page
 [V] rvan: 2fa didn't work first sign up? error is send but 2fa code was found correct
 [ ] make loggin websocket
-[ ] do 2fa whenever enabled and when logging in
+[V] do 2fa whenever enabled and when logging in
 [V] internal server error: same username
 [ ] randomness random name generator: fetch if user already exists? and max length check
+[ ] better validation checks
 
 flow:
 user authentication -> set username page -> create user
 when clicked on my account -> user already exists -> set account properties
+
+curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
