@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import { get_backend_host } from './utils';
 
 export default function PinkPong() {
+	let { spectateMatchID } = useParams();
 	let fieldWidth: number = 1500;		//3
 	let fieldHeight: number = 1000;		//2
 	let paddleWidth = 100;
@@ -40,6 +41,7 @@ export default function PinkPong() {
 	
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
+		console.log("spectateMatchID:", spectateMatchID);
 		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 		if (!canvas)
 		console.log("error");
@@ -60,6 +62,18 @@ export default function PinkPong() {
 		
 		webSocket.current.on("boardUpdated", getCoordinates) // subscribe on backend events
 		webSocket.current.on("matchID", getMatchID) // subscribe on backend events
+		webSocket.current.on("redirectHomeMatch", redirHome ) // subscribe on backend events
+
+		async function redirHome(payload: any) {
+			console.log("RedirHome");
+			const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+				method: 'GET',
+				credentials: 'include',
+			}).then(response => response.json());
+			console.log(await li);
+			if (await li === false)
+				navigate("/", { replace: true });
+		}
 
 		return () => {
 			console.log('Closing WebSocket');
@@ -118,7 +132,7 @@ export default function PinkPong() {
 	}
 	
 	function getCoordinates(payload: any) {
-		if (payload.matchID === matchID) {
+		if (payload.matchID === matchID || spectateMatchID == payload.matchID) {
 			canvas.width = window.innerWidth - getScrollbarWidth();
 			canvas.height = window.innerHeight;
 	

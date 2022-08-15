@@ -3,6 +3,8 @@ PROJECT = transcendence
 ifdef SL
 	ifeq ($(SL),stef)
 		export SERVER_LOCATION = stef
+	else ifeq ($(SL),iris)
+		export SERVER_LOCATION = iris
 	else
 		export SERVER_LOCATION = daniel
 	endif

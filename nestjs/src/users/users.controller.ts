@@ -60,6 +60,11 @@ export class UsersController {
     return this.userService.signOutUser(req.session.userId);
   }
 
+  @Put('logoutuser')
+  logOutUser(@Req() req: any) {
+    return this.userService.logOutUser(req.session.userId);
+  }
+
   @Post('setusername')
   @UsePipes(UserValidationPipe)
   setUsername(@Req() req: any, username: string) {

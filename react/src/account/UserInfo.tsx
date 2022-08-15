@@ -10,6 +10,7 @@ import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { get_backend_host } from "../utils";
+import { useNavigate } from 'react-router-dom';
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
@@ -20,6 +21,7 @@ function withParams(Component: any) {
 interface UserInfoProps { 
     params: any;
     statusWebsocket: any;
+    navigation: any;
 }
 
 interface UserInfoState { 
@@ -45,6 +47,14 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     async getCurrentUser() {
+        const { navigation } = this.props;
+        const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+			method: 'GET',
+			credentials: 'include',
+		}).then(response => response.json());
+        if (await li === false) {
+            navigation("/", { replace: true });
+		}
         return await fetch(get_backend_host() + "/users/user", { 
             method: 'GET',
             credentials: 'include',
@@ -181,8 +191,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     componentDidMount() {
-        this.getUserInfo()
         this.getCurrentUser()
+        this.getUserInfo()
         this.isUserBlocked()
         this.isUserFriend()
         this.getMatches()
@@ -462,4 +472,10 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 }
 
-export default withParams(UserInfo)
+// export default withParams(UserInfo)
+
+export default function UserInfoFunction(props: any) {
+    const navigation = useNavigate();
+    
+    return <UserInfo {...props} navigation={navigation} />;
+}

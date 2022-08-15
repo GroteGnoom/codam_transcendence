@@ -4,25 +4,27 @@ import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
 
-const ClassicWaitingRoom = () => {
+const InviteWaitingRoomPinkPong = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
     let navigate = useNavigate();
 
     useEffect(() => {
     console.log('Opening WebSocket');
-    webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
+    webSocket.current = io(get_backend_host() + "/inviteWaitingroom-ws", {
         withCredentials: true,
-        path: "/classicWaitingRoom-ws/socket.io"
+        path: "/inviteWaitingroom-ws/socket.io"
     });
     webSocketMatch.current = io(get_backend_host() + "/match-ws", {
         withCredentials: true,
         path: "/match-ws/socket.io"
     });
 
-    webSocket.current.emit("loggedInClassic", {
-        "loggedIn": true
+    webSocket.current.emit("loggedInInvite", {
+        "PinkPong": true
     });
+
+    console.log("Emitted loggedInInvite");
 
     async function startGame(payload: any) {
         let user:number = 0;
@@ -44,7 +46,7 @@ const ClassicWaitingRoom = () => {
             webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
-                "PinkPong": false
+                "PinkPong": true
             });
             navigate("/pinkpong", { replace: true });
         }
@@ -53,8 +55,8 @@ const ClassicWaitingRoom = () => {
         }
     }
 
-    webSocket.current.on("found2PlayersClassic", startGame ) // subscribe on backend events
-    webSocket.current.on("redirectHomeClassic", redirHome ) // subscribe on backend events
+    webSocket.current.on("found2PlayersInvite", startGame ) // subscribe on backend events
+    webSocket.current.on("redirectHomeInvite", redirHome ) // subscribe on backend events
 
     async function redirHome(payload: any) {
         console.log("RedirHome");
@@ -68,7 +70,7 @@ const ClassicWaitingRoom = () => {
     }
 
     return () => {
-        webSocket.current.emit("playerLeftClassic", {});
+        webSocket.current.emit("playerLeftInvite", {});
         console.log('Closing WebSocket');
         webSocket.current.close();
     }
@@ -78,7 +80,7 @@ const ClassicWaitingRoom = () => {
         <main>
             <div className="menu">
                 <Typography variant="h3" color="primary">
-                    Searching for opponent
+                    Waiting for opponent
                 </Typography>
                 <CircularProgress/>
             </div>
@@ -86,4 +88,4 @@ const ClassicWaitingRoom = () => {
     )
 }
 
-export default ClassicWaitingRoom;
+export default InviteWaitingRoomPinkPong;

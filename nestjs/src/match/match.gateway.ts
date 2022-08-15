@@ -333,24 +333,36 @@ export class MatchGateway {
   
   handleConnection(client: Socket, @Session() session) {
     console.log("Handle connection match gateway");
+    if (!getUserFromClient(client, this.configService)) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeMatch", {"client": client.id});
+      // this.server.close();
+    }
   }
 
-  emitGames() {
+  async emitGames() {
 	  let gameArray = [];
-	  this.currentGameStates.forEach((gameState, matchID) => {
+	  for (const [matchId, gameState] of this.currentGameStates) {
 		  console.log('pushing match');
-		  gameArray.push({Player1: gameState.Player1,
-						 Player2: gameState.Player2, 
+		  await gameState.getUsernames();
+		  console.log('after get usernames');
+		  gameArray.push({userName1: gameState.userName1,
+						 userName2: gameState.userName2, 
+						 matchID: gameState.matchID,
 		  });
-	  });
+	  }
 	  console.log('emitting array');
 	  console.log('gameArray', gameArray);
-	  //var gameArray = Array.from(this.currentGameStates.values());
 	  this.server.emit('matches', gameArray);
   }
 
   @SubscribeMessage('getGames')
   getGames(client: Socket, payload: any): void {
+    if (!getUserFromClient(client, this.configService)) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeMatch", {"client": client.id});
+      // this.server.close();
+    }
 	  this.emitGames();
   }
 
@@ -373,7 +385,7 @@ export class MatchGateway {
       this.currentGameStates.set(matchID, new gameState(this.userService, payload.Player1, payload.Player2, matchID, payload.PinkPong));
       
       console.log("currentGameState size: ", this.currentGameStates.size);
-	  console.log('emitting matches');
+	  console.log('emitting matches at startGame');
 	  this.emitGames();
     }
   }
@@ -396,6 +408,7 @@ export class MatchGateway {
       if (emitMessage.winner === 1 || emitMessage.winner === 2) {
         this.matchService.storeResult(emitMessage.matchID, emitMessage.scoreP1, emitMessage.scoreP2);
         this.currentGameStates.delete(matchID);
+		console.log('emitting games at loop, game ended');
 		this.emitGames();
       }
     });

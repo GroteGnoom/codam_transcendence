@@ -1,12 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { io } from "socket.io-client";
-import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
-import {CircularProgress, Typography} from '@mui/material';
-import { PlaylistAddOutlined } from '@mui/icons-material';
-import React, { Fragment } from 'react';
-
-// const pinkTheme = createTheme({ palette: { primary: pink } })
+import { Typography } from '@mui/material';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Button from '@mui/material/Button';
 
 interface SpectateProps {
 }
@@ -61,7 +58,7 @@ class SpectateComp extends React.Component <SpectateProps, SpectateState> {
 			Searching for games...
 					</Typography>
 				{this.state.gamesArray.map((game) => (
-					<li>{game.Player1} against {game.Player2} </li>
+					<Link className={"App-link"} key={game.matchID} to={{ pathname: "/pinkpong/" + game.matchID}}><Button className="button" variant="contained">{game.userName1} --- {game.userName2} </Button></Link>
 				))}
 			</div>
 			</main>

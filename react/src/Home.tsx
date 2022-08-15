@@ -67,7 +67,7 @@ const Home = (props : HomeProps) => {
 			method: "GET",
 			credentials: 'include',
 		})
-		.then(async (response) => { // TODO: is this the right place?
+		.then(async (response) => {
 			const json = await response.json();
 			console.log(json)
 			// if ( json && !props.statusWebsocket ){
@@ -89,18 +89,15 @@ const Home = (props : HomeProps) => {
 	}
 
 	async function logOutUser() {
-		// await fetch(get_backend_host() + "/auth/logout/", {
-		// 	method: "GET",
-		// 	credentials: 'include',
-		// })
-		// await fetch(get_backend_host() + "/users/signupuser", {
-        //     method: "PUT",
-        //     credentials: 'include',
-        //     headers: {'Content-Type':'application/json'},
-        //     body: JSON.stringify({
-        //         "status": userStatus.Offline,
-        //     })
-        // })
+		await fetch(get_backend_host() + "/users/logoutuser", {
+			method: "PUT",
+			credentials: 'include',
+		})
+		await fetch(get_backend_host() + "/auth/logout/", {
+			method: "GET",
+			credentials: 'include',
+		})
+		getLoggedIn();
 	}
 
 	// effect hooks
@@ -130,7 +127,7 @@ const Home = (props : HomeProps) => {
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/spectate" }}><Button disabled={!li} className="button" variant="contained">Spectate</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/leaderboard" }}><Button disabled={!li} className="button" variant="contained">Leaderboard</Button></Link>
-						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
+						{/* <Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button> */}
 						<Button disabled={!li} className="button" onClick={() => logOutUser()} variant="contained">Log out</Button>
 					</header>
 				</div>

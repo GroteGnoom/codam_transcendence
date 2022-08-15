@@ -30,6 +30,9 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 		} else if (process.env.SERVER_LOCATION === "stef") {
 			client_id = configService.get('FT_OAUTH_STEF_ID');
 			client_secret = configService.get('FT_OAUTH_STEF_SECRET');
+		} else if (process.env.SERVER_LOCATION === "iris") {
+			client_id = configService.get('FT_OAUTH_IRIS_ID');
+			client_secret = configService.get('FT_OAUTH_IRIS_SECRET');
 		} else {
 			client_id = configService.get('FT_OAUTH_DANIEL_ID');
 			client_secret = configService.get('FT_OAUTH_DANIEL_SECRET');

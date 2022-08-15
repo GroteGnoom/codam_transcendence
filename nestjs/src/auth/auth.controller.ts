@@ -94,6 +94,14 @@ export class AuthController
 			return true;
 		return false;
 	}
+
+	@Get('amitfavalidated')
+	amITfaValidated(@Req() request: Request) {
+		if (request.session.tfa_validated)
+			return true;
+		return false;
+	}
+
 	@UseGuards(SessionGuard)
 	@Get('is_tfa_enabled')
 	async isTfaEnabled(@Req() request: Request) {

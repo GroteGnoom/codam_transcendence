@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { forwardRef, Inject } from '@nestjs/common';
 import { getUserFromClient } from 'src/utils';
 import { get_frontend_host } from 'src/utils';
+import { Session } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: '/channels-ws', // https://stackoverflow.com/questions/66764826/nestjs-socket-io-serving-websockets-from-microservice-at-nested-path-instead-o
@@ -28,6 +29,14 @@ export class ChannelsGateway {
 
   @WebSocketServer()
   server: Server;
+
+  handleConnection(client: Socket, @Session() session) {
+    console.log("started chat server", session);
+    if (!getUserFromClient(client, this.configService)) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeChat", {"client": client.id});
+    }
+  }
 
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: Socket, payload: SocketMessage): Promise<void> {

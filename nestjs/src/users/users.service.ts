@@ -74,6 +74,10 @@ export class UsersService {
     return this.userRepository.update(userId, {isSignedUp: false});
   }
 
+  logOutUser(userId: number){
+    return this.userRepository.update(userId, {status: userStatus.Offline});
+  }
+
   findUsersByIntraname(intraName: string) {
     return this.userRepository.findOne({ where: {intraName : intraName} });
   }
