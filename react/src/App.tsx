@@ -17,6 +17,7 @@ import { Signup } from './Signup';
 import { get_backend_host, userStatus } from './utils';
 import { io } from 'socket.io-client';
 import Leaderboard from './account/Leaderboard';
+import Spectate from './Spectate';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -46,6 +47,7 @@ function App() {
 				<Route path={"/pinkpong"} element={<PinkPong />} />
 				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
 				<Route path={"/PinkPongWaitingroom"} element={<PinkPongWaitingRoom />} />
+				<Route path={"/Spectate"} element={<Spectate />} />
 				<Route path={"/chat"} element={<Chat />} />
 				<Route path={"/account"} element={<Account />} />
 				<Route path={"/logged_in/:token"} element={<LoggedIn />} />
