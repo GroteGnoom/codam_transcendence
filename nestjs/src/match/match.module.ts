@@ -10,6 +10,7 @@ import { GameStats } from 'src/typeorm/gameStats.entity';
 import { UsersModule} from '../users/users.module';
 import { User } from 'src/typeorm';
 import { StatusGateway } from 'src/users/status.gateway';
+import { InviteWaitingRoomGateway } from 'src/inviteWaitingroom/inviteWaitingroom.gateway';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { StatusGateway } from 'src/users/status.gateway';
     // AuthModule
   ],
   controllers: [MatchController],
-  providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway, StatusGateway]
+  providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway, StatusGateway, InviteWaitingRoomGateway]
 })
 export class MatchModule {}

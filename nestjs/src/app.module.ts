@@ -14,6 +14,7 @@ import { MatchModule } from './match/match.module';
 import { ClassicWaitingRoomModule } from './classicWaitingroom/classicWaitingroom.module';
 import { PinkPongWaitingRoomModule } from './PinkPongWaitingroom/PinkPongWaitingroom.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { inviteWaitingRoomModule } from './inviteWaitingroom/inviteWaitingroom.module';
 
 @Module({
 	imports: [
@@ -49,6 +50,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 		ChannelsModule,
 		ClassicWaitingRoomModule,
 		PinkPongWaitingRoomModule,
+		inviteWaitingRoomModule,
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname, '..', 'test_homepage'), 
     }),
