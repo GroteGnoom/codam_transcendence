@@ -4,7 +4,6 @@ import { Alert } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import { pink } from '@mui/material/colors';
 import Dialog from '@mui/material/Dialog';
@@ -31,7 +30,6 @@ export function Signup() {
     const [isSignedUp, setIsSignedUp] = useState(false);
     const [username, setUsername] = useState("");
     const [intraName, setIntraName] = useState("");
-    const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
     const [event, setEvent] = useState("");
     const [avatar, setAvatar] = useState({
@@ -44,6 +42,8 @@ export function Signup() {
     const [tfaCode, setTfaCode] = useState("");
     const [started, setStarted] = useState(false);
     const [dataFetched, setDataFetched] = useState(false);
+    const [isTfaEnabled, setIsTfaEnabled] = useState(false);
+    const [tfaChecked, setTfaChecked] = useState(false);
     const navigate = useNavigate();
 
     //backend calls
@@ -51,6 +51,13 @@ export function Signup() {
         console.log("i am being called");
         if (isLoggedIn === false)
             return;
+        // const tfa_validated = fetch(get_backend_host() + "/auth/amitfavalidated", {
+		// 	method: 'GET',
+		// 	credentials: 'include',
+		// }).then(response => response.json());
+        // setTfaChecked(await tfa_validated);
+        // console.log("tfa validated");
+        // console.log(await tfa_validated);
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
@@ -69,6 +76,7 @@ export function Signup() {
             setIntraName(response.intraName);
             setUsername(response.username);
             setIsSignedUp(response.isSignedUp);
+            setIsTfaEnabled(response.isTfaEnabled);
             setDataFetched(true);
         })
         .catch((error: Error) => setError(error.message))
@@ -126,12 +134,13 @@ export function Signup() {
             if (response.ok) {
                 console.log('response was OK');
                 setEvent("2-factor authentication successful"); // TODO: not needed??
+                setTfaChecked(true);
                 return true;
             } else {
                 throw new Error(json.message);
             }
         }).catch(() => {
-            console.log("catched the error");
+            setEvent("2-factor authentication failed");
             return false;
         });
     }
@@ -155,7 +164,7 @@ export function Signup() {
             body: JSON.stringify({
                 "username": username,
                 "intraName": intraName,
-                "status": status,
+                "status": userStatus.Online,
             })
         })
         .then(async (response) => {
@@ -218,7 +227,6 @@ export function Signup() {
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("juperdijupert");
         getLoggedIn();
         setChecked(event.target.checked);
     };
@@ -329,8 +337,15 @@ export function Signup() {
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
     useEffect(() => {
+        console.log("tfaChecked changed to: ", tfaChecked);
+        if ( isLoggedIn && isSignedUp && (tfaChecked || !isTfaEnabled) ) {
+            navigate('/');
+        }
+    }, [tfaChecked]); // will only be called when tfaChecked changes
+
+    useEffect(() => {
         console.log("isSignedUp changed to: ", isSignedUp);
-        if ( isLoggedIn && isSignedUp ) {
+        if ( isLoggedIn && isSignedUp && (tfaChecked || !isTfaEnabled) ) {
             navigate('/');
         }
     }, [isSignedUp]); // will only be called when isSignedUp changes
@@ -340,20 +355,24 @@ export function Signup() {
             { !started && // before fetchin the data, show spinner
                 <div className="menu"> <CircularProgress/> </div>
             }
-            { started && !isLoggedIn && // if not logged in, show login button
+            { started && dataFetched && !isLoggedIn && // if not logged in, show login button
                 <div className="menu">
                     <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a>
-                    { isLoggedIn && // if 2fa enabled, show 2fa
-                        <div>
-
-                        </div>
-                    }
                 </div>
             }
-            {
-
+            { started && dataFetched && isLoggedIn && isTfaEnabled && !tfaChecked && // if 2fa enabled, show 2fa
+                <div className="menu">
+                    <TextField className="item"
+                    inputProps={{ maxLength: 6 }}
+                    helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
+                    onChange={(e) => setTfaCode(e.target.value)}/>
+                    <Button className="item"
+                        variant="contained"
+                        onClick={() => checkTfaCode()}
+                    > SEND </Button>
+                </div>
             }
-            { started && dataFetched && isLoggedIn && // only show this when logged in and data fetched
+            { started && dataFetched && isLoggedIn && (tfaChecked || !isTfaEnabled) && // only show this when logged in and data fetched
                 <div>
                     {!isSignedUp && showSignup()}
                     {/* <Button variant="contained" onClick={() => redir()}>please go backkkk</Button> */}
