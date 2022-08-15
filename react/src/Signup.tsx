@@ -48,16 +48,11 @@ export function Signup() {
 
     //backend calls
     async function getUserInfoDatabase () {
-        console.log("i am being called");
-        if (isLoggedIn === false)
-            return;
-        // const tfa_validated = fetch(get_backend_host() + "/auth/amitfavalidated", {
-		// 	method: 'GET',
-		// 	credentials: 'include',
-		// }).then(response => response.json());
-        // setTfaChecked(await tfa_validated);
-        // console.log("tfa validated");
-        // console.log(await tfa_validated);
+        const tfa_validated = fetch(get_backend_host() + "/auth/amitfavalidated", {
+			method: 'GET',
+			credentials: 'include',
+		}).then(response => response.json());
+        setTfaChecked(await tfa_validated);
         return await fetch(get_backend_host() + "/users/user", {
             method: "GET",
             credentials: 'include',
@@ -75,8 +70,8 @@ export function Signup() {
             console.log("found username: " + response.username);
             setIntraName(response.intraName);
             setUsername(response.username);
-            setIsSignedUp(response.isSignedUp);
             setIsTfaEnabled(response.isTfaEnabled);
+            setIsSignedUp(response.isSignedUp);
             setDataFetched(true);
         })
         .catch((error: Error) => setError(error.message))
@@ -172,7 +167,6 @@ export function Signup() {
             if (response.ok) {
                 return json;
             } else {
-                console.log(json.message);
                 throw new Error(json.message);
             }
         })
@@ -313,18 +307,15 @@ export function Signup() {
     useEffect(() => {
         async function fetchData() { // sleep before fetching the data to show spinner
             await sleep(500);
+            await getLoggedIn();
             setStarted(true);
-            console.log("started!");
             getUserInfoDatabase();
         }
-        console.log("lets sleeep");
         fetchData();
     }, []); // will only be called on initial mount and unmount
 
     // combination of componentDidMount and componentDidUpdate
     useEffect(() => { // will be called after the DOM update (after render)
-        console.log(username);
-        console.log(intraName);
         if (started === true)
             getLoggedIn();
     });
@@ -355,7 +346,7 @@ export function Signup() {
             { !started && // before fetchin the data, show spinner
                 <div className="menu"> <CircularProgress/> </div>
             }
-            { started && dataFetched && !isLoggedIn && // if not logged in, show login button
+            { started && !isLoggedIn && // if not logged in, show login button
                 <div className="menu">
                     <a className="App-link" href={urlAuth}><Button className="button" variant="contained">Log in 42</Button></a>
                 </div>
