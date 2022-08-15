@@ -63,7 +63,7 @@ class SpectateComp extends React.Component <SpectateProps, SpectateState> {
 			Searching for games...
 					</Typography>
 				{this.state.gamesArray.map((game) => (
-					<Link className={"App-link"} key={game.matchID} to={{ pathname: "/pinkpong/" + game.matchID}}><Button className="button" variant="contained">{game.Player1} against {game.Player2} </Button></Link>
+					<Link className={"App-link"} key={game.matchID} to={{ pathname: "/pinkpong/" + game.matchID}}><Button className="button" variant="contained">{game.userName1} --- {game.userName2} </Button></Link>
 				))}
 			</div>
 			</main>

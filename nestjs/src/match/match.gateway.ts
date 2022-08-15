@@ -335,19 +335,21 @@ export class MatchGateway {
     console.log("Handle connection match gateway");
   }
 
-  emitGames() {
+  async emitGames() {
 	  let gameArray = [];
 	  this.currentGameStates.forEach((gameState, matchID) => {
 		  console.log('pushing match');
-		  gameArray.push({Player1: gameState.Player1,
-						 Player2: gameState.Player2, 
-						 matchID: gameState.matchID,
-		  });
+		  gameState.getUsernames().then( () => {
+			  console.log('after get usernames');
+			  gameArray.push({userName1: gameState.userName1,
+							 userName2: gameState.userName2, 
+							 matchID: gameState.matchID,
+			  });
+			  console.log('emitting array');
+			  console.log('gameArray', gameArray);
+			  this.server.emit('matches', gameArray);
+		  })
 	  });
-	  console.log('emitting array');
-	  console.log('gameArray', gameArray);
-	  //var gameArray = Array.from(this.currentGameStates.values());
-	  this.server.emit('matches', gameArray);
   }
 
   @SubscribeMessage('getGames')
