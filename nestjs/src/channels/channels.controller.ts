@@ -9,7 +9,9 @@ export class ChannelsController {
     @Get()
     getChannels(@Req() req: any) {
         const userID = req.session.userId;
-        return this.channelsService.getChannels(userID);
+        if (userID)
+            return this.channelsService.getChannels(userID);
+        return []
     }
 
     @Get(':name')
@@ -19,8 +21,10 @@ export class ChannelsController {
 
     @Get('chats/direct-messages')
     getChats(@Req() req: any) {
-        const userID = req.session.userId;   
-        return this.channelsService.getChats(userID);
+        const userID = req.session.userId;
+        if (userID)
+            return this.channelsService.getChats(userID);
+        return []
     }
 
     @Post()
