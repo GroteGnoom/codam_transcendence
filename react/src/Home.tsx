@@ -127,7 +127,7 @@ const Home = (props : HomeProps) => {
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/spectate" }}><Button disabled={!li} className="button" variant="contained">Spectate</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/leaderboard" }}><Button disabled={!li} className="button" variant="contained">Leaderboard</Button></Link>
-						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
+						{/* <Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button> */}
 						<Button disabled={!li} className="button" onClick={() => logOutUser()} variant="contained">Log out</Button>
 					</header>
 				</div>

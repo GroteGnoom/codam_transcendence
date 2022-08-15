@@ -328,13 +328,6 @@ export function Account() {
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
     useEffect(() => {
-        console.log("isSignedUp changed to: ", isSignedUp);
-        // if ( isLoggedIn && isSignedUp ) {
-        //     navigate('/');
-        // }
-    }, [isSignedUp]); // will only be called when isSignedUp changes
-
-    useEffect(() => {
         getUserInfoDatabase();
     }, []); // will only be called on initial mount and unmount
 
