@@ -47,12 +47,14 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     async getCurrentUser() {
+        const { navigation } = this.props;
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
-        // if (await li === false)
-        //     navigation("/", { replace: true });
+        if (await li === false) {
+            navigation("/", { replace: true });
+		}
         return await fetch(get_backend_host() + "/users/user", { 
             method: 'GET',
             credentials: 'include',
