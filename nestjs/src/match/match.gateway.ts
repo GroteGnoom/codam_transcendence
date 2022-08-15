@@ -333,6 +333,11 @@ export class MatchGateway {
   
   handleConnection(client: Socket, @Session() session) {
     console.log("Handle connection match gateway");
+    if (!getUserFromClient(client, this.configService)) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeMatch", {"client": client.id});
+      // this.server.close();
+    }
   }
 
   async emitGames() {
@@ -353,6 +358,11 @@ export class MatchGateway {
 
   @SubscribeMessage('getGames')
   getGames(client: Socket, payload: any): void {
+    if (!getUserFromClient(client, this.configService)) {
+      console.log("Redirect to home page");
+      this.server.emit("redirectHomeMatch", {"client": client.id});
+      // this.server.close();
+    }
 	  this.emitGames();
   }
 

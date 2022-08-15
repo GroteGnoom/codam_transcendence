@@ -44,7 +44,6 @@ function App() {
 		 	Status websocket connected: {statusWebSocket ? "YES": "NO"}
 			<Routes>
 				<Route path={"/"} element={<Home statusWebsocket={statusWebSocket} setStatusWebsocket={setStatusWebsocket}/>} />
-				<Route path={"/check_2fa"} element={<CheckTfa />} />
 				<Route path={"/show_qr"} element={<QR />} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />
 				<Route path={"/pinkpong/:spectateMatchID"} element={<PinkPong />} />

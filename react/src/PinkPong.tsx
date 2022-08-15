@@ -62,6 +62,18 @@ export default function PinkPong() {
 		
 		webSocket.current.on("boardUpdated", getCoordinates) // subscribe on backend events
 		webSocket.current.on("matchID", getMatchID) // subscribe on backend events
+		webSocket.current.on("redirectHomeMatch", redirHome ) // subscribe on backend events
+
+		async function redirHome(payload: any) {
+			console.log("RedirHome");
+			const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+				method: 'GET',
+				credentials: 'include',
+			}).then(response => response.json());
+			console.log(await li);
+			if (await li === false)
+				navigate("/", { replace: true });
+		}
 
 		return () => {
 			console.log('Closing WebSocket');
