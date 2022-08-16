@@ -6,7 +6,7 @@ import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { get_backend_host } from './utils';
 import { io } from 'socket.io-client';
-import { Dialog,DialogTitle,DialogContent,DialogActions,Alert } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Alert } from '@mui/material';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -50,7 +50,7 @@ interface HomeProps {
 
 let achievement = "";
 
-const Home = (props : HomeProps) => {
+const Home = (props: HomeProps) => {
 	const [li, setLi] = useState(false);
 	const [uniqueSession, setUniqueSession] = useState(false);
 	let navigate = useNavigate();
@@ -60,11 +60,11 @@ const Home = (props : HomeProps) => {
 
 	async function setAchievementEvent(payload: any) {
 		if (player === -1) {
-			await fetch(get_backend_host() + `/users/user`, { 
+			await fetch(get_backend_host() + `/users/user`, {
 				method: 'GET',
 				credentials: 'include',
 			}).then((response) => response.json())
-			.then((response) => {player = response.id})
+				.then((response) => { player = response.id })
 		}
 		if (player === payload.user)
 			achievement = payload.achievement;
@@ -85,8 +85,15 @@ const Home = (props : HomeProps) => {
 			method: "GET",
 			credentials: 'include',
 		}).then(response => response.json())
-		.then((response) => {
-            setUniqueSession(response);
+			.then((response) => {
+				setUniqueSession(response);
+			})
+	}
+
+	async function signOutUser() {
+		return await fetch(get_backend_host() + "/users/signoutuser", {
+			method: "PUT",
+			credentials: 'include',
 		})
 	}
 
@@ -95,18 +102,18 @@ const Home = (props : HomeProps) => {
 			method: "GET",
 			credentials: 'include',
 		})
-		.then(async (response) => {
-			const json = await response.json();
-			console.log(json)
-			// if ( json && !props.statusWebsocket ){
-			// 	console.log('Opening Status WebSocket');
-			// 	props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
-			// 		withCredentials: true,
-			// 		path: "/status-ws/socket.io" 
-			// 	}))
-			// }
-			setLi(json);
-		});
+			.then(async (response) => {
+				const json = await response.json();
+				console.log(json)
+				// if ( json && !props.statusWebsocket ){
+				// 	console.log('Opening Status WebSocket');
+				// 	props.setStatusWebsocket(io(get_backend_host() + "/status-ws", {
+				// 		withCredentials: true,
+				// 		path: "/status-ws/socket.io" 
+				// 	}))
+				// }
+				setLi(json);
+			});
 	}
 
 	async function logOutUser() {
@@ -130,7 +137,7 @@ const Home = (props : HomeProps) => {
 
 	useEffect(() => {
 		webSocket.current = io(get_backend_host() + "/match-ws", {
-			withCredentials: true, 
+			withCredentials: true,
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
 
@@ -142,19 +149,19 @@ const Home = (props : HomeProps) => {
 	return (
 		<ThemeProvider theme={pinkTheme}>
 			<main>
-				{ uniqueSession ?
-				null : <p>Pink Pong is already open in another browser</p> }
+				{uniqueSession ?
+					null : <p>Pink Pong is already open in another browser</p>}
 				<div className="App">
 					<header className="App-header">
 						<ShowLogin />
 						<Link className="App-link" to={{ pathname: "/signup" }}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
-						<Link className={!li ? "disabledLink" : "App-link"} to= {{pathname:"/classicWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
-                  		<Link className={!li ? "disabledLink" : "App-link"} to= {{pathname:"/PinkPongWaitingroom"}}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
+						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/classicWaitingroom" }}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
+						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/PinkPongWaitingroom" }}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/chat" }}><Button disabled={!li} className="button" variant="contained">Chat</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/spectate" }}><Button disabled={!li} className="button" variant="contained">Spectate</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/leaderboard" }}><Button disabled={!li} className="button" variant="contained">Leaderboard</Button></Link>
-						{/* <Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button> */}
+						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
 						<Button disabled={!li} className="button" onClick={() => logOutUser()} variant="contained">Log out</Button>
 					</header>
 				</div>
