@@ -46,15 +46,9 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         }
     }
 
+    avatar: any;
+
     async getCurrentUser() {
-        const { navigation } = this.props;
-        const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
-			method: 'GET',
-			credentials: 'include',
-		}).then(response => response.json());
-        if (await li === false) {
-            navigation("/", { replace: true });
-		}
         return await fetch(get_backend_host() + "/users/user", { 
             method: 'GET',
             credentials: 'include',
@@ -191,8 +185,11 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     componentDidMount() {
-        this.getCurrentUser()
+        this.redirHome()
+        if (!this.avatar)
+            return;
         this.getUserInfo()
+        this.getCurrentUser()
         this.isUserBlocked()
         this.isUserFriend()
         this.getMatches()
@@ -343,11 +340,29 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             );
     }
 
-    render(){ 
-        const avatar = {
+    async redirHome() {
+        console.log("RedirHome");
+        const { navigation } = this.props;
+        const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+            method: 'GET',
+            credentials: 'include',
+        }).then(response => response.json());
+        console.log(await li);
+        if (await li === false) {
+            console.log("navigate");
+            navigation("/", { replace: true });
+            return;
+        }
+        this.avatar = {
             imgSrc: get_backend_host() + `/users/avatar/${this.props.params.id}`,
             imgHash: Date.now(), 
         }
+    }
+
+    render(){
+        this.redirHome();
+        if (!this.avatar)
+            return;
 
         return (
             <div className="menu">
@@ -355,7 +370,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 { this.state.user &&
                         <Avatar
                             alt={this.state.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
-                            src={`${avatar.imgSrc}?${avatar.imgHash}`}
+                            src={`${this.avatar.imgSrc}?${this.avatar.imgHash}`}
                             sx={{ height: 120, width: 120, mt:3}}
                         />
                     }

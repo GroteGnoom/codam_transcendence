@@ -3,9 +3,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { get_backend_host } from "../utils";
+import { useNavigate } from 'react-router-dom';
 
 
-interface LeaderboardProps {}
+interface LeaderboardProps {
+    navigation: any;
+}
 
 interface LeaderboardState { 
     userStats: any[];    
@@ -19,6 +22,8 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
         }
     }
 
+    li: any;
+
     getLeaderboard() {
         fetch(get_backend_host() + `/match/leaderboard`, { 
             method: 'GET',
@@ -30,7 +35,25 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
         })
     }
 
+    async redirHome() {
+        console.log("RedirHome");
+        const { navigation } = this.props;
+        this.li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+            method: 'GET',
+            credentials: 'include',
+        }).then(response => response.json());
+        console.log(await this.li);
+        if (await this.li === false) {
+            console.log("navigate");
+            navigation("/", { replace: true });
+            return;
+        }
+    }
+
     componentDidMount() {
+        this.redirHome()
+        if (this.li === false)
+            return;
         this.getLeaderboard()
     }
 
@@ -116,4 +139,8 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
     }
 }
 
-export default Leaderboard
+export default function LeaderboardFunction(props: any) {
+    const navigation = useNavigate();
+    
+    return <Leaderboard {...props} navigation={navigation} />;
+}
