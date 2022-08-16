@@ -27,6 +27,7 @@ services:
   postgres:
     container_name: postgres
     image: postgres
+    command: postgres -c stats_temp_directory=/tmp # prevent warnings about pg_stats: https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
     # build: dockerfiles/postgres
     ports:
       - "5432:5432"

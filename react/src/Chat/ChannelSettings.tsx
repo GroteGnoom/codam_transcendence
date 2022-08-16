@@ -243,7 +243,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
                         {this.state.settings.channelType === 'protected' && <TextField
                             onChange={(event) => { this.setState({ settings: { ...this.state.settings, password: event.target.value } }) }}
                             autoFocus
-                            value={this.state.settings.password}
+                            value={this.state.settings.password || ''}
                             inputProps={{ maxLength: 20 }}
                             margin="dense"
                             id="name"

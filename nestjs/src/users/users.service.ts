@@ -47,7 +47,9 @@ export class UsersService {
         });
   }
 
-  getUsers() { return this.userRepository.find(); }
+  getUsers() { return this.userRepository.find({
+    order: {username: 'ASC'}
+  }); }
 
   async getAvatarId(id: number) {
     return (await this.userRepository.findOneBy({id : id})).avatarId; // returns all users with id: id

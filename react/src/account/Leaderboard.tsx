@@ -1,11 +1,14 @@
-import { Avatar, Box, Divider, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Avatar, Box, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { get_backend_host } from "../utils";
+import { useNavigate } from 'react-router-dom';
 
 
-interface LeaderboardProps {}
+interface LeaderboardProps {
+    navigation: any;
+}
 
 interface LeaderboardState { 
     userStats: any[];    
@@ -19,6 +22,8 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
         }
     }
 
+    li: any;
+
     getLeaderboard() {
         fetch(get_backend_host() + `/match/leaderboard`, { 
             method: 'GET',
@@ -30,12 +35,30 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
         })
     }
 
+    async redirHome() {
+        console.log("RedirHome");
+        const { navigation } = this.props;
+        this.li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
+            method: 'GET',
+            credentials: 'include',
+        }).then(response => response.json());
+        console.log(await this.li);
+        if (await this.li === false) {
+            console.log("navigate");
+            navigation("/", { replace: true });
+            return;
+        }
+    }
+
     componentDidMount() {
+        this.redirHome()
+        if (this.li === false)
+            return;
         this.getLeaderboard()
     }
 
     renderLeaderboard = () => {
-        console.log(this.state.userStats)   //array of gamestat entities
+        // console.log(this.state.userStats)   //array of gamestat entities
         const players = this.state.userStats.map((el: any, index: number) => {
             const avatar = {
                 imgSrc: get_backend_host() + `/users/avatar/${el.user.id}`,
@@ -55,50 +78,53 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
                         />
                     </TableCell>
                     <TableCell align="left" style={{ width: 300 }}>
-                        <Link to={ el.user && { pathname:`/userinfo/${el.user.id}`} }>
+                        <Link to={ el.user && { pathname:`/userinfo/${el.user.id}`} } style={{ color: '#e91e63' }}>
                                     {el.user && `${el.user.username}`}
                         </Link>
                     </TableCell>
-                    <TableCell align="right" >{`${el.wins}`}</TableCell>
-                    <TableCell align="right">{`${el.losses}`}</TableCell>
+                    <TableCell align="center" >{`${el.wins}`}</TableCell>
+                    <TableCell align="center">{`${el.losses}`}</TableCell>
                 </TableRow>
             )
         })
         return (
-            <Table sx={{bgcolor: '#f48fb1', maxWidth: '80%'}}>
+            <TableContainer style={{ maxHeight: 450 }}  sx={{bgcolor: '#f48fb1', maxWidth: '80%'}}>
+
+            <Table stickyHeader sx={{bgcolor: '#f48fb1'}}>
                 <TableHead sx={{bgcolor: '#e91e63', maxWidth: '80%'}}>
                     <TableRow>
-                        <TableCell>                
+                        <TableCell sx={{bgcolor: '#f48fb1'}}>                
                             <Typography variant='h6'>
                                 Ranking
                             </Typography>  
                         </TableCell>
-                        <TableCell>                
+                        <TableCell sx={{bgcolor: '#f48fb1'}}>                
                             <Typography variant='h6'>
                                 
                             </Typography>  
                         </TableCell>
-                        <TableCell>                
+                        <TableCell sx={{bgcolor: '#f48fb1'}}>                
                             <Typography variant='h6'>
                                 Player
                             </Typography>  
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center" sx={{bgcolor: '#f48fb1'}}>
                             <Typography variant='h6'>
                                 Total wins
                             </Typography>  
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center" sx={{bgcolor: '#f48fb1'}}>
                             <Typography variant='h6'>
                                 Total losses
                             </Typography>  
                         </TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody sx={{maxHeight: 300}}>
                     {players}
                 </TableBody>
             </Table>
+            </TableContainer>
         );
     }
 
@@ -116,4 +142,8 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
     }
 }
 
-export default Leaderboard
+export default function LeaderboardFunction(props: any) {
+    const navigation = useNavigate();
+    
+    return <Leaderboard {...props} navigation={navigation} />;
+}

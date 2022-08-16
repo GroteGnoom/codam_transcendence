@@ -17,7 +17,7 @@ interface DirectMessageState {
     newChat: string;
     open: boolean;
     users: any[];
-    selectedMember: number;
+    selectedMember: any;
     currentUser: any; // currently logged in user
 }
 
@@ -29,7 +29,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             newChat: "",
             open: false,
             users: [],
-            selectedMember: 0,
+            selectedMember: '',
             currentUser: undefined,
         };
     }
@@ -139,7 +139,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                 <ListItemText primary="new chat" />
                 <ListItemAvatar>
                     <Avatar sx={{ width: 24, height: 24 }}>
-                        <AddIcon color='secondary' fontSize='small' sx={{ color: 'darkpink' }}/>
+                        <AddIcon fontSize='small' style={{ color: '#e91e63' }}/>
                     </Avatar>
                 </ListItemAvatar>
             </ListItemButton>
@@ -166,7 +166,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
         return (
         <div>
-            <Box sx={{ width: 250, bgcolor: '#ec407a', m:5 }}>
+            <Box sx={{ width: 250, bgcolor: '#e91e63', m:5 }}>
             <Typography variant="h5" component="div" align="center">
                 Direct Messages
             </Typography>
@@ -175,7 +175,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             <Dialog open={this.state.open} onClose={this.handleClose} >  {/*pop window for new dm */}
                 <Box sx={{ bgcolor: '#f48fb1' }}>
                 <DialogTitle>Direct Message</DialogTitle>
-                <DialogContent>
+                <DialogContent style={{paddingTop:8}}>
                     <FormControl fullWidth>
                         <InputLabel>select</InputLabel>
                         <Select
