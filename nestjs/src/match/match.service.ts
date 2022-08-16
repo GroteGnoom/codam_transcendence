@@ -33,8 +33,10 @@ export class MatchService {
         if (!player_1_stats) {
             player_1_stats = this.gameStatsRepository.create({ user: {id: match.player_1.id }, wins:0, losses:0 })
             //first game played
-            console.log("this was your first game, " + match.player_1);
-            server.emit("achievement", {"achievement": "First Game"});
+            await server.emit("achievement", {
+                "achievement": "First Game",
+                "user": match.player_1.id
+            });
         }
         let player_2_stats = await this.gameStatsRepository.findOne({
             where: { user: { id: match.player_2.id }}
@@ -42,38 +44,40 @@ export class MatchService {
         if (!player_2_stats) {
             player_2_stats = this.gameStatsRepository.create({ user: {id: match.player_2.id }, wins:0, losses:0 })
             //first game played
-            console.log("this was your first game, " + match.player_2);
-            server.emit("achievement", {"achievement": "First Game"});
+            await server.emit("achievement", {
+                "achievement": "First Game",
+                "user": match.player_2.id
+            });
         }
         if (scoreP1 > scoreP2) {
             player_1_stats.wins++;
             player_2_stats.losses++;
             //if first win P1
-            if (player_1_stats.wins === 1)
-            {
+            if (player_1_stats.wins === 3) {
                 console.log("this was your first win, " + player_1_stats);
-                // setAchievement("First Win")
+                await server.emit("achievement", {
+                    "achievement": "3 wins!",
+                    "user": match.player_1.id
+                });
             }
             //if first defeat P2
-            if (player_2_stats.losses === 1)
-            {
+            if (player_2_stats.losses === 1) {
                 console.log("this was your first defeat, " + player_2_stats);
-                // setAchievement("First Loss")
             }
         } else {
             player_1_stats.losses++;
             player_2_stats.wins++;
             //if first defeat P1
-            if (player_1_stats.losses === 1)
-            {
+            if (player_1_stats.losses === 1) {
                 console.log("this was your first defeat, " + player_1_stats);
-                // setAchievement("First Win")
             }
             //if first win P2
-            if (player_2_stats.wins === 1)
-            {
+            if (player_2_stats.wins === 3) {
                 console.log("this was your first win, " + player_2_stats);
-                // setAchievement("First Loss")
+                await server.emit("achievement", {
+                    "achievement": "3 wins!",
+                    "user": match.player_2.id
+                });
             }
         }
         await this.gameStatsRepository.save([player_1_stats, player_2_stats]);
