@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -48,16 +48,31 @@ interface HomeProps {
 	setStatusWebsocket: any;
 }
 
+let achievement = "";
+
 const Home = (props : HomeProps) => {
 	const [li, setLi] = useState(false);
 	const [uniqueSession, setUniqueSession] = useState(false);
-	const [achievement, setAchievement] = useState("");
+	let navigate = useNavigate();
+	let player = -1;
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
 
-	function setAchievementEvent(payload: any) {
-		console.log("setAchievement: ", payload.achievement);
-		setAchievement(payload.achievement);
+	async function setAchievementEvent(payload: any) {
+		if (player === -1) {
+			await fetch(get_backend_host() + `/users/user`, { 
+				method: 'GET',
+				credentials: 'include',
+			}).then((response) => response.json())
+			.then((response) => {player = response.id})
+		}
+		if (player === payload.user)
+			achievement = payload.achievement;
+	}
+
+	function resetAchievement() {
+		achievement = "";
+		navigate("/", { replace: true });
 	}
 
 	if (webSocket.current)
@@ -125,8 +140,6 @@ const Home = (props : HomeProps) => {
 			path: "/match-ws/socket.io"
 		}); // open websocket connection with backend
 
-		console.log("Achievement: ", achievement);
-
 		getLoggedIn();
 		getUniqueSession();
 	}, []); // will only be called on initial mount and unmount
@@ -154,16 +167,16 @@ const Home = (props : HomeProps) => {
 			</main>
 
 			<Dialog open={achievement !== ""} >  {/*pop window for new achievement message */}
-                <DialogTitle>Achievement Unlocked!</DialogTitle>
-                <DialogContent>
-                    <Alert severity="success">
-                        {achievement}
-                    </Alert>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => setAchievement("")}>OK</Button> {/* TODO: enter to get out of dialog */}
-                </DialogActions>
-            </Dialog>
+				<DialogTitle>Achievement Unlocked!</DialogTitle>
+				<DialogContent>
+					<Alert severity="success">
+						{achievement}
+					</Alert>
+				</DialogContent>
+				<DialogActions>
+					<Button variant="contained" onClick={() => resetAchievement()}>OK</Button> {/* TODO: enter to get out of dialog */}
+				</DialogActions>
+			</Dialog>
 		</ThemeProvider>
 	)
 }
