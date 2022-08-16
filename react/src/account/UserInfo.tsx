@@ -352,7 +352,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     async redirHome() {
-        console.log("RedirHome");
         const { navigation } = this.props;
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
             method: 'GET',

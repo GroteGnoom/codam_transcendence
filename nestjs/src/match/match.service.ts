@@ -33,18 +33,18 @@ export class MatchService {
         if (!player_1_stats) {
             player_1_stats = this.gameStatsRepository.create({ user: {id: match.player_1.id }, wins:0, losses:0 })
             //first game played
-            console.log("this was your first game, " + match.player_1);
-            server.emit("achievement", {"achievement": "First Game"});
         }
+        console.log("this was your first game, " + match.player_1);
+        server.emit("achievement", {"achievement": "First Game"});
         let player_2_stats = await this.gameStatsRepository.findOne({
             where: { user: { id: match.player_2.id }}
         })
         if (!player_2_stats) {
             player_2_stats = this.gameStatsRepository.create({ user: {id: match.player_2.id }, wins:0, losses:0 })
             //first game played
-            console.log("this was your first game, " + match.player_2);
-            server.emit("achievement", {"achievement": "First Game"});
         }
+        console.log("this was your first game, " + match.player_2);
+        server.emit("achievement", {"achievement": "First Game"});
         if (scoreP1 > scoreP2) {
             player_1_stats.wins++;
             player_2_stats.losses++;

@@ -51,20 +51,17 @@ interface HomeProps {
 const Home = (props : HomeProps) => {
 	const [li, setLi] = useState(false);
 	const [uniqueSession, setUniqueSession] = useState(false);
-	// const [achievement, setAchievement] = useState("");
+	const [achievement, setAchievement] = useState("");
 
 	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
-	webSocket.current = io(get_backend_host() + "/match-ws", {
-		withCredentials: true, 
-		path: "/match-ws/socket.io"
-	}); // open websocket connection with backend
-	
 
-	function setAchievement(payload: any) {
-
+	function setAchievementEvent(payload: any) {
+		console.log("setAchievement: ", payload.achievement);
+		setAchievement(payload.achievement);
 	}
 
-	webSocket.current.on("achievement", setAchievement) // subscribe on backend events
+	if (webSocket.current)
+		webSocket.current.on("achievement", setAchievementEvent) // subscribe on backend events
 
 	//backend calls
 	async function getUniqueSession() {
@@ -123,6 +120,13 @@ const Home = (props : HomeProps) => {
 	});
 
 	useEffect(() => {
+		webSocket.current = io(get_backend_host() + "/match-ws", {
+			withCredentials: true, 
+			path: "/match-ws/socket.io"
+		}); // open websocket connection with backend
+
+		console.log("Achievement: ", achievement);
+
 		getLoggedIn();
 		getUniqueSession();
 	}, []); // will only be called on initial mount and unmount
@@ -157,7 +161,7 @@ const Home = (props : HomeProps) => {
                     </Alert>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => setAchievementEvent("")}>OK</Button> {/* TODO: enter to get out of dialog */}
+                    <Button variant="contained" onClick={() => setAchievement("")}>OK</Button> {/* TODO: enter to get out of dialog */}
                 </DialogActions>
             </Dialog>
 		</ThemeProvider>
