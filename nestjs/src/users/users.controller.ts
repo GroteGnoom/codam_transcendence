@@ -38,6 +38,7 @@ export class UsersController {
   }
 
   @Post('create')
+  @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   createUser(@Body() body: UserDto) {
     this.logger.log('Creating user...');
@@ -45,6 +46,7 @@ export class UsersController {
   }
 
   @Put('signupuser')
+  @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   signUpUser(@Req() req: any, @Body() body: UserDto) {
     this.logger.log('Signup user...');
@@ -52,22 +54,26 @@ export class UsersController {
   }
 
   @Put('updateuser')
+  @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   updateUser(@Req() req: any, @Body() body: UserDto) {
     return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
   }
 
   @Put('signoutuser')
+  @UseGuards(SessionGuard)
   signOutUser(@Req() req: any) {
     return this.userService.signOutUser(req.session.userId);
   }
 
   @Put('logoutuser')
+  @UseGuards(SessionGuard)
   logOutUser(@Req() req: any) {
     return this.userService.logOutUser(req.session.userId);
   }
 
   @Post('setusername')
+  @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   setUsername(@Req() req: any, username: string) {
     this.logger.log("setUsername called");
@@ -75,6 +81,7 @@ export class UsersController {
   }
 
   @Post('avatar')
+  @UseGuards(SessionGuard)
   @UseInterceptors(FileInterceptor('file'))
   async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
     this.logger.log("id: ", req.session.userId);
@@ -90,6 +97,7 @@ export class UsersController {
   }
 
   @Get('avatar')
+  @UseGuards(SessionGuard)
   async getDatabaseFileById(@Req() req: any, @Response({passthrough : true})
                                              res): Promise<StreamableFile> {
     const userId = req.session.userId;
@@ -106,6 +114,7 @@ export class UsersController {
   }
 
   @Get('avatar/:id')
+  @UseGuards(SessionGuard)
   async getAvatarForUSer(@Param('id') id: number, @Response({passthrough : true})
                                              res): Promise<StreamableFile> {
     const avatarId = await this.userService.getAvatarId(id);
@@ -124,11 +133,13 @@ export class UsersController {
   // Endpoint needed for chat
 
   @Get('id/:id')
+  @UseGuards(SessionGuard)
   findUser(@Param('id') id: number) {                 //need this endpoint to get owner name of a channel
     return this.userService.findUsersById(Number(id));
   }
 
   @Put('block/:id')
+  @UseGuards(SessionGuard)
   blockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;  
     console.log("Blocking", blocker, blocked)             
@@ -136,6 +147,7 @@ export class UsersController {
   }
 
   @Put('unblock/:id')
+  @UseGuards(SessionGuard)
   unblockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;  
     console.log("UNblocking", blocker, blocked)             
@@ -151,6 +163,7 @@ export class UsersController {
 
 
   @Put('friend/:id')
+  @UseGuards(SessionGuard)
   friendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;  
     console.log("Befriending", userID, friend)             
@@ -158,6 +171,7 @@ export class UsersController {
   }
 
   @Put('unfriend/:id')
+  @UseGuards(SessionGuard)
   unfriendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;  
     console.log("UNfriending", userID, friend)             
