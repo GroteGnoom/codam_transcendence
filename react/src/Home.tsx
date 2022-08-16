@@ -68,6 +68,7 @@ const Home = (props : HomeProps) => {
 		}
 		if (player === payload.user)
 			achievement = payload.achievement;
+		console.log("achievement: ", payload.achievement);
 	}
 
 	function resetAchievement() {
