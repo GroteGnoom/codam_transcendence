@@ -187,8 +187,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     componentDidMount() {
         this.redirHome()
-        if (!this.avatar)
-            return;
             
         if (this.props.statusWebsocket){
             console.log("subscribe to status ws", this.props.statusWebsocket)
@@ -371,8 +369,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     render(){
         this.redirHome();
-        if (!this.avatar)
-            return;
+        // if (!this.avatar)
+        //     return;
 
         return (
             <div className="menu">
