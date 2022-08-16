@@ -14,9 +14,9 @@ import { useNavigate } from 'react-router-dom';
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
-function withParams(Component: any) {
-  return (props: any) => <Component {...props} params={useParams()} />;
-}
+// function withParams(Component: any) {
+//   return (props: any) => <Component {...props} params={useParams()} />;
+// }
 
 interface UserInfoProps { 
     params: any;
@@ -379,7 +379,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 <Stack direction="row">
                 { this.state.user &&
                         <Avatar
-                            alt={this.state.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
+                            alt={this.state.user.name} // first letter of alt (alternative) text is default avatar if loading src fails
                             src={`${this.avatar.imgSrc}?${this.avatar.imgHash}`}
                             sx={{ height: 120, width: 120, mt:3}}
                         />
