@@ -17,10 +17,23 @@ TODOS
 [ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?) (2fa code, image, username)
 [V] severity error 2fa wrong to error!
 curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
+
+backend not logged in beveiliging
+every Post and Put should not cause a 500, even with random input
+If something requires a session to not crash, or users should only be able to access it when logged in it needs a SessionGuard
+
+easy way to see your own userinfo, maybe in 'my account'
+sometimes a friend keeps the 'playing the game' icon forever
+
+maybe(if all the important things are done):
+not allow a player to be in multiple games at once?
+the ball goes into the paddle a little when bouncing
+you should not be able to block yourself in chat
+
+
 at the end, just before evals:
 - use production server, not develop
 - everything should work with
   docker-compose up --build
   not via a makefile
-backend not logged in beveiliging
 

@@ -27,6 +27,7 @@ class gameState {
       this.Player2 = Player2;
       this.matchID = matchID;
       this.PinkPong = PinkPong;
+      this.start = Date.now();
       this.getUsernames();
     };
 
@@ -39,9 +40,9 @@ class gameState {
   userName2: string;
     
   ballSpeed = 12;
-  paddleSpeed = 15;
+  paddleSpeed = 9;
   maxAngle = 3 * Math.PI / 12;
-  maxScore = 1;
+  maxScore = 11;
 
   paddleP1RelX: number;
   paddleP1RelY: number;
@@ -54,8 +55,7 @@ class gameState {
   rightKeyPressedP2 = false;
 
   userID: number;
-
-  interval: any;
+  start:number;
 
   ballRelX: number;
   ballRelY: number;
@@ -69,13 +69,13 @@ class gameState {
   fieldWidth = 1500;
   fieldHeight = 1000;
   paddleWidth = 100;
-  paddleHeight = 15;
-  ballWidth = 25;
+  paddleHeight = 20;
+  ballWidth = 20;
 
   /* powerups are only available in PinkPong, not in the original */
   paddleSizeMultiplierP1: number = 1;
   paddleSizeMultiplierP2: number = 1;
-  powerupStrength: number = 0.3;
+  powerupStrength: number = 0.25;
 
   async getUsernames() {
     const np1 = await this.userService.findUsersById(this.Player1);
@@ -104,80 +104,80 @@ class gameState {
 
   update() {
     if (this.winner === 0){
-      /*	handle top side */
-      if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
-        /*	bounce top paddle */
-        let relativeHit = (this.paddleP1RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
-        let bounceAngle;
-        if (this.PinkPong)
-          bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) * this.maxAngle;
-        else
-          bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
-        this.ballVY = this.ballSpeed * Math.cos(bounceAngle);
-        this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
-      }
-      else if (this.ballRelY < this.paddleP1RelY - 10) {
-        /*	score a point */
-        this.scoreP2 = this.scoreP2 + 1;
-        if (this.PinkPong)
-          this.handlePowerups(1);
-        this.setGame();
-      }
-      /*	handle bottom side */
-      if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
-        /*	bounce bottom paddle */
-        let relativeHit = (this.paddleP2RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
-        let bounceAngle;
-        if (this.PinkPong)
-          bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP2) / 2)) * this.maxAngle;
-        else
-          bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
-        this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
-        this.ballVY = this.ballSpeed * (Math.cos(bounceAngle) * -1);
-      }
-      else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
-        /*	score a point */
-        this.scoreP1 = this.scoreP1 + 1;
-        if (this.PinkPong)
-          this.handlePowerups(2);
-        this.setGame();
-      }
-      /*	bounce east wall */
-      if (this.ballRelX + this.ballWidth > this.fieldWidth && this.ballVX > 0) {
-        this.ballVX = this.ballVX * -1;
-      }
-      /*	bounce west wall */
-      else if (this.ballRelX <= 0 && this.ballVX < 0) {
-        this.ballVX = this.ballVX * -1;
-      }
+      if (Date.now() - this.start > 1000) {
+        /*	handle top side */
+        if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
+          /*	bounce top paddle */
+          let relativeHit = (this.paddleP1RelX + ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) - (this.ballRelX + (this.ballWidth / 2));
+          let bounceAngle;
+          if (this.PinkPong)
+            bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) * this.maxAngle;
+          else
+            bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+          this.ballVY = this.ballSpeed * Math.cos(bounceAngle);
+          this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
+        }
+        else if (this.ballRelY < this.paddleP1RelY - 10) {
+          /*	score a point */
+          if (this.PinkPong)
+            this.handlePowerups(1);
+          this.start = Date.now();
+          this.scoreP2 = this.scoreP2 + 1;
+          this.setGame();
+        }
+        /*	handle bottom side */
+        if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
+          /*	bounce bottom paddle */
+          let relativeHit = (this.paddleP2RelX + ((this.paddleWidth * this.paddleSizeMultiplierP2)/ 2)) - (this.ballRelX + (this.ballWidth / 2));
+          let bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP2) / 2)) * this.maxAngle;
+          this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
+          this.ballVY = this.ballSpeed * (Math.cos(bounceAngle) * -1);
+        }
+        else if (this.ballRelY + this.ballWidth > this.paddleP2RelY + this.paddleHeight + 10) {
+          /*	score a point */
+          if (this.PinkPong)
+            this.handlePowerups(2);
+          this.start = Date.now();
+          this.scoreP1 = this.scoreP1 + 1;
+          this.setGame();
+        }
+        /*	bounce east wall */
+        if (this.ballRelX + this.ballWidth > this.fieldWidth && this.ballVX > 0) {
+          this.ballVX = this.ballVX * -1;
+        }
+        /*	bounce west wall */
+        else if (this.ballRelX <= 0 && this.ballVX < 0) {
+          this.ballVX = this.ballVX * -1;
+        }
 
-    
+      
 
-      /*	calculate next position */
-      this.ballRelX = this.ballRelX + this.ballVX;
-      this.ballRelY = this.ballRelY + this.ballVY;
-      /*	calculate paddle positions */
-      if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0)
-        this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
-      if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth)
-        this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
-      if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0)
-        this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
-      if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth)
-        this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
+        /*	calculate next position */
+        this.ballRelX = this.ballRelX + this.ballVX;
+        this.ballRelY = this.ballRelY + this.ballVY;
+        /*	calculate paddle positions */
+        if (this.leftKeyPressedP1 === true && this.paddleP1RelX > 0)
+          this.paddleP1RelX = this.paddleP1RelX - (this.paddleSpeed * 1);
+        if (this.rightKeyPressedP1 === true && this.paddleP1RelX + (this.paddleWidth * this.paddleSizeMultiplierP1) < this.fieldWidth)
+          this.paddleP1RelX = this.paddleP1RelX + (this.paddleSpeed * 1);
+        if (this.leftKeyPressedP2 === true && this.paddleP2RelX > 0)
+          this.paddleP2RelX = this.paddleP2RelX - (this.paddleSpeed * 1);
+        if (this.rightKeyPressedP2 === true && this.paddleP2RelX + (this.paddleWidth * this.paddleSizeMultiplierP2) < this.fieldWidth)
+          this.paddleP2RelX = this.paddleP2RelX + (this.paddleSpeed * 1);
 
-      if (this.paddleP1RelX < 0)
-        this.paddleP1RelX = 0;
-      else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
-        this.paddleP1RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1);
-      if (this.paddleP2RelX < 0)
-        this.paddleP2RelX = 0;
-      else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
-        this.paddleP2RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2);
+        if (this.paddleP1RelX < 0)
+          this.paddleP1RelX = 0;
+        else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
+          this.paddleP1RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1);
+        if (this.paddleP2RelX < 0)
+          this.paddleP2RelX = 0;
+        else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
+          this.paddleP2RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2);
+      }
     }
     else if (this.winner === -1) {
-      this.winner = 0;
       this.setGame();
+      this.winner = 0;
     }
     else {
       this.setGame();
@@ -194,17 +194,17 @@ class gameState {
       "winner": this.winner,
       "paddleSizeMultiplierP1": this.paddleSizeMultiplierP1,
       "paddleSizeMultiplierP2": this.paddleSizeMultiplierP2,
-	    "namePlayer1" : this.userName1,
-	    "namePlayer2" : this.userName2,
+      "namePlayer1" : this.userName1,
+      "namePlayer2" : this.userName2,
       "matchID": this.matchID
     })
   };
 
   setGame() {
     if (this.scoreP1 < this.maxScore && this.scoreP2 < this.maxScore) {
-      this.paddleP1RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
+      this.paddleP1RelX = this.fieldWidth / 2 - (this.paddleWidth * this.paddleSizeMultiplierP1) / 2;
       this.paddleP1RelY = 10;
-      this.paddleP2RelX = this.fieldWidth / 2 - this.paddleWidth / 2;
+      this.paddleP2RelX = this.fieldWidth / 2 - (this.paddleWidth * this.paddleSizeMultiplierP2) / 2;
       this.paddleP2RelY = this.fieldHeight - 10 - this.paddleHeight;
       this.ballRelX = this.fieldWidth / 2 - this.ballWidth / 2;
       this.ballRelY = this.fieldHeight / 2 - this.ballWidth / 2;
@@ -282,7 +282,7 @@ class gameState {
     return false;
   }
   ballIsBetweenPaddleP1Y() {
-    if (this.ballRelY >= this.paddleP1RelY + this.paddleHeight - 10 && this.ballRelY <= this.paddleP1RelY + this.paddleHeight)
+    if (this.ballRelY >= this.paddleP1RelY + this.paddleHeight - 20 && this.ballRelY <= this.paddleP1RelY + this.paddleHeight)
       return true;
     return false;
   }
@@ -292,7 +292,7 @@ class gameState {
     return false;
   }
   ballIsBetweenPaddleP2Y() {
-    if (this.ballRelY + this.ballWidth >= this.paddleP2RelY && this.ballRelY + this.ballWidth <= this.paddleP2RelY + 10)
+    if (this.ballRelY + this.ballWidth >= this.paddleP2RelY && this.ballRelY + this.ballWidth <= this.paddleP2RelY + 20)
       return true;
     return false;
   }
