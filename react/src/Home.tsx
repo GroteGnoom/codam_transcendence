@@ -6,6 +6,7 @@ import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { get_backend_host, userStatus } from './utils';
 import { io } from 'socket.io-client';
+import { Dialog,DialogTitle,DialogContent,DialogActions,Alert } from '@mui/material';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -50,6 +51,20 @@ interface HomeProps {
 const Home = (props : HomeProps) => {
 	const [li, setLi] = useState(false);
 	const [uniqueSession, setUniqueSession] = useState(false);
+	// const [achievement, setAchievement] = useState("");
+
+	const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
+	webSocket.current = io(get_backend_host() + "/match-ws", {
+		withCredentials: true, 
+		path: "/match-ws/socket.io"
+	}); // open websocket connection with backend
+	
+
+	function setAchievement(payload: any) {
+
+	}
+
+	webSocket.current.on("achievement", setAchievement) // subscribe on backend events
 
 	//backend calls
 	async function getUniqueSession() {
@@ -132,6 +147,18 @@ const Home = (props : HomeProps) => {
 					</header>
 				</div>
 			</main>
+
+			<Dialog open={achievement !== ""} >  {/*pop window for new achievement message */}
+                <DialogTitle>Achievement Unlocked!</DialogTitle>
+                <DialogContent>
+                    <Alert severity="success">
+                        {achievement}
+                    </Alert>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => setAchievementEvent("")}>OK</Button> {/* TODO: enter to get out of dialog */}
+                </DialogActions>
+            </Dialog>
 		</ThemeProvider>
 	)
 }
