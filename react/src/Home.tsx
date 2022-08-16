@@ -97,6 +97,7 @@ const Home = (props : HomeProps) => {
 			method: "GET",
 			credentials: 'include',
 		})
+		props.statusWebsocket.close() // this will set the user-status offline
 		getLoggedIn();
 	}
 

@@ -11,8 +11,8 @@ import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
-const ENTER_KEY_CODE = 13;
 
+const ENTER_KEY_CODE = 13;
 
 interface ChatWindowProps { 
     channelsWebSocket: any;
@@ -29,6 +29,7 @@ interface ChatWindowState {
     gameInviteOpen: boolean;
     muted: boolean;
     blockedUsers: number[];
+    currentUser: any; // currently logged in user
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
@@ -42,6 +43,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             gameInviteOpen: false,
             muted: false,
             blockedUsers: [],
+            currentUser: undefined,
         }
     }
 
@@ -88,17 +90,31 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         })
     }
 
+    async getCurrentUser() {
+        return await fetch(get_backend_host() + "/users/user", { 
+            method: 'GET',
+            credentials: 'include',
+        })
+		.then((response) => response.json())
+        .then((response) => {
+            this.setState({ currentUser: response });
+        })
+    }
+
     onReceiveMessage(socketMessage: any){   //subscribed to recMessage events through ws
         if (socketMessage.channel === this.props.channel.name) {
             console.log("Received a message for this channel")
             this.setState( { messages: [...this.state.messages, socketMessage.message] } );
-        }       
+        }           
     }
 
     onUserMuted(payload: any, muted: boolean) {
-        if (this.props.channel === payload.channel) {
-            console.log("User muted", muted, payload)
-            this.checkIfMuted() // todo find out who current user is in this component to compare
+        if (this.props.channel.name === payload.channel 
+            && this.state.currentUser 
+            && Number(payload.userId) === Number(this.state.currentUser.id)) {
+            console.log("I am muted", muted)
+            // this.checkIfMuted() // todo find out who current user is in this component to compare
+            this.setState({muted: muted}) // true or false depending on which event type is received
         }
     }
 
@@ -134,10 +150,12 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     componentDidMount() {
-        console.log("Mounting", this.props.channel);
-        this.getBlockedUsers().then(() =>
-        this.getMessages()
+        // console.log("Mounting", this.props.channel);
+        this.getBlockedUsers()
+        .then(() =>
+            this.getMessages()
         )
+        this.getCurrentUser()
         this.subscribeWebsocketEvents()
         this.checkIfMuted()
     }
@@ -190,7 +208,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             {`${this.formatMessageTime(msg)}`}
                         </Typography>
                         <Typography variant="body1">
-                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#ec407a' }}>
+                            <Link to={{ pathname:`/userinfo/${msg.sender.id}`} } style={{ color: '#e91e63' }}>
                                 {`${msg.sender.username}`}
                             </Link>
                         </Typography>
@@ -202,9 +220,11 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                             </Typography>
                         }
                         {!msg.invite &&
-                            <Typography variant="h6">
+                        <Container fixed disableGutters={true} maxWidth='md'>
+                            <Typography style={{ wordWrap: "break-word" }} variant="h6">
                                 {msg.text}
                             </Typography> 
+                            </Container>
                         }
                     </div>
                 </ListItem> 
@@ -271,8 +291,8 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                                     }
                                 </Grid>
                             </Grid>
-                            <AddUserWindow  open={this.state.addUserOpen} handleClose={this.handleClose} 
-                                            activeChannel={this.props.channel.name} setError={this.props.setError} />
+                            {this.state.addUserOpen && <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} 
+                                            activeChannel={this.props.channel.name} setError={this.props.setError} />}
                             <Divider />
                             <Grid container spacing={4} alignItems="center">
                                 <Grid id="chat-window" xs={12} item>

@@ -199,8 +199,8 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members']
         });
-        if (channel.bannedUsers.includes(id)) {
-                throw new BadRequestException("This member is banned")
+        if (channel.bannedUsers.includes(Number(id))) {
+                throw new BadRequestException("You are banned from this channel")
         }
         if (channel.channelType === ChannelType.Protected) {
             const isPasswordMatching = await bcrypt.compare(password, channel.password);
@@ -256,7 +256,7 @@ export class ChannelsService {
         channel.members.forEach((member) => {
             if (member.user.id == id) {
                 member.isMuted = true;
-                member.mutedUntil = new Date(new Date().getTime() + 30 * 1000); // 10 seconds for testing
+                member.mutedUntil = new Date(new Date().getTime() + 30 * 1000); // 30 seconds for testing
                 this.channelGateway.broadcastMuteUser(channelName, id);
             } 
         })
