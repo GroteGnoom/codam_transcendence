@@ -36,3 +36,9 @@ user authentication -> set username page -> create user
 when clicked on my account -> user already exists -> set account properties
 
 curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
+
+at the end, just before evals:
+- use production server, not develop
+- everything should work with
+  docker-compose up --build
+  not via a makefile
