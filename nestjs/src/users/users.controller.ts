@@ -8,6 +8,7 @@ import {
   StreamableFile,
   UploadedFile, UseInterceptors,
   UsePipes,
+  UseGuards,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -17,6 +18,7 @@ import { Readable } from 'stream';
 import { UserValidationPipe } from './uservalidation.pipe'
 import { DatabaseFilesService } from './databaseFiles.service';
 import { TwoFactorAuthenticationController } from 'src/auth/twoFactorAuthentication.controller';
+import { SessionGuard } from '../auth/session.guard';
 
 @Controller('users')
 export class UsersController {
@@ -141,6 +143,7 @@ export class UsersController {
   }
 
   @Get('is-blocked/:id')
+  @UseGuards(SessionGuard)
   isBlocked(@Param('id') id: number, @Req() req: any) {
     const blocker = req.session.userId;        
     return this.userService.isBlocked(Number(blocker), Number(id));
@@ -162,6 +165,7 @@ export class UsersController {
   }
 
   @Get('is-friend/:id')
+  @UseGuards(SessionGuard)
   isFriend(@Param('id') id: number, @Req() req: any) {
     const userID = req.session.userId;        
     return this.userService.isFriend(Number(userID), Number(id));
