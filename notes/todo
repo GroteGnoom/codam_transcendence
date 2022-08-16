@@ -6,39 +6,19 @@ put scrollbars back after playing a game
 
 add sessionguards to all backend endpoints
 
-Irir----
-[V] uitzoeken: async, await, promises asynchronous programming how does it work?
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
-[V] aantekingen frontend
-[V] user account pagina:
-[V] set username
-[V] check ERR_EMPTY_RESPONSE; send custom response when username not unique?
-[V] show intraName; fix 401 error request
-[V] better unique username checker; custom validator
-[V] add icon for custom avatar upload
-[V] save custom avatar in db
-[V] fix issignedup
-[V] validation checks: max length, zichtbare characters (dus niet " ")
-[V] validation checks image size
-[V] trim username
-[V] only one validation error
-[V] when signed up, redirect to homepage and show buttons
-[V] make account page
-[V] rvan: 2fa didn't work first sign up? error is send but 2fa code was found correct
-[ ] make loggin websocket
-[V] do 2fa whenever enabled and when logging in
-[V] internal server error: same username
-[ ] randomness random name generator: fetch if user already exists? and max length check
-[ ] better validation checks
-
 flow:
 user authentication -> set username page -> create user
 when clicked on my account -> user already exists -> set account properties
 
+TODOS
+[ ] make loggin websocket
+[ ] randomness random name generator: fetch if user already exists? and max length check
+[ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?)
 curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
-
 at the end, just before evals:
 - use production server, not develop
 - everything should work with
   docker-compose up --build
   not via a makefile
+
