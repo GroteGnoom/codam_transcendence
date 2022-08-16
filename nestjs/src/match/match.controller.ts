@@ -1,7 +1,14 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { 
+	Controller,
+	Get,
+	Param,
+	UseGuards,
+} from '@nestjs/common';
 import { MatchService } from './match.service';
+import { SessionGuard } from '../auth/session.guard';
 
 
+@UseGuards(SessionGuard)
 @Controller('match')
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}

@@ -18,12 +18,14 @@ import { User } from '../typeorm/user.entity';
 import { UsersService } from '../users/users.service';
 import { TwoFactorAuthenticationDto } from './dto'
 import * as rawbody from 'raw-body';
+import { SessionGuard } from '../auth/session.guard';
  
 interface RequestWithUser extends Request {
   user: User;
 }
  
 export default RequestWithUser;
+@UseGuards(SessionGuard)
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
@@ -34,7 +36,6 @@ export class TwoFactorAuthenticationController {
 	) {}
 
 	@Post('generate')
-	//@UseGuards(JwtAuthenticationGuard)
 	async register(@Res() response: Response, @Req() request: RequestWithUser) {
 		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(request.user);
 
@@ -47,24 +48,6 @@ export class TwoFactorAuthenticationController {
 
 		// await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
-	}
-
-	@Post('turn-on')
-	@HttpCode(200)
-	//@UseGuards(JwtAuthenticationGuard)
-	async turnOnTwoFactorAuthentication(
-		@Req() request: RequestWithUser,
-		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
-	) {
-		/*
-		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
-			twoFactorAuthenticationCode, request.user
-		);
-		if (!isCodeValid) {
-			throw new UnauthorizedException('Wrong authentication code');
-		}
-		await this.userService.turnOnTwoFactorAuthentication(request.user.id);
-	   */
 	}
 
 	@Post('authenticate')
