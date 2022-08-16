@@ -12,12 +12,6 @@ import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { get_backend_host } from "../utils";
 import { useNavigate } from 'react-router-dom';
 
-//https://ui.dev/react-router-url-parameters
-//https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
-function withParams(Component: any) {
-  return (props: any) => <Component {...props} params={useParams()} />;
-}
-
 interface UserInfoProps { 
     params: any;
     statusWebsocket: any;
