@@ -11,7 +11,6 @@ import { Session } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 
 
-// let matchID: number;
 let matchIDStr: string;
 
 class gameState {
@@ -22,31 +21,27 @@ class gameState {
     Player2:number,
     matchID:number,
     PinkPong:boolean,
-    // Player1SocketID:number,
-    // Player2SocketID:number
+
     ) {
       this.Player1 = Player1;
       this.Player2 = Player2;
       this.matchID = matchID;
       this.PinkPong = PinkPong;
-      // this.Player1SocketID = Player1SocketID;
       this.getUsernames();
     };
 
   Player1:number;
-  // Player1SocketID:number;
   Player2:number;
-  // Player2SocketID:number;
   matchID:number;
   PinkPong:boolean;
 
   userName1: string;
   userName2: string;
     
-  ballSpeed = 9;
+  ballSpeed = 12;
   paddleSpeed = 15;
   maxAngle = 3 * Math.PI / 12;
-  maxScore = 10;
+  maxScore = 11;
 
   paddleP1RelX: number;
   paddleP1RelY: number;
@@ -81,8 +76,6 @@ class gameState {
   paddleSizeMultiplierP1: number = 1;
   paddleSizeMultiplierP2: number = 1;
   powerupStrength: number = 0.3;
-  noSizeDownP1: number = 0;
-  noSizeDownP2: number = 0;
 
   async getUsernames() {
     const np1 = await this.userService.findUsersById(this.Player1);
@@ -110,13 +103,16 @@ class gameState {
   }
 
   update() {
-    // console.log("getPositions");
     if (this.winner === 0){
       /*	handle top side */
       if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
         /*	bounce top paddle */
         let relativeHit = (this.paddleP1RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
-        let bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+        let bounceAngle;
+        if (this.PinkPong)
+          bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) * this.maxAngle;
+        else
+          bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
         this.ballVY = this.ballSpeed * Math.cos(bounceAngle);
         this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
       }
@@ -131,7 +127,11 @@ class gameState {
       if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
         /*	bounce bottom paddle */
         let relativeHit = (this.paddleP2RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
-        let bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+        let bounceAngle;
+        if (this.PinkPong)
+          bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP2) / 2)) * this.maxAngle;
+        else
+          bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
         this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
         this.ballVY = this.ballSpeed * (Math.cos(bounceAngle) * -1);
       }
@@ -169,11 +169,11 @@ class gameState {
       if (this.paddleP1RelX < 0)
         this.paddleP1RelX = 0;
       else if (this.paddleP1RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1))
-        this.paddleP1RelX = this.fieldWidth - this.paddleWidth;
+        this.paddleP1RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP1);
       if (this.paddleP2RelX < 0)
         this.paddleP2RelX = 0;
       else if (this.paddleP2RelX > this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2))
-        this.paddleP2RelX = this.fieldWidth - this.paddleWidth;
+        this.paddleP2RelX = this.fieldWidth - (this.paddleWidth * this.paddleSizeMultiplierP2);
     }
     else if (this.winner === -1) {
       this.winner = 0;
@@ -253,28 +253,26 @@ class gameState {
       this.paddleSizeMultiplierP2 = this.paddleSizeMultiplierP2 + this.powerupStrength;
   }
   powerDownPaddleSize(playerID: number) {
-    if (playerID === 1)
-      this.paddleSizeMultiplierP1 = this.paddleSizeMultiplierP1 - this.powerupStrength;
+    if (playerID === 1 && this.paddleSizeMultiplierP2 > 1)
+      this.paddleSizeMultiplierP1 = this.paddleSizeMultiplierP2 - this.powerupStrength;
+    else if (playerID === 1)
+      this.paddleSizeMultiplierP1 = this.paddleSizeMultiplierP2;
+    else if (playerID === 2 && this.paddleSizeMultiplierP1 > 1)
+      this.paddleSizeMultiplierP2 = this.paddleSizeMultiplierP1 - this.powerupStrength;
     else if (playerID === 2)
-      this.paddleSizeMultiplierP2 = this.paddleSizeMultiplierP2 - this.powerupStrength;
+      this.paddleSizeMultiplierP2 = this.paddleSizeMultiplierP1;
   }
 
   handlePowerups(scoringPlayer: number) {
     if (scoringPlayer === 1) {  
-      if (this.paddleSizeMultiplierP2 > 1 && this.noSizeDownP2 < 0)
+      if (this.paddleSizeMultiplierP2 > 1)
         this.powerDownPaddleSize(2);
-      else
-        this.noSizeDownP1 = this.noSizeDownP1 + 1;
       this.powerUpPaddleSize(1);
-      this.noSizeDownP2 = this.noSizeDownP2 - 1;
     }
     else if (scoringPlayer === 2) {
-      if (this.paddleSizeMultiplierP1 > 1 && this.noSizeDownP1 < 0)
+      if (this.paddleSizeMultiplierP1 > 1)
         this.powerDownPaddleSize(1);
-      else
-        this.noSizeDownP2 = this.noSizeDownP2 + 1;
       this.powerUpPaddleSize(2);
-      this.noSizeDownP1 = this.noSizeDownP1 - 1;
     }
   }
 
