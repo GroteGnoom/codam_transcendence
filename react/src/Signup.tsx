@@ -127,15 +127,14 @@ export function Signup() {
         .then(async (response) => {
             const json = await response.json();
             if (response.ok) {
-                console.log('response was OK');
-                setEvent("2-factor authentication successful"); // TODO: not needed??
+                console.log('2-factor authentication was OK');
                 setTfaChecked(true);
                 return true;
             } else {
                 throw new Error(json.message);
             }
         }).catch(() => {
-            setEvent("2-factor authentication failed");
+            setError("2-factor authentication failed");
             return false;
         });
     }
@@ -147,10 +146,8 @@ export function Signup() {
         console.log(users);
         if (checked) {
             const checkTfa = await checkTfaCode();
-            if (checkTfa === false){
-                setError("2-factor authentication failed");
+            if (checkTfa === false)
                 return;
-            }
         }
         return await fetch(get_backend_host() + "/users/signupuser", {
             method: "PUT",

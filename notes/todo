@@ -14,8 +14,8 @@ when clicked on my account -> user already exists -> set account properties
 TODOS
 [ ] make loggin websocket
 [ ] randomness random name generator: fetch if user already exists? and max length check
-[ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?)
-[ ] severity error 2fa wrong to error!
+[ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?) (2fa code, image, username)
+[V] severity error 2fa wrong to error!
 curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
 at the end, just before evals:
 - use production server, not develop

@@ -1,12 +1,9 @@
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
-import PersonOutlineSharpIcon from '@mui/icons-material/PersonOutlineSharp';
 import { Alert } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
-import CircularProgress from '@mui/material/CircularProgress';
 import { pink } from '@mui/material/colors';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -30,10 +27,8 @@ const pinkTheme = createTheme({ palette: { primary: pink } })
 export function Account() {
     const [users, setUsers] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isSignedUp, setIsSignedUp] = useState(false);
     const [username, setUsername] = useState("");
     const [intraName, setIntraName] = useState("");
-    const [status, setStatus] = useState(userStatus.Online);
     const [error, setError] = useState("");
     const [event, setEvent] = useState("");
     const [avatar, setAvatar] = useState({
@@ -41,11 +36,10 @@ export function Account() {
         imgHash: Date.now(),
     });
     const [checked, setChecked] = useState(false);
-    const urlAuth = get_backend_host() + "/auth/ft";
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
-    const [started, setStarted] = useState(false);
     const [newTfa, setNewTfa] = useState(false);
+    const [severityEvent, setSeverityEvent] = useState("success");
     const navigate = useNavigate();
 
     //backend calls
@@ -87,7 +81,6 @@ export function Account() {
             console.log("found isTfaEnabled: " + response.isTfaEnabled);
             setIntraName(response.intraName);
             setUsername(response.username);
-            setIsSignedUp(response.isSignedUp);
             setChecked(response.isTfaEnabled);
         })
         .catch((err: Error) => setError(err.message))
@@ -143,14 +136,13 @@ export function Account() {
         .then(async (response) => {
             const json = await response.json();
             if (response.ok) {
-                console.log('response was OK');
-                setEvent("2-factor authentication successful"); // TODO: not needed??
+                console.log('2-factor authentication was OK');
                 return true;
             } else {
                 throw new Error(json.message);
             }
         }).catch(() => {
-            console.log("catched the error");
+            setError("2-factor authentication failed");
             return false;
         });
     }
@@ -162,10 +154,8 @@ export function Account() {
         console.log(users);
         if (checked && newTfa) {
             const checkTfa = await checkTfaCode();
-            if (checkTfa === false){
-                setError("2-factor authentication failed");
+            if (checkTfa === false)
                 return;
-            }
         }
         return await fetch(get_backend_host() + "/users/updateuser", {
             method: "PUT",
@@ -174,7 +164,7 @@ export function Account() {
             body: JSON.stringify({
                 "username": username,
                 "intraName": intraName,
-                "status": status,
+                "status": userStatus.Online,
                 "isTfaEnabled": checked,
             })
         })
@@ -188,7 +178,7 @@ export function Account() {
         })
         .then((response) => {
             getUsers();
-            setIsSignedUp(true);
+            setSeverityEvent("success");
             setEvent("User saved successfully");
         })
         .catch((err: Error) => setError(err.message))
@@ -221,6 +211,7 @@ export function Account() {
             }
         })
         .then(() => {
+            setSeverityEvent("success");
             setEvent("Avatar created successfully");
             setAvatar({
                 imgSrc: get_backend_host() + "/users/avatar",
@@ -355,7 +346,7 @@ export function Account() {
             </div>
 
             <Snackbar open={event !== ""} autoHideDuration={3000} onClose={() => setEvent("")}>
-                <Alert onClose={() => setEvent("")} severity="success" sx={{ width: '100%' }}>
+                <Alert onClose={() => setEvent("")} severity={severityEvent === "error" ? "error" : "success"} sx={{ width: '100%' }}>
                     {event}
                 </Alert>
             </Snackbar>
