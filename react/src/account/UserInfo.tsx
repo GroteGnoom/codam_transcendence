@@ -371,8 +371,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     render(){
         this.redirHome();
-        // if (!this.avatar)
-        //     return;
+        if (!this.avatar)
+            return;
 
         return (
             <div className="menu">
