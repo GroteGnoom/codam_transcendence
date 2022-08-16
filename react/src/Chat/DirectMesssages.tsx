@@ -62,10 +62,20 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             method: 'GET',
             credentials: 'include',
         })
-		.then((response) => response.json())
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)                
+            }
+        }) 
         .then((response) => {
             const chats = response.map((chat: Channel) => this.addDisplayName(chat))
             this.setState({ chats: chats });
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
         })
 	}
 

@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { SessionGuard } from 'src/auth/session.guard';
 import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
 
 @Controller('channels')
+@UseGuards(SessionGuard)
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
 

@@ -91,6 +91,9 @@ export class ChannelsService {
     }
 
     async createDirectMessage(user : number , other : number) {
+        if ( !(await this.userService.findUsersById(other)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
+        }
         const newDM = await this.channelRepository.save({ // create new Channel object (direct mesage)
             name: `dm-${user}-${other}`,
             owner: user,

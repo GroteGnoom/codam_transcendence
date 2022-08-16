@@ -207,53 +207,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         this.props.statusWebsocket.off("inGameStatusUpdate")
     }
 
-    // renderMatchesRow(props: ListChildComponentProps) {
-    //     const { index, style } = props;
-    //     const el = this.state.matches[index];
-   
-    //     return (
-    //         <TableRow
-    //         key={index}
-    //         style={style}
-    //         sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
-    //             <TableCell align="right" style={{ width: 150 }}>
-    //                 <Link to={{ pathname:`/userinfo/${el.player_1.id}`} } style={{ color: '#e91e63' }}>
-    //                             {`${el.player_1.username}`}
-    //                 </Link>
-    //             </TableCell>
-    //             <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
-    //             <TableCell align="center">{"-"}</TableCell>
-    //             <TableCell align="right">{`${el.scoreP2}`}</TableCell>
-    //             <TableCell align="left" style={{ width: 150 }}>
-    //                 <Link to={{ pathname:`/userinfo/${el.player_2.id}`} } style={{ color: '#e91e63' }}>
-    //                             {`${el.player_2.username}`}
-    //                 </Link>
-    //             </TableCell>
-    //         </TableRow>
-    //     );
-    // }
-
-    // renderMatches = () => {
-    //     return (
-    //         <Box
-    //           sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: '#f06292', m:10, ml:16 }}>
-    //             <Typography variant="h6" component="div">
-    //                 Matches
-    //             </Typography>
-    //             <Divider />
-    //             <FixedSizeList
-    //                 height={360}
-    //                 width={500}
-    //                 itemSize={46}
-    //                 itemCount={this.state.matches.length}
-    //                 overscanCount={5}                    
-    //             >
-    //             {(props) => this.renderMatchesRow(props)}
-    //           </FixedSizeList>
-    //         </Box>
-    //       );
-    // }
-
     renderMatches = () => {
         const matches = this.state.matches.map((el: any) => (
             <TableRow
@@ -290,7 +243,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             </Box>
         );
     }
-
 
     renderFriendsRow(props: ListChildComponentProps) {
         const { index, style } = props;
@@ -377,7 +329,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 <Stack direction="row">
                 { this.state.user &&
                         <Avatar
-                            alt={this.state.user.name} // first letter of alt (alternative) text is default avatar if loading src fails
+                            alt={this.state.user.intraName} // first letter of alt (alternative) text is default avatar if loading src fails
                             src={`${this.avatar.imgSrc}?${this.avatar.imgHash}`}
                             sx={{ height: 120, width: 120, mt:3}}
                         />
@@ -493,8 +445,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         )
     }
 }
-
-// export default withParams(UserInfo)
 
 export default function UserInfoFunction(props: any) {
     const navigation = useNavigate();
