@@ -40,7 +40,7 @@ class gameState {
   userName2: string;
     
   ballSpeed = 12;
-  paddleSpeed = 12;
+  paddleSpeed = 9;
   maxAngle = 3 * Math.PI / 12;
   maxScore = 11;
 
@@ -75,7 +75,7 @@ class gameState {
   /* powerups are only available in PinkPong, not in the original */
   paddleSizeMultiplierP1: number = 1;
   paddleSizeMultiplierP2: number = 1;
-  powerupStrength: number = 0.3;
+  powerupStrength: number = 0.25;
 
   async getUsernames() {
     const np1 = await this.userService.findUsersById(this.Player1);
@@ -108,7 +108,7 @@ class gameState {
         /*	handle top side */
         if (this.ballIsBetweenPaddleP1X() && this.ballIsBetweenPaddleP1Y() && this.ballVY < 0) {
           /*	bounce top paddle */
-          let relativeHit = (this.paddleP1RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
+          let relativeHit = (this.paddleP1RelX + ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) - (this.ballRelX + (this.ballWidth / 2));
           let bounceAngle;
           if (this.PinkPong)
             bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP1) / 2)) * this.maxAngle;
@@ -128,12 +128,8 @@ class gameState {
         /*	handle bottom side */
         if (this.ballIsBetweenPaddleP2X() && this.ballIsBetweenPaddleP2Y() && this.ballVY > 0) {
           /*	bounce bottom paddle */
-          let relativeHit = (this.paddleP2RelX + (this.paddleWidth / 2)) - (this.ballRelX + (this.ballWidth / 2));
-          let bounceAngle;
-          if (this.PinkPong)
-            bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP2) / 2)) * this.maxAngle;
-          else
-            bounceAngle = (relativeHit / (this.paddleWidth / 2)) * this.maxAngle;
+          let relativeHit = (this.paddleP2RelX + ((this.paddleWidth * this.paddleSizeMultiplierP2)/ 2)) - (this.ballRelX + (this.ballWidth / 2));
+          let bounceAngle = (relativeHit / ((this.paddleWidth * this.paddleSizeMultiplierP2) / 2)) * this.maxAngle;
           this.ballVX = this.ballSpeed * (Math.sin(bounceAngle) * -1);
           this.ballVY = this.ballSpeed * (Math.cos(bounceAngle) * -1);
         }
