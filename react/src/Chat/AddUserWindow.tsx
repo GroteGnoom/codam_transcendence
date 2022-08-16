@@ -20,7 +20,7 @@ interface AddUserWindowProps {
 interface AddUserWindowState { 
     users: any[];
     currentMembers: number[];
-    selectedMember: number;
+    selectedMember: any;
 }
 
 class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowState> {
@@ -29,7 +29,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
         this.state = { 
             users: [], // array of user entities
             currentMembers: [],
-            selectedMember: 0,
+            selectedMember: '',
         }
     }
 
@@ -45,7 +45,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
         fetch(get_backend_host() + `/channels/${this.props.activeChannel}`, { method: 'GET'})
 		.then((response) => response.json())
         .then((response) => {
-            this.setState({ currentMembers: response.members.map((user: any) => user.id) });            
+            this.setState({ currentMembers: response.members.map((member: any) => member.user.id) });            
         })
     }
 
@@ -90,7 +90,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
             <Dialog open={this.props.open} onClose={this.props.handleClose}>  {/*pop window to add user to channel */}
                 <Box sx={{ bgcolor: '#f48fb1' }}>
                 <DialogTitle>Add Member</DialogTitle>
-                <DialogContent>          
+                <DialogContent style={{paddingTop:8}}>          
                     <FormControl fullWidth>
                         <InputLabel>select</InputLabel>
                         <Select

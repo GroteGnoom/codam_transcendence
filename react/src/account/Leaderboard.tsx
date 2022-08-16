@@ -35,7 +35,7 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
     }
 
     renderLeaderboard = () => {
-        console.log(this.state.userStats)   //array of gamestat entities
+        // console.log(this.state.userStats)   //array of gamestat entities
         const players = this.state.userStats.map((el: any, index: number) => {
             const avatar = {
                 imgSrc: get_backend_host() + `/users/avatar/${el.user.id}`,
@@ -85,12 +85,12 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
                                 Player
                             </Typography>  
                         </TableCell>
-                        <TableCell align="right" sx={{bgcolor: '#f48fb1'}}>
+                        <TableCell align="center" sx={{bgcolor: '#f48fb1'}}>
                             <Typography variant='h6'>
                                 Total wins
                             </Typography>  
                         </TableCell>
-                        <TableCell align="right" sx={{bgcolor: '#f48fb1'}}>
+                        <TableCell align="center" sx={{bgcolor: '#f48fb1'}}>
                             <Typography variant='h6'>
                                 Total losses
                             </Typography>  

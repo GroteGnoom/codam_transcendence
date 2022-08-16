@@ -5,7 +5,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SportsTennisIcon from '@mui/icons-material/SportsTennis';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import { Avatar, Box, Button, Divider, IconButton, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { Avatar, Box, Button, Divider, IconButton, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
@@ -161,6 +161,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     updateStatus(socketMessage: any){   //subscribed to statusUpdate events through ws
+        console.log(socketMessage)
         const user = this.state.user;
         user.friends.forEach((el: any) => {
             if (socketMessage.userID === Number(el.id)){
@@ -191,33 +192,76 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     componentDidMount() {
+        if (this.props.statusWebsocket){
+            console.log("subscribe to status ws", this.props.statusWebsocket)
+            this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
+            this.props.statusWebsocket.on("inGameStatusUpdate", (payload: any) => {this.updateInGameStatus(payload)} )
+        } // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
+        
         this.getCurrentUser()
         this.getUserInfo()
         this.isUserBlocked()
         this.isUserFriend()
         this.getMatches()
         this.getRanking()
-
-        if (this.props.statusWebsocket){
-            console.log("subscribe to status ws", this.props.statusWebsocket)
-            this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
-            this.props.statusWebsocket.on("inGameStatusUpdate", (payload: any) => {this.updateInGameStatus(payload)} )
-        } // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
-
     }
 
     componentWillUnmount() {
-        this.props.statusWebsocket.off("statusUpdate")
+        this.props.statusWebsocket.off("statusUpdate")    // unsubscribe for events
+        this.props.statusWebsocket.off("inGameStatusUpdate")
     }
 
-    renderMatchesRow(props: ListChildComponentProps) {
-        const { index, style } = props;
-        const el = this.state.matches[index];
+    // renderMatchesRow(props: ListChildComponentProps) {
+    //     const { index, style } = props;
+    //     const el = this.state.matches[index];
    
-        return (
+    //     return (
+    //         <TableRow
+    //         key={index}
+    //         style={style}
+    //         sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
+    //             <TableCell align="right" style={{ width: 150 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_1.id}`} } style={{ color: '#e91e63' }}>
+    //                             {`${el.player_1.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //             <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
+    //             <TableCell align="center">{"-"}</TableCell>
+    //             <TableCell align="right">{`${el.scoreP2}`}</TableCell>
+    //             <TableCell align="left" style={{ width: 150 }}>
+    //                 <Link to={{ pathname:`/userinfo/${el.player_2.id}`} } style={{ color: '#e91e63' }}>
+    //                             {`${el.player_2.username}`}
+    //                 </Link>
+    //             </TableCell>
+    //         </TableRow>
+    //     );
+    // }
+
+    // renderMatches = () => {
+    //     return (
+    //         <Box
+    //           sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: '#f06292', m:10, ml:16 }}>
+    //             <Typography variant="h6" component="div">
+    //                 Matches
+    //             </Typography>
+    //             <Divider />
+    //             <FixedSizeList
+    //                 height={360}
+    //                 width={500}
+    //                 itemSize={46}
+    //                 itemCount={this.state.matches.length}
+    //                 overscanCount={5}                    
+    //             >
+    //             {(props) => this.renderMatchesRow(props)}
+    //           </FixedSizeList>
+    //         </Box>
+    //       );
+    // }
+
+    renderMatches = () => {
+        const matches = this.state.matches.map((el: any) => (
             <TableRow
-            key={index}
-            style={style}
+            key={el.id}
             sx={{ '&:last-child td, &:last-child th': { border: 0 }, bgcolor: '#f48fb1' }} >
                 <TableCell align="right" style={{ width: 150 }}>
                     <Link to={{ pathname:`/userinfo/${el.player_1.id}`} } style={{ color: '#e91e63' }}>
@@ -233,58 +277,23 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                     </Link>
                 </TableCell>
             </TableRow>
-        );
-    }
-
-    renderMatches = () => {
+            ))
         return (
-            <Box
-              sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: '#f06292', m:10, ml:16 }}>
+            <Box sx={{ width: '100%', height: 400, maxWidth: 500, bgcolor: '#f06292', m:10, ml:16 }}>
                 <Typography variant="h6" component="div">
                     Matches
                 </Typography>
                 <Divider />
-                <FixedSizeList
-                    height={360}
-                    width={500}
-                    itemSize={46}
-                    itemCount={this.state.matches.length}
-                    overscanCount={5}                    
-                >
-                {(props) => this.renderMatchesRow(props)}
-              </FixedSizeList>
+                <TableContainer style={{ maxHeight: 360 }}  sx={{bgcolor: '#f48fb1'}}>
+                    <Table stickyHeader sx={{bgcolor: '#f48fb1'}}>
+                        <TableBody>
+                            {matches}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
-          );
+        );
     }
-
-    // renderMatches = () => {
-    //     const matches = this.state.matches.map((el: any) => (
-    //         <TableRow
-    //             key={el.id}
-    //             sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
-    //             <TableCell align="right" style={{ width: 300 }}>
-    //                 <Link to={{ pathname:`/userinfo/${el.player_1.id}`} }>
-    //                             {`${el.player_1.username}`}
-    //                 </Link>
-    //             </TableCell>
-    //             <TableCell align="right" >{`${el.scoreP1}`}</TableCell>
-    //             <TableCell align="center">{"-"}</TableCell>
-    //             <TableCell align="right">{`${el.scoreP2}`}</TableCell>
-    //             <TableCell align="left" style={{ width: 300 }}>
-    //                 <Link to={{ pathname:`/userinfo/${el.player_2.id}`} }>
-    //                             {`${el.player_2.username}`}
-    //                 </Link>
-    //             </TableCell>
-    //         </TableRow>
-    //         ))
-    //     return (
-    //         <Table sx={{bgcolor: '#f48fb1'}}>
-    //             <TableBody>
-    //                 {matches}
-    //             </TableBody>
-    //         </Table>
-    //     );
-    // }
 
 
     renderFriendsRow(props: ListChildComponentProps) {
@@ -341,7 +350,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 {(props) => this.renderFriendsRow(props)}
                 </FixedSizeList>
             </Box>
-            );
+        );
     }
 
     render(){ 
@@ -477,5 +486,5 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 export default function UserInfoFunction(props: any) {
     const navigation = useNavigate();
     
-    return <UserInfo {...props} navigation={navigation} />;
+    return <UserInfo {...props} navigation={navigation} params={useParams()}/>;
 }

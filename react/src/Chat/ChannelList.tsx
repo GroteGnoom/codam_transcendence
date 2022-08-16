@@ -75,7 +75,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             credentials: 'include',
             headers: {'Content-Type':'application/json'},
 			body: JSON.stringify({
-                "name": this.state.newChannel,
+                "name": this.state.newChannel.trim(),
                 "channelType": this.state.newChannelType,
                 "password": this.state.newChannelPassword,
 			})  
@@ -270,7 +270,7 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
                         margin="dense"
                         id="name"
                         label="Password"
-                        type="text"
+                        type="password"
                         fullWidth
                         variant="standard"/>
                 </DialogContent>}

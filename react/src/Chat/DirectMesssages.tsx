@@ -17,7 +17,7 @@ interface DirectMessageState {
     newChat: string;
     open: boolean;
     users: any[];
-    selectedMember: number;
+    selectedMember: any;
     currentUser: any; // currently logged in user
 }
 
@@ -29,7 +29,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             newChat: "",
             open: false,
             users: [],
-            selectedMember: 0,
+            selectedMember: '',
             currentUser: undefined,
         };
     }
@@ -175,7 +175,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
             <Dialog open={this.state.open} onClose={this.handleClose} >  {/*pop window for new dm */}
                 <Box sx={{ bgcolor: '#f48fb1' }}>
                 <DialogTitle>Direct Message</DialogTitle>
-                <DialogContent>
+                <DialogContent style={{paddingTop:8}}>
                     <FormControl fullWidth>
                         <InputLabel>select</InputLabel>
                         <Select
