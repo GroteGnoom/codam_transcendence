@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { get_backend_host, userStatus } from './utils';
+import { get_backend_host } from './utils';
 import { io } from 'socket.io-client';
 import { Dialog,DialogTitle,DialogContent,DialogActions,Alert } from '@mui/material';
 
@@ -107,13 +107,6 @@ const Home = (props : HomeProps) => {
 			// }
 			setLi(json);
 		});
-	}
-
-	async function signOutUser() {
-		return await fetch(get_backend_host() + "/users/signoutuser", {
-			method: "PUT",
-			credentials: 'include',
-		})
 	}
 
 	async function logOutUser() {

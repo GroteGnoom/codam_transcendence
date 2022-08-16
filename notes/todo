@@ -23,7 +23,10 @@ If something requires a session to not crash, or users should only be able to ac
 
 easy way to see your own userinfo, maybe in 'my account'
 
-maybe not allow a player to be in multiple games at once?
+maybe(if all the important things are done):
+not allow a player to be in multiple games at once?
+the ball goes into the paddle a little when bouncing
+
 
 at the end, just before evals:
 - use production server, not develop
