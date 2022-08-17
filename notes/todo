@@ -27,4 +27,4 @@ at the end, just before evals:
 - do TODO's including the fake login. Very important.
 
 important forever:
-every Post and Put should not cause a 500, even with random input
+every Post and Put should not cause a 500, even with random input. All `save` and `find`, which query the database need to have a catch and throw bad request
