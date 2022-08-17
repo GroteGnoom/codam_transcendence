@@ -222,18 +222,25 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                     <Box p={3} sx={{ m:5 }}>
                         <Grid container direction="row" alignItems="center">
                             <Grid xs={10} item>
-                                { this.props.channel.displayName && 
-                                    <Typography variant="h4" gutterBottom>
-                                        <Link to={{ pathname:`/userinfo/${this.props.channel.name.split('-')[2]}`} } style={{ color: '#000000' }}>
-                                        {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
-                                    </Link> 
-                                    </Typography>
-                                }
-                                { !this.props.channel.displayName &&
-                                    <Typography variant="h4" gutterBottom>
-                                        {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
-                                    </Typography>
-                                }
+                                    { this.state.currentUser && this.props.channel.displayName && this.props.channel.name.split('-')[1] !== this.state.currentUser.id &&
+                                        <Typography variant="h4" gutterBottom>
+                                            <Link to={{ pathname:`/userinfo/${this.props.channel.name.split('-')[1]}`} } style={{ color: '#000000' }}>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Link> 
+                                        </Typography>
+                                    }
+                                    { this.state.currentUser && this.props.channel.displayName && this.props.channel.name.split('-')[2] !== this.state.currentUser.id &&
+                                        <Typography variant="h4" gutterBottom>
+                                            <Link to={{ pathname:`/userinfo/${this.props.channel.name.split('-')[2]}`} } style={{ color: '#000000' }}>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Link> 
+                                        </Typography>
+                                    }
+                                    { !this.props.channel.displayName &&
+                                        <Typography variant="h4" gutterBottom>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Typography>
+                                    }
                             </Grid>
                             <Grid xs={1} item>
                                 { this.props.channel.channelType !== "direct message" &&
