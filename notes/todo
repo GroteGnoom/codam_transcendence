@@ -16,7 +16,6 @@ curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: applica
 
 maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
-the ball goes into the paddle a little when bouncing
 you should not be able to block yourself in chat
 
 at the end, just before evals:
