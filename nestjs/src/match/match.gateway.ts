@@ -40,7 +40,7 @@ class gameState {
   userName2: string;
     
   ballSpeed = 12;
-  paddleSpeed = 9;
+  paddleSpeed = 8;
   maxAngle = 3 * Math.PI / 12;
   maxScore = 11;
 
@@ -292,7 +292,7 @@ class gameState {
     return false;
   }
   ballIsBetweenPaddleP2Y() {
-    if (this.ballRelY + this.ballWidth >= this.paddleP2RelY && this.ballRelY + this.ballWidth <= this.paddleP2RelY + 20)
+    if (this.ballRelY + this.ballWidth * 1.3 >= this.paddleP2RelY && this.ballRelY + this.ballWidth * 1.3 <= this.paddleP2RelY + 20)
       return true;
     return false;
   }
