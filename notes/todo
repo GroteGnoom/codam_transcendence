@@ -2,8 +2,6 @@ When starting up on a new computer, the pg_hba.conf is not set correctly (for ev
  error: no pg_hba.conf entry for host "172.18.0.4", user "postgres", database "transcendence_db", no encryption
  ..and also other problems, for which the proper solution is to delete all postgres_data
 
-put scrollbars back after playing a game
-
 add sessionguards to all backend endpoints
 
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
@@ -22,7 +20,6 @@ backend not logged in beveiliging
 every Post and Put should not cause a 500, even with random input
 If something requires a session to not crash, or users should only be able to access it when logged in it needs a SessionGuard
 
-easy way to see your own userinfo, maybe in 'my account'
 sometimes a friend keeps the 'playing the game' icon forever
 
 maybe(if all the important things are done):
