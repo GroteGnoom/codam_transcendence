@@ -17,7 +17,6 @@ import React from 'react';
 import { get_backend_host } from '../utils';
 import { Channel } from './Chat.types';
 
-
 interface ChannelListProps {
     channelsWebSocket: any;
     openChat: any;
@@ -38,7 +37,6 @@ interface ChannelListState {
     passwordToJoin: string;
 }
 
-
 class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
 
     constructor(props: any) {
@@ -57,15 +55,24 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         };
     }
 
-    // Backend calls
     async getChannels() {
 		return await fetch(get_backend_host() + "/channels", { 
             method: 'GET',
             credentials: 'include',
         })
-		.then((response) => response.json())
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                return json;
+            } else {
+                throw new Error(json.message)                
+            }
+        })
         .then((response) => {
             this.setState({ channels: response });
+        })
+        .catch((err: Error) => {
+            this.props.setError(err.message)
         })
 	}
 
@@ -131,7 +138,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         
     }
 
-    //Helpers
     async tryToOpenChat(channel: Channel) {
         const member = await this.isMember(channel.name);
         console.log("Is member?", member)
@@ -142,8 +148,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
             this.setState({channelToJoin: channelToJoin})
             this.setState({openJoinWindow: true})
         }
-
-        // if (this.state.channels.find((el) => el.members.includes()))
     }
 
     subscribeWebsocketEvents(){
@@ -168,7 +172,6 @@ class ChannelList extends React.Component<ChannelListProps, ChannelListState> {
         const channel = this.state.channels.map((el) => (
             <ListItem sx={ { height: 40 } } key={el.name}> 
                 <ListItemButton selected={this.props.activeChannel && el.name===this.props.activeChannel.name} 
-                    //</ListItem>onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     onClick={() => this.tryToOpenChat(el) }> {/* sets active channel */}
                     <ListItemText primary={el.name} />
                 </ListItemButton>    

@@ -16,7 +16,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import FormData from 'form-data';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Account.css';
 import { get_backend_host, userStatus } from '../utils';
 import Switch from '@mui/material/Switch';
@@ -38,9 +38,12 @@ export function Account() {
     const [checked, setChecked] = useState(false);
 	const url2fa = get_backend_host() + "/2fa/generate";
     const [tfaCode, setTfaCode] = useState("");
+    const [userId, setUserId] = useState("");
     const [newTfa, setNewTfa] = useState(false);
     const [severityEvent, setSeverityEvent] = useState("success");
     const navigate = useNavigate();
+
+    getUserId();
 
     //backend calls
     async function getUserInfoDatabase () {
@@ -237,6 +240,14 @@ export function Account() {
         setChecked(false);
     };
 
+    async function getUserId() {
+        await fetch(get_backend_host() + `/users/user`, { 
+            method: 'GET',
+            credentials: 'include',
+        }).then((response) => response.json())
+        .then((response) => {setUserId(response.id)})
+    }
+
     function showAccount() {
         return (
             <div className="menu">
@@ -312,6 +323,7 @@ export function Account() {
                     // startIcon={<PersonOutlineSharpIcon />}
                     onClick={() => saveUser()}
                     > Save changes </Button>
+                <Link className={"App-link"} to={{ pathname: "/userinfo/" + userId.toString() }}><Button className="item" variant="contained">My profile</Button></Link>
             </div>
         )
     }

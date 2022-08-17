@@ -52,7 +52,7 @@ function App() {
 				<Route path={"/chat"} element={<Chat />} />
 				<Route path={"/account"} element={<Account />} />
 				<Route path={"/signup"} element={<Signup />} />
-				<Route path={"/userinfo/:id"} element={<UserInfo statusWebsocket={statusWebSocket}/>} />
+				{ statusWebSocket && <Route path={"/userinfo/:id"} element={<UserInfo statusWebsocket={statusWebSocket}/>} /> }
 				<Route path={"/leaderboard"} element={<Leaderboard />} />
 			</Routes>
 		</ThemeProvider>

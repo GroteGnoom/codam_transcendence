@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { SessionGuard } from 'src/auth/session.guard';
 import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
 
 @Controller('channels')
+@UseGuards(SessionGuard)
 export class ChannelsController {
     constructor(private readonly channelsService: ChannelsService) {}
 
@@ -48,20 +50,15 @@ export class ChannelsController {
 		return this.channelsService.updateChannel(createChannelDto, userID);
 	}
 
-    @Delete(':name')
-    removeChannel(@Param('name') name: string) {        
-        return this.channelsService.removeChannelByName(name);
-    }
+    // @Delete(':name')
+    // removeChannel(@Param('name') name: string) {        
+    //     return this.channelsService.removeChannelByName(name);
+    // }
 
     @Put(':name/admin/:id')
     async addAdminToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
         const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
-        if (!channel) {
-            throw new NotFoundException('Channel not found');
-        } else {
-            res.status(HttpStatus.OK).json(channel).send();
-        }
     }
 
     @Delete(':name/admin/:id')
@@ -92,6 +89,7 @@ export class ChannelsController {
     }
 
     @Put(':name/join')
+    @UsePipes(ValidationPipe)
     async joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
         const userID = req.session.userId;
         const password = joinChannelDto.password;

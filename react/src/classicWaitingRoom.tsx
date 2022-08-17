@@ -26,6 +26,7 @@ const ClassicWaitingRoom = () => {
 
     async function startGame(payload: any) {
         let user:number = 0;
+        
         await fetch(get_backend_host() + `/users/user`, { 
             method: 'GET',
             credentials: 'include',
