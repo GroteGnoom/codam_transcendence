@@ -157,6 +157,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     updateStatus(socketMessage: any){   //subscribed to statusUpdate events through ws
         console.log(socketMessage)
         const user = this.state.user;
+        if (! user)
+            return;
         user.friends.forEach((el: any) => {
             if (socketMessage.userID === Number(el.id)){
                 console.log("Friends status was updated");
@@ -168,6 +170,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     updateInGameStatus(socketMessage: any){   //subscribed to statusInGameUpdate events through ws
         const user = this.state.user;
+        console.log("update Game Status: ")
         console.log(socketMessage)
         user.friends.forEach((el: any) => {
             if (socketMessage.userID === Number(el.id)){
@@ -187,12 +190,16 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
     componentDidMount() {
         this.redirHome()
-            
+        
         if (this.props.statusWebsocket){
             console.log("subscribe to status ws", this.props.statusWebsocket)
             this.props.statusWebsocket.on("statusUpdate", (payload: any) => {this.updateStatus(payload)} )
             this.props.statusWebsocket.on("inGameStatusUpdate", (payload: any) => {this.updateInGameStatus(payload)} )
-        } // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
+        }
+        else{
+            console.log("no websocket :(")
+        }
+         // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
         
         this.getUserInfo()
         this.getCurrentUser()

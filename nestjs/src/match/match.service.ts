@@ -74,6 +74,7 @@ export class MatchService {
             }
         }
         await this.gameStatsRepository.save([player_1_stats, player_2_stats]);
+        await this.setGameStatus(Number(match.player_1.id), Number(match.player_2.id), false, match.id)
         let numberOne = (await this.getLeaderboard())[0];   // for the leaderboard achievement
         numberOne.beenNumberOne = true;
         this.gameStatsRepository.save(numberOne);
