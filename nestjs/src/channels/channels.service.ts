@@ -29,7 +29,10 @@ export class ChannelsService {
             order: {
                 name: "ASC" // "DESC"
             }
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not find channels');
+		});
+;
     };
 
     async getChannelByName(name: string) {
@@ -48,7 +51,9 @@ export class ChannelsService {
         return this.channelRepository.find({
             where: {channelType: ChannelType.dm, admins: [{id: userID}]},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not find channels');
+		});
     }
 
     async createChannel(createChannelDto: CreateChannelDto, userID: number) {
