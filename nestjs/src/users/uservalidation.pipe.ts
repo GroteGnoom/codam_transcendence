@@ -36,7 +36,7 @@ export class UserValidationPipe implements PipeTransform {
       this.trim_username(values);
     const object = plainToInstance(metadata.metatype, values);
     const errors = await validate(object);
-    if (errors.length > 0) {
+    if (errors.length > 0) { // if multiple errors found, return first found error
       throw new BadRequestException(errors[0].constraints[Object.keys(errors[0].constraints)[0]]); // only throw message first error
     }
     return values;

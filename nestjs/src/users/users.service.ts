@@ -34,17 +34,9 @@ export class UsersService {
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
       throw new BadRequestException('Account with this username already exists');
     return this.userRepository.save(newUser).catch(
-        (e) => {if (/(intraName)[\s\S]+(already exists)/.test(e.detail)) {
-            throw new BadRequestException(
-                'Account with this intraName already exists',
-            );
-          } else if (/(username)[\s\S]+(already exists)/.test(e.detail)) {
-            throw new BadRequestException(
-                'Account with this username already exists',
-            );
-          }
-          return e;
-        });
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   getUsers() { return this.userRepository.find({
@@ -85,16 +77,22 @@ export class UsersService {
   }
 
   async signUpUser(userId: number, username: string) {
-    if (await this.usernameAlreadyExists(userId, username)){
+    if (await this.usernameAlreadyExists(userId, username))
       throw new BadRequestException('Account with this username already exists');
-    }
-    return this.userRepository.update(userId, {username : username, isSignedUp : true});
+    return this.userRepository.update(userId, {username : username, isSignedUp : true}).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   async updateUser(userId: number, username: string, isTfaEnabled: boolean) {
     if (await this.usernameAlreadyExists(userId, username))
       throw new BadRequestException('Account with this username already exists');
-    return this.userRepository.update(userId, {username : username, isTfaEnabled : isTfaEnabled});
+    // userId cannot be undefined because of sessionguard
+    return this.userRepository.update(userId, {username : username, isTfaEnabled : isTfaEnabled}).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
@@ -144,7 +142,10 @@ export class UsersService {
     if (avatarIdBefore === null){
       await this.userRepository.update(
           id,
-          {avatarId : avatar.id}); // save the id of the avatar in user repository
+          {avatarId : avatar.id}).catch(
+            (e) => {
+              throw new BadRequestException(e.message);
+            }); // save the id of the avatar in user repository
     }
     return avatar;
   }
@@ -167,7 +168,7 @@ export class UsersService {
       return user;
     }
     user.blockedUsers.push(blocked);
-    return this.userRepository.save(user); 
+    return this.userRepository;
   }
 
   async unblockUser(blocker: number, blocked: number) {
