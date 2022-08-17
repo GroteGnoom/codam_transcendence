@@ -2,8 +2,6 @@ When starting up on a new computer, the pg_hba.conf is not set correctly (for ev
  error: no pg_hba.conf entry for host "172.18.0.4", user "postgres", database "transcendence_db", no encryption
  ..and also other problems, for which the proper solution is to delete all postgres_data
 
-add sessionguards to all backend endpoints
-
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 flow:
 user authentication -> set username page -> create user
@@ -16,21 +14,17 @@ TODOS
 [V] severity error 2fa wrong to error!
 curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
 
-backend not logged in beveiliging
-every Post and Put should not cause a 500, even with random input
-If something requires a session to not crash, or users should only be able to access it when logged in it needs a SessionGuard
-
-sometimes a friend keeps the 'playing the game' icon forever
-
 maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
-the ball goes into the paddle a little when bouncing
 you should not be able to block yourself in chat
-
 
 at the end, just before evals:
 - use production server, not develop
 - everything should work with
   docker-compose up --build
   not via a makefile
+- remove the backend homepage
+- do TODO's including the fake login. Very important.
 
+important forever:
+every Post and Put should not cause a 500, even with random input. All `save` and `find`, which query the database need to have a catch and throw bad request

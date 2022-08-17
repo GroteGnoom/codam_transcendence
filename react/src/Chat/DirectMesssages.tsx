@@ -3,6 +3,7 @@ import React from 'react';
 import { Channel } from './Chat.types';
 import AddIcon from '@mui/icons-material/Add';
 import { get_backend_host } from '../utils';
+import { Link } from "react-router-dom";
 
 
 interface DirectMessageProps { 
@@ -139,7 +140,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
                 <ListItemButton selected={ this.props.activeChannel && el.name===this.props.activeChannel.name} 
                     //</ListItem>onClick={() => this.props.openChat(el.name)}> {/* sets active channel */}
                     onClick={() => this.props.openChat(el) }> {/* sets active channel */}
-                    <ListItemText primary={el.displayName} />
+                    <ListItemText primary={el.displayName}/>
                 </ListItemButton>    
             </ListItem>
         ))  

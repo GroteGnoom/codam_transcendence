@@ -10,6 +10,7 @@ import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
+import {SelectChangeEvent} from '@mui/material'
 
 const ENTER_KEY_CODE = 13;
 
@@ -41,7 +42,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             gameInviteOpen: false,
             muted: false,
             blockedUsers: [],
-            currentUser: undefined,
+            currentUser: undefined
         }
     }
 
@@ -207,101 +208,117 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                     </div>
                 </ListItem> 
             )}
-            );
+        );
             
-            const actions = [
-                { icon: <SportsEsportsIcon />, name: 'Classic' },
-                { icon: <SportsEsportsIcon />, name: 'Special' },
-            ];
-            
-            return (
-                <Fragment>
-                <Container>
-                    <Paper elevation={5} sx={{ bgcolor: '#f48fb1'}}>
-                        <Box p={3} sx={{ m:5 }}>
-                            <Grid container direction="row" alignItems="center">
-                                <Grid xs={10} item>
-                                    <Typography variant="h4" gutterBottom>
-                                        {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
-                                    </Typography>
-                                </Grid>
-                                <Grid xs={1} item>
-                                    { this.props.channel.channelType !== "direct message" &&
-                                        <IconButton onClick={() => { this.props.openSettings(true) }}
-                                        color="secondary">
-                                                <SettingsIcon style={{ color: '#ec407a' }}/>
-                                        </IconButton>
+        const actions = [
+            { icon: <SportsEsportsIcon />, name: 'Classic' },
+            { icon: <SportsEsportsIcon />, name: 'Special' },
+        ];
+
+        return (
+            <Fragment>
+            <Container>
+                <Paper elevation={5} sx={{ bgcolor: '#f48fb1'}}>
+                    <Box p={3} sx={{ m:5 }}>
+                        <Grid container direction="row" alignItems="center">
+                            <Grid xs={10} item>
+                                    { this.state.currentUser && this.props.channel.displayName && this.props.channel.name.split('-')[1] !== this.state.currentUser.id &&
+                                        <Typography variant="h4" gutterBottom>
+                                            <Link to={{ pathname:`/userinfo/${this.props.channel.name.split('-')[1]}`} } style={{ color: '#000000' }}>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Link> 
+                                        </Typography>
                                     }
-                                </Grid>
-                                <Grid sx={{position: 'relative'}} xs={1} item>
-                                    { this.props.channel.channelType !== "direct message" &&
-                                        <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
-                                        color="secondary">
-                                                <PersonAddIcon style={{ color: '#ec407a' }}/>
-                                        </IconButton>
+                                    { this.state.currentUser && this.props.channel.displayName && this.props.channel.name.split('-')[2] !== this.state.currentUser.id &&
+                                        <Typography variant="h4" gutterBottom>
+                                            <Link to={{ pathname:`/userinfo/${this.props.channel.name.split('-')[2]}`} } style={{ color: '#000000' }}>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Link> 
+                                        </Typography>
                                     }
-                                    { this.props.channel.channelType === "direct message" && // challenge another player to a game
-                                        <SpeedDial
-                                        direction={'down'}
-                                        ariaLabel="SpeedDial tooltip example"
-                                        sx={{position: 'absolute', top: -40, }}
-                                        icon={<SportsEsportsIcon />}
-                                        onClose={() => { this.setState( {gameInviteOpen: false} ) }}
-                                        onOpen={() => { this.setState( {gameInviteOpen: true} ) }}
-                                        open={this.state.gameInviteOpen}
-                                        >
-                                        <SpeedDialAction
-                                            // FabProps={{ sx: { bgcolor: '#fcc6ff','&:hover': { bgcolor: '#fcc6ff', }} }}
-                                            key={'Classic'}
-                                            icon={<VideogameAssetIcon style={{ color: '#f06292' }}/>}
-                                            tooltipTitle={'Classic'}
-                                            tooltipOpen
-                                            onClick={() => this.inviteClassicPong()}
-                                            />
-                                        <SpeedDialAction
-                                            key={'Special'}
-                                            icon={<SportsEsportsIcon style={{ color: '#f06292' }}/>}
-                                            tooltipTitle={'Special'}
-                                            tooltipOpen
-                                            onClick={() => this.invitePinkPong()}
-                                            />
-                                        </SpeedDial> 
+                                    { !this.props.channel.displayName &&
+                                        <Typography variant="h4" gutterBottom>
+                                            {this.props.channel.displayName ? this.props.channel.displayName : this.props.channel.name}
+                                        </Typography>
                                     }
-                                </Grid>
                             </Grid>
-                            {this.state.addUserOpen && <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} 
-                                            activeChannel={this.props.channel.name} setError={this.props.setError} />}
-                            <Divider />
-                            <Grid container spacing={4} alignItems="center">
-                                <Grid id="chat-window" xs={12} item>
-                                    <List id="chat-window-messages">
-                                        {listChatMessages}
-                                        <ListItem></ListItem>
-                                    </List>
-                                </Grid>
-                                <Grid xs={9} item>
-                                    <FormControl fullWidth>
-                                        <TextField onChange={(e) => this.setState({text: e.target.value})}
-                                            onKeyDown={(e) => this.handleEnterKey(e)}
-                                            disabled={this.state.muted}
-                                            inputProps={{ maxLength: 140 }}
-                                            value={this.state.text}
-                                            label="Type your message..."
-                                            variant="outlined"/>
-                                    </FormControl>
-                                </Grid>
-                                <Grid xs={1} item>
-                                    <IconButton type="submit" onClick={() => this.postMessage()}
-                                        disabled={this.state.muted}
-                                        color="secondary">
-                                            <SendIcon style={{ color: '#ec407a' }}/>
+                            <Grid xs={1} item>
+                                { this.props.channel.channelType !== "direct message" &&
+                                    <IconButton onClick={() => { this.props.openSettings(true) }}
+                                    color="secondary">
+                                            <SettingsIcon style={{ color: '#ec407a' }}/>
                                     </IconButton>
-                                </Grid>
+                                }
                             </Grid>
-                        </Box>
-                    </Paper>
-                </Container>
-            </Fragment>
+                            <Grid sx={{position: 'relative'}} xs={1} item>
+                                { this.props.channel.channelType !== "direct message" &&
+                                    <IconButton onClick={() => { this.setState( {addUserOpen: true} ) }}
+                                    color="secondary">
+                                            <PersonAddIcon style={{ color: '#ec407a' }}/>
+                                    </IconButton>
+                                }
+                                { this.props.channel.channelType === "direct message" && // challenge another player to a game
+                                    <SpeedDial
+                                    direction={'down'}
+                                    ariaLabel="SpeedDial tooltip example"
+                                    sx={{position: 'absolute', top: -40, }}
+                                    icon={<SportsEsportsIcon />}
+                                    onClose={() => { this.setState( {gameInviteOpen: false} ) }}
+                                    onOpen={() => { this.setState( {gameInviteOpen: true} ) }}
+                                    open={this.state.gameInviteOpen}
+                                    >
+                                    <SpeedDialAction
+                                        // FabProps={{ sx: { bgcolor: '#fcc6ff','&:hover': { bgcolor: '#fcc6ff', }} }}
+                                        key={'Classic'}
+                                        icon={<VideogameAssetIcon style={{ color: '#f06292' }}/>}
+                                        tooltipTitle={'Classic'}
+                                        tooltipOpen
+                                        onClick={() => this.inviteClassicPong()}
+                                        />
+                                    <SpeedDialAction
+                                        key={'Special'}
+                                        icon={<SportsEsportsIcon style={{ color: '#f06292' }}/>}
+                                        tooltipTitle={'Special'}
+                                        tooltipOpen
+                                        onClick={() => this.invitePinkPong()}
+                                        />
+                                    </SpeedDial> 
+                                }
+                            </Grid>
+                        </Grid>
+                        {this.state.addUserOpen && <AddUserWindow open={this.state.addUserOpen} handleClose={this.handleClose} 
+                                        activeChannel={this.props.channel.name} setError={this.props.setError} />}
+                        <Divider />
+                        <Grid container spacing={4} alignItems="center">
+                            <Grid id="chat-window" xs={12} item>
+                                <List id="chat-window-messages">
+                                    {listChatMessages}
+                                    <ListItem></ListItem>
+                                </List>
+                            </Grid>
+                            <Grid xs={9} item>
+                                <FormControl fullWidth>
+                                    <TextField onChange={(e) => this.setState({text: e.target.value})}
+                                        onKeyDown={(e) => this.handleEnterKey(e)}
+                                        disabled={this.state.muted}
+                                        inputProps={{ maxLength: 140 }}
+                                        value={this.state.text}
+                                        label="Type your message..."
+                                        variant="outlined"/>
+                                </FormControl>
+                            </Grid>
+                            <Grid xs={1} item>
+                                <IconButton type="submit" onClick={() => this.postMessage()}
+                                    disabled={this.state.muted}
+                                    color="secondary">
+                                        <SendIcon style={{ color: '#ec407a' }}/>
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Container>
+        </Fragment>
         );
     }
 }

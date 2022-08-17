@@ -29,7 +29,10 @@ export class ChannelsService {
             order: {
                 name: "ASC" // "DESC"
             }
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not find channels');
+		});
+;
     };
 
     async getChannelByName(name: string) {
@@ -48,7 +51,9 @@ export class ChannelsService {
         return this.channelRepository.find({
             where: {channelType: ChannelType.dm, admins: [{id: userID}]},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not find channels');
+		});
     }
 
     async createChannel(createChannelDto: CreateChannelDto, userID: number) {
@@ -72,7 +77,9 @@ export class ChannelsService {
             members: [this.newMember(userID)],
             password: hash,
             channelType: createChannelDto.channelType,
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not create channel');
+		});
         this.channelGateway.broadcastNewChannel(newChannel.name)
         return newChannel;
     }
@@ -81,13 +88,16 @@ export class ChannelsService {
         if ( !(await this.userService.findUsersById(other)) ) {
             throw new BadRequestException('Bad Request: user does not exist');
         }
+		console.log('createDirectmessage');
         const newDM = await this.channelRepository.save({ // create new Channel object (direct mesage)
             name: `dm-${user}-${other}`,
             owner: user,
             admins: [{id: user}, {id: other}],
             members: [this.newMember(user), this.newMember(other)],
             channelType: ChannelType.dm,
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not create channel');
+		});
         this.channelGateway.broadcastNewDM(newDM.name)
         return newDM;
     }
@@ -116,7 +126,9 @@ export class ChannelsService {
             name: createChannelDto.name,
             password: hash,
             channelType: createChannelDto.channelType,
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not update channel');
+		});
     }
 
     // removeChannelByName(name: string) {
@@ -142,7 +154,10 @@ export class ChannelsService {
             throw new BadRequestException('User is already admin');
         }
         const admins = [...channel.admins, {id: newAdmin}];
-        return this.channelRepository.save({name: channelName, admins: admins});
+        return this.channelRepository.save({name: channelName, admins: admins
+        }).catch( (e) => {
+			throw new BadRequestException('could not add admin');
+		});
     }
 
     async demoteAdmin(channelName: string, id: number, requester: number) {
@@ -160,7 +175,10 @@ export class ChannelsService {
             throw new BadRequestException('Cannot remove owner from administators');
         }
         const admins = channel.admins.filter((user) => user.id != id)
-        return this.channelRepository.save({name: channelName, admins: admins}); 
+        return this.channelRepository.save({name: channelName, admins: admins
+        }).catch( (e) => {
+			throw new BadRequestException('could not demote admin');
+		});
     }
 
     async addMemberToChannel(channelName: string, newMember: number) {
@@ -181,7 +199,10 @@ export class ChannelsService {
             return channel;
         }
         const members = [...channel.members, this.newMember(newMember)];
-        return this.channelRepository.save({name: channelName, members: members});
+        return this.channelRepository.save({name: channelName, members: members
+        }).catch( (e) => {
+			throw new BadRequestException('could not add member');
+		});
     }
 
     async checkIfMember(channelName: string, id: number) {
@@ -224,7 +245,10 @@ export class ChannelsService {
             }
         }
         const members = [...channel.members, this.newMember(id)];
-        return this.channelRepository.save({name: channelName, members: members});
+        return this.channelRepository.save({name: channelName, members: members
+        }).catch( (e) => {
+			throw new BadRequestException('could not join channel');
+		});
     }
 
     async removeMemberFromChannel(channelName: string, id: number, requester: number) {
@@ -246,7 +270,10 @@ export class ChannelsService {
         }
         const members = channel.members.filter((member) => member.user.id != id)
         const admins = channel.admins.filter((admin) => admin.id != id)
-        return this.channelRepository.save({name: channelName, members: members, admins: admins}); 
+        return this.channelRepository.save({name: channelName, members: members, admins: admins
+        }).catch( (e) => {
+			throw new BadRequestException('could not remove member from channel');
+		});
     }
 
     async leaveFromChannel(channelName: string, id: number) {
@@ -266,7 +293,9 @@ export class ChannelsService {
         }
         channel.members = channel.members.filter((member) => member.user.id != id)
         channel.admins = channel.admins.filter((admin) => admin.id != id)
-        return this.channelRepository.save(channel); 
+        return this.channelRepository.save(channel).catch( (e) => {
+			throw new BadRequestException('could not leave from channel');
+		});
     }
 
     async muteMemberInChannel(channelName: string, id: number, requester: number) {
@@ -290,7 +319,9 @@ export class ChannelsService {
                 this.channelGateway.broadcastMuteUser(channelName, id);
             } 
         })
-        return this.channelRepository.save({name: channelName, members: channel.members}); 
+        return this.channelRepository.save({name: channelName, members: channel.members}).catch( (e) => {
+			throw new BadRequestException('could not mute member in channel');
+		}); 
     }
 
     @Interval(10000) // every 10 seconds
@@ -305,7 +336,9 @@ export class ChannelsService {
             if (el.mutedUntil < currentDate) {
                 el.isMuted = false;
                 el.mutedUntil = null;
-                this.memberRepository.save(el)
+                this.memberRepository.save(el).catch( (e) => {
+			throw new BadRequestException('could not mute member in channel');
+		})
                 this.channelGateway.broadcastUnmuteUser(el.channel.name, el.user.id);
             }
         })
@@ -324,7 +357,10 @@ export class ChannelsService {
             throw new BadRequestException('Bad Request: user does not exist');
         }
         channel.bannedUsers.push(Number(id));
-        return this.channelRepository.save(channel); 
+        return this.channelRepository.save(channel).catch( (e) => {
+			throw new BadRequestException('could not ban member from channel');
+		})
+; 
     }
 
     async addMessage(channel: string, sender: number, message: MessageDto) {
@@ -340,7 +376,10 @@ export class ChannelsService {
             throw new NotFoundException('Channel not found');
         }
         newMessage.channel = channel;
-		await this.messageRepository.save(newMessage);
+		await this.messageRepository.save(newMessage).catch( (e) => {
+			throw new BadRequestException('could not add message channel');
+		})
+;
         return this.messageRepository.findOne({
             where: {id: newMessage.id},
         });
