@@ -89,6 +89,7 @@ export class ChannelsController {
     }
 
     @Put(':name/join')
+    @UsePipes(ValidationPipe)
     async joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
         const userID = req.session.userId;
         const password = joinChannelDto.password;

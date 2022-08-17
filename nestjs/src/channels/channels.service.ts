@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
 import { ChannelMember } from 'src/typeorm/channel.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -8,8 +9,6 @@ import { Channel, Message } from '../typeorm';
 import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { ChannelsGateway } from './channels.gateway';
 import { MessageDto } from './message.dtos';
-import * as bcrypt from 'bcrypt';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class ChannelsService {
@@ -18,23 +17,7 @@ export class ChannelsService {
         @InjectRepository(Message) private readonly messageRepository: Repository<Message>, 
         @InjectRepository(ChannelMember) private readonly memberRepository: Repository<ChannelMember>,         
         private readonly channelGateway: ChannelsGateway,
-        private readonly userService: UsersService ) {
-        // this.getChannels(0)
-        // .then( (channels) => {
-        //     console.log(`Found ${channels.length} channels on startup`)
-            // try{
-            //     if (channels.length === 2) {
-            //         userService.findOrCreateUser("root")
-            //         .then( (user) => {
-            //             this.createChannel({ name: "General", channelType: ChannelType.Public }, user.id)
-            //             .then(() => this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id) )
-            //             // this.createChannel({ name: "Secret", channelType: ChannelType.Protected, password: "secret" }, user.id)
-            //         })
-            //     }
-            // }
-            // catch(e){}
-        // })
-    }
+        private readonly userService: UsersService ) {}
 
     getChannels(userID: number){
         return this.channelRepository.find({
@@ -54,6 +37,9 @@ export class ChannelsService {
             where: {name: name},
             relations: ['members', 'admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         channel.password = undefined;
         return channel;
     }
@@ -133,10 +119,10 @@ export class ChannelsService {
         });
     }
 
-    removeChannelByName(name: string) {
-        this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
-        return this.channelRepository.delete({name: name});     // then delete channel
-    }
+    // removeChannelByName(name: string) {
+    //     this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
+    //     return this.channelRepository.delete({name: name});     // then delete channel
+    // }
 
     async addAdminToChannel(channelName: string, newAdmin: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
@@ -145,6 +131,9 @@ export class ChannelsService {
         });
         if (!channel) {
             throw new NotFoundException('Channel not found');
+        }
+        if ( !(await this.userService.findUsersById(newAdmin)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
         }
         if (!channel.admins.map((user) => Number(user.id)).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
@@ -161,6 +150,9 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
@@ -171,18 +163,24 @@ export class ChannelsService {
         return this.channelRepository.save({name: channelName, admins: admins}); 
     }
 
-    async addMemberToChannel(channelName: string, id: number) {
+    async addMemberToChannel(channelName: string, newMember: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
         });
-        if (channel.bannedUsers.includes(id)) {
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
+        if ( !(await this.userService.findUsersById(newMember)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
+        }
+        if (channel.bannedUsers.includes(newMember)) {
             throw new BadRequestException("This member is banned")
         }
-        if (channel.members.map((member) => member.user.id).includes(id)) {
+        if (channel.members.map((member) => member.user.id).includes(newMember)) {
             return channel;
         }
-        const members = [...channel.members, this.newMember(id)];
+        const members = [...channel.members, this.newMember(newMember)];
         return this.channelRepository.save({name: channelName, members: members});
     }
 
@@ -190,7 +188,10 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
-        });        
+        });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }     
         return channel.members.map((member) => member.user.id).includes(id); // check if userId is in member array
     }
 
@@ -199,6 +200,9 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         return channel.members.find((member) => Number(member.user.id) === Number(id)).isMuted;
     }
 
@@ -207,6 +211,9 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         if (channel.bannedUsers.includes(Number(id))) {
                 throw new BadRequestException("You are banned from this channel")
         }
@@ -225,6 +232,12 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members', 'admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
+        if ( !(await this.userService.findUsersById(id)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
+        }
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');  
         }
@@ -241,6 +254,9 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members', 'admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         if (id == channel.owner) {
             const nextOwner = channel.admins.find((admin) => admin.id != id)
             if (!nextOwner) {
@@ -258,6 +274,12 @@ export class ChannelsService {
             where: {name: channelName},
             relations: ['members', 'admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
+        if ( !(await this.userService.findUsersById(id)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
+        }
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
@@ -295,6 +317,12 @@ export class ChannelsService {
             where: {name: channelName },
             relations: ['admins']
         });
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
+        if ( !(await this.userService.findUsersById(id)) ) {
+            throw new BadRequestException('Bad Request: user does not exist');
+        }
         channel.bannedUsers.push(Number(id));
         return this.channelRepository.save(channel); 
     }
@@ -305,7 +333,12 @@ export class ChannelsService {
             text: message.text,
             invite: message.invite
         }); // will create id and date for message
-
+        const channelExist: Channel = await this.channelRepository.findOne({
+            where: {name: channel }
+        });
+        if (!channelExist) {
+            throw new NotFoundException('Channel not found');
+        }
         newMessage.channel = channel;
 		await this.messageRepository.save(newMessage);
         return this.messageRepository.findOne({
