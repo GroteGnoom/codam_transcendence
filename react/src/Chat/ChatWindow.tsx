@@ -11,7 +11,6 @@ import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
-
 const ENTER_KEY_CODE = 13;
 
 interface ChatWindowProps { 
@@ -33,7 +32,6 @@ interface ChatWindowState {
 }
 
 class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
-
     constructor(props: ChatWindowProps){
         super(props);
         this.state = { 
@@ -46,18 +44,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             currentUser: undefined,
         }
     }
-
-    // async redirHome(payload: any) {
-    //     console.log("RedirHome");
-    //     const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
-	// 		method: 'GET',
-	// 		credentials: 'include',
-	// 	}).then(response => response.json());
-    //     console.log(await li);
-    //     const { navigation } = this.props;
-    //     if (await li === false)
-    //         navigation("/", { replace: true });
-    // }
 
     async getMessages(){
         return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/messages`, { 
@@ -112,14 +98,12 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         if (this.props.channel.name === payload.channel 
             && this.state.currentUser 
             && Number(payload.userId) === Number(this.state.currentUser.id)) {
-            console.log("I am muted", muted)
-            // this.checkIfMuted() // todo find out who current user is in this component to compare
-            this.setState({muted: muted}) // true or false depending on which event type is received
+                console.log("I am muted", muted)
+                this.setState({muted: muted}) // true or false depending on which event type is received
         }
     }
 
     async inviteClassicPong(){
-        // const Stack = createNativeStackNavigator();
         this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
@@ -150,11 +134,8 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     componentDidMount() {
-        // console.log("Mounting", this.props.channel);
         this.getBlockedUsers()
-        .then(() =>
-            this.getMessages()
-        )
+        .then( () => this.getMessages() )
         this.getCurrentUser()
         this.subscribeWebsocketEvents()
         this.checkIfMuted()
@@ -194,11 +175,8 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     };
     
     render() {
-        // console.log(this.state.blockedUsers)
         const filteredMessages = this.state.messages.filter((msg) => 
-        !this.state.blockedUsers.includes(Number(msg.sender.id))
-        )
-        // console.log(filteredMessages)
+            !this.state.blockedUsers.includes(Number(msg.sender.id)))
         
         const listChatMessages = filteredMessages.map((msg, index) => {
             return (

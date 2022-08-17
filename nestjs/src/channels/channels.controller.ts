@@ -50,20 +50,15 @@ export class ChannelsController {
 		return this.channelsService.updateChannel(createChannelDto, userID);
 	}
 
-    @Delete(':name')
-    removeChannel(@Param('name') name: string) {        
-        return this.channelsService.removeChannelByName(name);
-    }
+    // @Delete(':name')
+    // removeChannel(@Param('name') name: string) {        
+    //     return this.channelsService.removeChannelByName(name);
+    // }
 
     @Put(':name/admin/:id')
     async addAdminToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
         const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
-        if (!channel) {
-            throw new NotFoundException('Channel not found');
-        } else {
-            res.status(HttpStatus.OK).json(channel).send();
-        }
     }
 
     @Delete(':name/admin/:id')

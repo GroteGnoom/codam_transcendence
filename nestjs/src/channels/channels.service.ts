@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChannelMember } from 'src/typeorm/channel.entity';
@@ -9,6 +9,7 @@ import { ChannelType, CreateChannelDto } from './channels.dtos';
 import { ChannelsGateway } from './channels.gateway';
 import { MessageDto } from './message.dtos';
 import * as bcrypt from 'bcrypt';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class ChannelsService {
@@ -114,6 +115,9 @@ export class ChannelsService {
             where: {name: createChannelDto.name},
             relations: ['admins']
         });
+        if (! channel ) {
+            throw new NotFoundException('Channel not Found');
+        }
         if (!channel.admins.map((user) => user.id).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
@@ -134,20 +138,21 @@ export class ChannelsService {
         return this.channelRepository.delete({name: name});     // then delete channel
     }
 
-    async addAdminToChannel(channelName: string, id: number, requester: number) {
+    async addAdminToChannel(channelName: string, newAdmin: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['admins']
         });
-        console.log("requester: ", requester)
-        console.log("id: ", id)
+        if (!channel) {
+            throw new NotFoundException('Channel not found');
+        }
         if (!channel.admins.map((user) => Number(user.id)).includes(requester)) {
             throw new UnauthorizedException('You are not authorized');
         }
-        if (channel.admins.map((user) => Number(user.id)).includes(id)) {
+        if (channel.admins.map((user) => Number(user.id)).includes(newAdmin)) {
             throw new BadRequestException('User is already admin');
         }
-        const admins = [...channel.admins, {id: id}];
+        const admins = [...channel.admins, {id: newAdmin}];
         return this.channelRepository.save({name: channelName, admins: admins});
     }
 
