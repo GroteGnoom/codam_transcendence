@@ -48,6 +48,8 @@ export function IsNotBlank(validationOptions?: ValidationOptions) {
             options: validationOptions,
             validator: {
               validate(input: string) {
+                if (typeof(input) !== "string")
+                  return true;
                 return input.trim().length > 0;
               }
             }

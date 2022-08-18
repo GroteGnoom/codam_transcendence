@@ -19,6 +19,7 @@ import { UserValidationPipe } from './uservalidation.pipe'
 import { DatabaseFilesService } from './databaseFiles.service';
 import { TwoFactorAuthenticationController } from 'src/auth/twoFactorAuthentication.controller';
 import { SessionGuard } from '../auth/session.guard';
+import { request } from 'http';
 
 @Controller('users')
 export class UsersController {
@@ -39,18 +40,21 @@ export class UsersController {
     return this.userService.findUsersById(req.session.userId)
   }
 
-  @Put('signupuser') // TODO user validation
+  @Put('signupuser')
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   signUpUser(@Req() req: any, @Body() body: UserDto) {
-    this.logger.log('Signup user...');
+    if (body.username === null || body.username === undefined)
+      throw new BadRequestException("Username should not be null or undefined");
     return this.userService.signUpUser(req.session.userId, body.username);
   }
 
-  @Put('updateuser') // TODO user validation
+  @Put('updateuser')
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   updateUser(@Req() req: any, @Body() body: UserDto) {
+    if (body.username === null || body.username === undefined)
+      throw new BadRequestException("Username should not be null or undefined");
     return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
   }
 

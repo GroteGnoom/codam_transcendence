@@ -4,16 +4,16 @@ user authentication -> set username page -> create user
 when clicked on my account -> user already exists -> set account properties
 
 TODOS
-[ ] make loggin websocket
-[ ] randomness random name generator: fetch if user already exists? and max length check
+[V] randomness random name generator: fetch if user already exists? and max length check
 [ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?) (2fa code, image, username)
 [V] severity error 2fa wrong to error!
 curl -X POST http://f1r1s16.codam.nl:5000/users/create -H "Content-Type: application/json" -d '{"username": "bla", "intraname": "ta"}'
-
+[ ] signup doesn't work? either or signup.tsx or signup: true
 curl -X POST http://f1r1s16.codam.nl:5000/users/avatar -H "Content-Type: application/json" -d '{"username": "bla"}'
 curl -X PUT http://f1r1s16.codam.nl:5000/users/block/bla
-whenever accepting an parameter as number, check this 
+whenever accepting a parameter as number, check this 
 alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if statements)
+curl -X PUT http://f1r1s16.codam.nl:5000/users/updateuser -H "Content-Type: application/json" -d '{"isTfaEnabled": true, "username": "1234"}'
 
 [ ] add useguard to all endpoints
 [ ] password error channels

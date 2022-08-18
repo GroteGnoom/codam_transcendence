@@ -17,7 +17,7 @@ export class UserValidationPipe implements PipeTransform {
 
   private trim_username(values) {
     Object.keys(values).forEach(key => {
-      if (key === 'username') {
+      if (key === 'username' && values[key] !== undefined && values[key] !== null && typeof(values[key]) === "string") {
         values[key] = values[key].trim(); // delete whitespaces before and after username
       }
     })

@@ -20,11 +20,14 @@ export class UsersService {
   ) {}
 
   async usernameAlreadyExists(userId: number, username: string) {
+    // if (userId === undefined || userId === null || username === undefined || username === null) // TODO: kan dit uit na betere validators??
+    //   return false;
     const [users, usersCount] = await this.userRepository.findAndCount({where: {username: username}});
     if (usersCount > 1)
       return true;
-    if (usersCount == 1 && users[0].id !== userId)
+    if (usersCount == 1 && Number(users[0].id) !== Number(userId)){
       return true;
+    }
     return false;
   }
 
@@ -32,7 +35,7 @@ export class UsersService {
     const gameStats = this.gameStatsRepository.create()
     const newUser = this.userRepository.create({...body, gameStats: gameStats});
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
-      throw new BadRequestException('Account with this username already exists');
+      throw new BadRequestException('account with this username already exists');
     return this.userRepository.save(newUser).catch(
       (e) => {
         throw new BadRequestException(e.message);
@@ -60,7 +63,7 @@ export class UsersService {
   
   setUsername(userId: number, username: string) {
     if (this.usernameAlreadyExists(userId, username))
-      throw new BadRequestException('Account with this username already exists');
+      throw new BadRequestException('account with this username already exists');
     return this.userRepository.update(userId, {username : username});
   }
 
@@ -93,7 +96,7 @@ export class UsersService {
 
   async signUpUser(userId: number, username: string) {
     if (await this.usernameAlreadyExists(userId, username))
-      throw new BadRequestException('Account with this username already exists');
+      throw new BadRequestException('account with this username already exists');
     return this.userRepository.update(userId, {username : username, isSignedUp : true}).catch(
       (e) => {
         throw new BadRequestException(e.message);
@@ -102,7 +105,7 @@ export class UsersService {
 
   async updateUser(userId: number, username: string, isTfaEnabled: boolean) {
     if (await this.usernameAlreadyExists(userId, username))
-      throw new BadRequestException('Account with this username already exists');
+      throw new BadRequestException('account with this username already exists');
     // userId cannot be undefined because of sessionguard
     return this.userRepository.update(userId, {username : username, isTfaEnabled : isTfaEnabled}).catch(
       (e) => {
@@ -136,7 +139,7 @@ export class UsersService {
       name = await fetch("http://names.drycodes.com/1")
         .then(response => response.json())
         .then((response) => response[0]);
-      if (!(await this.userRepository.findOne({where: {username: name}})))
+      if (!(await this.userRepository.findOne({where: {username: name}})) && name.length <= 30)
         unique = true;
     }
     return name;

@@ -4,19 +4,24 @@ import {IsNotBlank, IsUniqueUser} from './validators';
 
 export class UserDto { // Nestjs Data Transfer Object = a class that defines the
                        // values of the body from the request
-  @IsNotEmpty()
-  @IsNotBlank({message : 'Username must not be empty'})
+                       // overall checks for values are in here
+  // @IsDefined() // is not null or undefined, otherwise give error
+  // decorators are executed bottom-to-top
   @MaxLength(30)
-  @IsDefined()
-  username: string;
-
+  @IsNotBlank({message : 'username must not be empty'})
   @IsNotEmpty()
   @IsString()
+  @IsOptional() //Checks if given value is empty (=== null, === undefined) and if so, ignores all the validators on the property.
+  username: string;
+
   @MaxLength(8)
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   intraName: string;
 
-  @IsIn([userStatus.Offline, userStatus.Online])
   @IsEnum(userStatus)
+  @IsOptional()
   status: userStatus;
 
   @IsBoolean()
