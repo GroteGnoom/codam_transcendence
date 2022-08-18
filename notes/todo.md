@@ -19,6 +19,8 @@ curl -X PUT http://f1r1s16.codam.nl:5000/users/updateuser -H "Content-Type: appl
 [ ] password error channels
 [ ] open leaderboard: Uncaught TypeError: Cannot read properties of null (reading 'id') in leaderboard.tsx:64
 
+the backend should not send sensitive userdata about other users
+
 maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
 you should not be able to block yourself in chat
