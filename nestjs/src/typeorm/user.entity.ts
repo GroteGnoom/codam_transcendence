@@ -5,11 +5,13 @@ import { GameStats } from './gameStats.entity';
 export enum userStatus {
 	Online = "online",
 	Offline = "offline",
+	// InGame = "inGame",
 }
 @Entity()
 export class User {
 	@PrimaryGeneratedColumn({ // primary column will be auto-generated key
 		type: 'bigint',
+		name: 'user_id'
 	})
 	id: number;
 
