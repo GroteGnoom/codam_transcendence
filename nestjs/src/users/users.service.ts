@@ -39,9 +39,20 @@ export class UsersService {
       });
   }
 
-  getUsers() { return this.userRepository.find({
-    order: {username: 'ASC'}
-  }); }
+  filterUserInfo(user: any) {
+	  delete user.twoFactorAuthenticationSecret;
+	  delete user.isSignedUp;
+	  delete user.isTfaEnabled;
+  }
+
+  getUsers() {
+	  return this.userRepository.find({
+		  order: {username: 'ASC'}
+	  }).then((users) => { 
+		  users.forEach(this.filterUserInfo);
+		  return users;
+	  });
+  }
 
   async getAvatarId(id: number) {
     return (await this.userRepository.findOneBy({id : id})).avatarId; // returns all users with id: id
@@ -57,7 +68,11 @@ export class UsersService {
     return this.userRepository.findOne( { // returns first user with id: id
       where: { id : id },
       relations: ['friends', 'gameStats']
-    });
+    }).then((user) => { 
+		this.filterUserInfo(user);
+		user.friends.forEach(this.filterUserInfo);
+		return user;
+	  });
   }
 
   findUsersByName(username: string) {
