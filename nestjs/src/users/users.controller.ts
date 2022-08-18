@@ -27,6 +27,7 @@ export class UsersController {
               private readonly databaseFilesService: DatabaseFilesService) {};
 
   @Get()
+  @UseGuards(SessionGuard)
   getUsers() {
     this.logger.log('getting users\n');
     return this.userService.getUsers();

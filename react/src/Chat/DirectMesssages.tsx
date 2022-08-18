@@ -105,7 +105,7 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     };
 
     async getUsers(){
-        fetch(get_backend_host() + `/users`, { method: 'GET'})
+        fetch(get_backend_host() + `/users`, { method: 'GET', credentials: 'include'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ users: response });            
