@@ -44,7 +44,6 @@ export class UsersService {
 
   filterUserInfo(user: any) {
 	  delete user.twoFactorAuthenticationSecret;
-	  delete user.isSignedUp;
 	  delete user.isTfaEnabled;
   }
 
