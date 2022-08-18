@@ -8,7 +8,15 @@ TODOS
 [ ] randomness random name generator: fetch if user already exists? and max length check
 [ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?) (2fa code, image, username)
 [V] severity error 2fa wrong to error!
-curl -X POST http://f1r1s16.codam.nl:3000/users/create -H "Content-Type: application/json -d '{"username": "dfjklsdfjldsfldjsfkdlsfjdklsfds", "intraname": "tatatatatatatatataaaaaaaaaaaaaaa"}'
+curl -X POST http://f1r1s16.codam.nl:5000/users/create -H "Content-Type: application/json" -d '{"username": "bla", "intraname": "ta"}'
+
+curl -X POST http://f1r1s16.codam.nl:5000/users/avatar -H "Content-Type: application/json" -d '{"username": "bla"}'
+curl -X PUT http://f1r1s16.codam.nl:5000/users/block/bla
+whenever accepting an parameter as number, check this 
+alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if statements)
+
+[ ] add useguard to all endpoints
+[ ] password error channels
 
 maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
@@ -24,3 +32,9 @@ at the end, just before evals:
 
 important forever:
 every Post and Put should not cause a 500, even with random input. All `save` and `find`, which query the database need to have a catch and throw bad request
+
+POST /users/create HTTP/1.1
+Host: iertje
+Content-Type: application/json
+
+field1=value1&field2=value2
