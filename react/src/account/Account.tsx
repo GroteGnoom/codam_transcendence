@@ -110,7 +110,9 @@ export function Account() {
 
     async function getUsers () {
         return await fetch(get_backend_host() + "/users", {
-            method: "GET"} )
+            method: "GET",
+            credentials: 'include',
+        })
         .then(async (response) => {
             const json = await response.json();
             if (response.ok) {
