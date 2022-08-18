@@ -18,6 +18,8 @@ alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if st
 [ ] add useguard to all endpoints
 [ ] password error channels
 
+the backend should not send sensitive userdata about other users
+
 maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
 you should not be able to block yourself in chat
