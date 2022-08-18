@@ -1,7 +1,3 @@
-When starting up on a new computer, the pg_hba.conf is not set correctly (for every computer), so it could be that 0.0.0.0/0 is missing, and you'll get 
- error: no pg_hba.conf entry for host "172.18.0.4", user "postgres", database "transcendence_db", no encryption
- ..and also other problems, for which the proper solution is to delete all postgres_data
-
 https://medium.com/jspoint/typescript-promises-and-async-await-b842b55ee3fd
 flow:
 user authentication -> set username page -> create user
