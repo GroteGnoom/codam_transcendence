@@ -60,11 +60,10 @@ export class InviteWaitingRoomGateway {
   @SubscribeMessage('loggedInInvite')
   async handleLoggedInInvite(client: Socket, payload: any): Promise<void> {
     console.log("Emit received");
-    if (!this.Player1 && !this.Player2) {
+    if (!this.Player1)
       this.Player1 = getUserFromClient(client, this.configService);
-    }
-    else
-      this.Player2 = getUserFromClient(client, this.configService)
+    else if (!this.Player2)
+      this.Player2 = getUserFromClient(client, this.configService);
     this.PinkPong = payload.PinkPong;
     console.log("PinkPong: ", this.PinkPong);
     console.log("Player1: ", this.Player1);

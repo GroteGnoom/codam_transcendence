@@ -43,7 +43,7 @@ const InviteWaitingRoomPinkPong = () => {
         
         if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
             console.log("Emit start game");
-            webSocketMatch.current.emit("startGame", {
+            await webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
                 "PinkPong": true

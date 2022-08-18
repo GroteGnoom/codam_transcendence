@@ -42,7 +42,7 @@ class gameState {
   ballSpeed = 12;
   paddleSpeed = 8;
   maxAngle = 3 * Math.PI / 12;
-  maxScore = 11;
+  maxScore = 2;
 
   paddleP1RelX: number;
   paddleP1RelY: number;
