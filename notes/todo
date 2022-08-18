@@ -38,3 +38,9 @@ Host: iertje
 Content-Type: application/json
 
 field1=value1&field2=value2
+
+all checks user validation:
+[ ] for every put/post
+[ ] since user can only put trash in db with update/save, always catch error when update/save + throw
+[ ] this throw must be catched every time the function is called
+[ ] besides, check when functions are called which have update/save method

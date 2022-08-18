@@ -115,9 +115,16 @@ export class UsersService {
   }
 
   async generateName() {
-    return fetch("http://names.drycodes.com/1")
+    var unique = false;
+    var name = "";
+    while (!unique) {
+      name = await fetch("http://names.drycodes.com/1")
         .then(response => response.json())
         .then((response) => response[0]);
+      if (!(await this.userRepository.findOne({where: {username: name}})))
+        unique = true;
+    }
+    return name;
   }
 
   // adds user logged in through intra

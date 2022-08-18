@@ -38,14 +38,6 @@ export class UsersController {
     return this.userService.findUsersById(req.session.userId)
   }
 
-  @Post('create') // TODO user validation
-  @UseGuards(SessionGuard)
-  @UsePipes(UserValidationPipe)
-  createUser(@Body() body: UserDto) {
-    this.logger.log('Creating user...');
-    return this.userService.createUser(body);
-  }
-
   @Put('signupuser') // TODO user validation
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
@@ -132,7 +124,7 @@ export class UsersController {
     return this.userService.findUsersById(Number(id));
   }
 
-  @Put('block/:id')
+  @Put('block/:id') // TODO user validation
   @UseGuards(SessionGuard)
   blockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;  
@@ -140,7 +132,7 @@ export class UsersController {
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 
-  @Put('unblock/:id')
+  @Put('unblock/:id') // TODO user validation
   @UseGuards(SessionGuard)
   unblockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;
@@ -156,7 +148,7 @@ export class UsersController {
   }
 
 
-  @Put('friend/:id')
+  @Put('friend/:id') // TODO user validation
   @UseGuards(SessionGuard)
   friendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;
@@ -164,7 +156,7 @@ export class UsersController {
     return this.userService.friendUser(Number(userID), Number(friend));
   }
 
-  @Put('unfriend/:id')
+  @Put('unfriend/:id') // TODO user validation
   @UseGuards(SessionGuard)
   unfriendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;  

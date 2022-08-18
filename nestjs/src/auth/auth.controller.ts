@@ -33,7 +33,6 @@ export class AuthController
 	@Redirect(get_frontend_host() + '/logged_in', 302)
 	@UseGuards(AuthGuard('ft')) //before returning the get request this will try the ft strategy for authentication. If ft exists is checked during runtime, and will give Unknown authentication strategy "ft" if it doesn't exist.
 	async login(@Req() req: Request, @Res() response:Response): Promise<any> { //the function name doesn't matter?
-		const areq = await req;
 		//it's always req.user, even though it's not a user at all :( 
 		const user = req.user;
 		this.logger.log('get on auth/ft user:', user);
