@@ -4,13 +4,14 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import {SelectChangeEvent} from '@mui/material'
+import { io } from "socket.io-client";
 
 const ENTER_KEY_CODE = 13;
 
@@ -44,7 +45,13 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             blockedUsers: [],
             currentUser: undefined
         }
+        this.inviteWebSocket = io(get_backend_host() + "/inviteWaitingroom-ws", {
+            withCredentials: true,
+            path: "/inviteWaitingroom-ws/socket.io"
+        });
     }
+
+    inviteWebSocket: any;
 
     async getMessages(){
         return await fetch(get_backend_host() + `/channels/${this.props.channel.name}/messages`, { 
@@ -105,27 +112,38 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
     }
 
     async inviteClassicPong(){
-        this.props.channelsWebSocket.emit("sendMessage", { 
+        await this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of <a href='inviteWaitingRoomClassic'>Classic Pong!</a>", //<a> is HTML link element (anchor)
+                "text": "Join me for a game of <a href='inviteWaitingRoomClassic/" + this.props.channel.name.split('-')[1] + "/" + this.props.channel.name.split('-')[2] + "'>Classic Pong!</a>", //<a> is HTML link element (anchor)
                 "invite": true
             }
         })
+        await this.inviteWebSocket.emit("loggedInInvite", {
+            "Player1": this.props.channel.name.split('-')[1],
+            "Player2": this.props.channel.name.split('-')[2],
+            "PinkPong": false
+        })
         const { navigation } = this.props;
-        navigation("/inviteWaitingroomClassic", { replace: true });
+        navigation("/inviteWaitingRoomClassic/" + this.props.channel.name.split('-')[1] + "/" + this.props.channel.name.split('-')[2], { replace: true });
     }
     
     async invitePinkPong(){
-        this.props.channelsWebSocket.emit("sendMessage", { 
+        await this.props.channelsWebSocket.emit("sendMessage", { 
             "channel": this.props.channel.name,
             "message": {
-                "text": "Join me for a game of <a href='inviteWaitingRoomPinkPong'>PinkPong!</a>",
+                "text": "Join me for a game of <a href='inviteWaitingRoomPinkPong/" + this.props.channel.name.split('-')[1] + "/" + this.props.channel.name.split('-')[2] + "'>Pink Pong!</a>", //<a> is HTML link element (anchor)
                 "invite": true
             }
         })
+        console.log("Pressed link");
+        await this.inviteWebSocket.emit("loggedInInvite", {
+            "Player1": this.props.channel.name.split('-')[1],
+            "Player2": this.props.channel.name.split('-')[2],
+            "PinkPong": true
+        })
         const { navigation } = this.props;
-        navigation("/inviteWaitingroomPinkPong", { replace: true });
+        navigation("/inviteWaitingRoomPinkPong/" + this.props.channel.name.split('-')[1] + "/" + this.props.channel.name.split('-')[2], { replace: true });
     }
     
     subscribeWebsocketEvents() {

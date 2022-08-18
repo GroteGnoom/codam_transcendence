@@ -50,7 +50,7 @@ const ClassicWaitingRoom = () => {
             navigate("/pinkpong", { replace: true });
         }
         else {
-            console.log("Dit is niet de bedoeling...");
+            navigate("/", { replace: true });
         }
     }
 

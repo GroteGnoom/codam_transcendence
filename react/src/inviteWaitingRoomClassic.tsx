@@ -1,12 +1,13 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
 import {CircularProgress, Typography} from '@mui/material';
 
-const InviteWaitingRoomClassic = () => {
+export default function InviteWaitingRoomClassic() {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
+    let { Player1, Player2 } = useParams();
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -20,11 +21,11 @@ const InviteWaitingRoomClassic = () => {
         path: "/match-ws/socket.io"
     });
 
-    webSocket.current.emit("loggedInInvite", {
+    webSocket.current.emit("loggedIn", {
+        "Player1": Number(Player1),
+        "Player2": Number(Player2),
         "PinkPong": false
     });
-
-    console.log("Emitted loggedInInvite");
 
     async function startGame(payload: any) {
         let user:number = 0;
@@ -43,15 +44,12 @@ const InviteWaitingRoomClassic = () => {
         
         if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
             console.log("Emit start game");
-            webSocketMatch.current.emit("startGame", {
+            await webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
                 "PinkPong": false
             });
             navigate("/pinkpong", { replace: true });
-        }
-        else {
-            console.log("Dit is niet de bedoeling...");
         }
     }
 
@@ -87,5 +85,3 @@ const InviteWaitingRoomClassic = () => {
         </main>
     )
 }
-
-export default InviteWaitingRoomClassic;

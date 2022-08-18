@@ -42,7 +42,7 @@ class gameState {
   ballSpeed = 12;
   paddleSpeed = 8;
   maxAngle = 3 * Math.PI / 12;
-  maxScore = 2;
+  maxScore = 11;
 
   paddleP1RelX: number;
   paddleP1RelY: number;
@@ -85,11 +85,11 @@ class gameState {
   }
 
   setKeyPresses(leftKeyPressed: boolean, rightKeyPressed: boolean, client: number) {
-    if (client === this.Player1) {
+    if (Number(client) === Number(this.Player1)) {
       this.leftKeyPressedP1 = leftKeyPressed;
       this.rightKeyPressedP1 = rightKeyPressed;
     }
-    if (client === this.Player2) {
+    if (Number(client) === Number(this.Player2)) {
       this.leftKeyPressedP2 = leftKeyPressed;
       this.rightKeyPressedP2 = rightKeyPressed;
     }
@@ -367,8 +367,11 @@ export class MatchGateway {
   @SubscribeMessage('startGame')
   async startGame(client: Socket, payload: any): Promise<void> {
     const player = getUserFromClient(client, this.configService);
-    if (player === payload.Player1 || player === payload.Player2)
+    if (Number(player) === Number(payload.Player1) || Number(player) === Number(payload.Player2))
       this.matchStarted = this.matchStarted + 1;
+    console.log("Player: ", player);
+    console.log("Player1: ", payload.Player1);
+    console.log("Player2: ", payload.Player2);
     if (this.matchStarted === 2) {
       this.matchStarted = 0;
       

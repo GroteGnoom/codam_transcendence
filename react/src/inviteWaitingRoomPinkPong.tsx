@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { io } from "socket.io-client";
 import { useEffect, useRef } from 'react';
 import { get_backend_host } from './utils';
@@ -7,6 +7,7 @@ import {CircularProgress, Typography} from '@mui/material';
 const InviteWaitingRoomPinkPong = () => {
     const webSocket: any = useRef(null); // useRef creates an object with a 'current' property
     const webSocketMatch: any = useRef(null); // useRef creates an object with a 'current' property
+    let { Player1, Player2 } = useParams();
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -20,11 +21,11 @@ const InviteWaitingRoomPinkPong = () => {
         path: "/match-ws/socket.io"
     });
 
-    webSocket.current.emit("loggedInInvite", {
+    webSocket.current.emit("loggedIn", {
+        "Player1": Number(Player1),
+        "Player2": Number(Player2),
         "PinkPong": true
     });
-
-    console.log("Emitted loggedInInvite");
 
     async function startGame(payload: any) {
         let user:number = 0;
@@ -49,9 +50,6 @@ const InviteWaitingRoomPinkPong = () => {
                 "PinkPong": true
             });
             navigate("/pinkpong", { replace: true });
-        }
-        else {
-            console.log("Dit is niet de bedoeling...");
         }
     }
 

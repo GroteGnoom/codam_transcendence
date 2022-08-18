@@ -45,8 +45,8 @@ function App() {
 				<Route path={"/pinkpong"} element={<PinkPong />} />
 				<Route path={"/pinkpong/:spectateMatchID"} element={<PinkPong />} />
 				<Route path={"/classicWaitingroom"} element={<ClassicWaitingRoom />} />
-				<Route path={"/inviteWaitingroomClassic"} element={<InviteWaitingRoomClassic />} />
-				<Route path={"/inviteWaitingroomPinkPong"} element={<InviteWaitingRoomPinkPong />} />
+				<Route path={"/inviteWaitingroomClassic/:Player1/:Player2"} element={<InviteWaitingRoomClassic />} />
+				<Route path={"/inviteWaitingroomPinkPong/:Player1/:Player2"} element={<InviteWaitingRoomPinkPong />} />
 				<Route path={"/PinkPongWaitingroom"} element={<PinkPongWaitingRoom />} />
 				<Route path={"/Spectate"} element={<Spectate />} />
 				<Route path={"/chat"} element={<Chat />} />
