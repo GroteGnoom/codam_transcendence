@@ -30,7 +30,7 @@ export class ChannelsController {
     }
 
     @Post()
-	@UsePipes(ValidationPipe)   //validates body (not empty etc)
+	@UsePipes(new ValidationPipe({stopAtFirstError: true}))   //validates body (not empty etc)
 	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
         const userID = req.session.userId;
         console.log("user id: ", userID);
@@ -44,7 +44,7 @@ export class ChannelsController {
     }
 
     @Put('update/:name')
-	@UsePipes(ValidationPipe)
+	@UsePipes(new ValidationPipe({stopAtFirstError: true}))
 	updateChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
         const userID = req.session.userId;
 		return this.channelsService.updateChannel(createChannelDto, userID);
@@ -89,7 +89,7 @@ export class ChannelsController {
     }
 
     @Put(':name/join')
-    @UsePipes(ValidationPipe)
+    @UsePipes(new ValidationPipe({stopAtFirstError: true}))
     async joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
         const userID = req.session.userId;
         const password = joinChannelDto.password;
