@@ -346,25 +346,25 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                             {this.state.user.username}
                         </Typography>
                     }
-                    { this.state.isFriend && 
+                    { this.state.currentUser && (this.props.params.id !== this.state.currentUser.id) && this.state.isFriend &&
                         <IconButton type="submit" onClick={() => (this.unfriendUser())}
                             color="primary">
                             <FavoriteIcon fontSize='large' />
                         </IconButton>
                     }
-                    { !this.state.isFriend && 
+                    { this.state.currentUser && (this.props.params.id !== this.state.currentUser.id) && !this.state.isFriend &&
                         <IconButton type="submit" onClick={() => (this.friendUser())}
                             color="primary">
                             <FavoriteBorderIcon fontSize='large' style={{ color: '#f06292' }}/>
                         </IconButton>
                     }
-                    { !this.state.isBlocked && 
+                    { this.state.currentUser && (this.props.params.id !== this.state.currentUser.id) && !this.state.isBlocked &&
                         <IconButton type="submit" onClick={() => this.blockUser()}
                             color="primary">
                             <BlockIcon fontSize='large' style={{ color: '#f06292' }}/>
                         </IconButton>
                     }
-                    { this.state.isBlocked && 
+                    { this.state.currentUser && (this.props.params.id !== this.state.currentUser.id) && this.state.isBlocked &&
                         <Button variant="text" style={{ color: '#f06292' }} onClick={() => this.unblockUser()}>
                             UNBLOCK
                         </Button> 

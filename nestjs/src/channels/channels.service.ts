@@ -306,6 +306,9 @@ export class ChannelsService {
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
+        if (id == requester) {
+            throw new BadRequestException('Cannot mute yourself');
+        }
         if ( !(await this.userService.findUsersById(id)) ) {
             throw new BadRequestException('Bad Request: user does not exist');
         }

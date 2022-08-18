@@ -98,7 +98,9 @@ export function Signup() {
 
     async function getUsers () {
         return await fetch(get_backend_host() + "/users", {
-            method: "GET"} )
+            method: "GET",
+            credentials: 'include',
+        })
         .then(async (response) => {
             const json = await response.json();
             if (response.ok) {
@@ -306,7 +308,8 @@ export function Signup() {
             await sleep(500);
             await getLoggedIn();
             setStarted(true);
-            getUserInfoDatabase();
+			if (isLoggedIn)
+	            getUserInfoDatabase();
         }
         fetchData();
     }, []); // will only be called on initial mount and unmount
