@@ -33,11 +33,12 @@ export class UsersController {
   }
 
   @Get('user')
+  @UseGuards(SessionGuard)
   findUsersById(@Req() req: any) {
     return this.userService.findUsersById(req.session.userId)
   }
 
-  @Post('create')
+  @Post('create') // TODO user validation
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   createUser(@Body() body: UserDto) {
@@ -45,7 +46,7 @@ export class UsersController {
     return this.userService.createUser(body);
   }
 
-  @Put('signupuser')
+  @Put('signupuser') // TODO user validation
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   signUpUser(@Req() req: any, @Body() body: UserDto) {
@@ -53,38 +54,31 @@ export class UsersController {
     return this.userService.signUpUser(req.session.userId, body.username);
   }
 
-  @Put('updateuser')
+  @Put('updateuser') // TODO user validation
   @UseGuards(SessionGuard)
   @UsePipes(UserValidationPipe)
   updateUser(@Req() req: any, @Body() body: UserDto) {
     return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
   }
 
-  @Put('signoutuser')
+  @Put('signoutuser') // TODO user validation
   @UseGuards(SessionGuard)
   signOutUser(@Req() req: any) {
     return this.userService.signOutUser(req.session.userId);
   }
 
-  @Put('logoutuser')
+  @Put('logoutuser') // TODO user validation
   @UseGuards(SessionGuard)
   logOutUser(@Req() req: any) {
     return this.userService.logOutUser(req.session.userId);
   }
 
-  @Post('setusername')
-  @UseGuards(SessionGuard)
-  @UsePipes(UserValidationPipe)
-  setUsername(@Req() req: any, username: string) {
-    this.logger.log("setUsername called");
-    return this.userService.setUsername(req.session.userId, username);
-  }
-
-  @Post('avatar')
+  @Post('avatar') // TODO user validation
   @UseGuards(SessionGuard)
   @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
-    this.logger.log("id: ", req.session.userId);
+  async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) { // UploadedFile to extract file from request
+    if (!file)
+      throw new BadRequestException("File not provided");
     this.logger.log("file size: ", file.size);
     this.logger.log("filename: ", file.originalname);
     this.logger.log("mimetype: ", file.mimetype);
@@ -142,15 +136,15 @@ export class UsersController {
   @UseGuards(SessionGuard)
   blockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;  
-    console.log("Blocking", blocker, blocked)             
+    console.log("Blocking", blocker, blocked);
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 
   @Put('unblock/:id')
   @UseGuards(SessionGuard)
   unblockUser(@Param('id') blocked: number, @Req() req: any) {
-    const blocker = req.session.userId;  
-    console.log("UNblocking", blocker, blocked)             
+    const blocker = req.session.userId;
+    console.log("UNblocking", blocker, blocked);
     return this.userService.unblockUser(Number(blocker), Number(blocked));
   }
 
@@ -165,8 +159,8 @@ export class UsersController {
   @Put('friend/:id')
   @UseGuards(SessionGuard)
   friendUser(@Param('id') friend: number, @Req() req: any) {
-    const userID = req.session.userId;  
-    console.log("Befriending", userID, friend)             
+    const userID = req.session.userId;
+    console.log("Befriending", userID, friend);
     return this.userService.friendUser(Number(userID), Number(friend));
   }
 
@@ -174,14 +168,14 @@ export class UsersController {
   @UseGuards(SessionGuard)
   unfriendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;  
-    console.log("UNfriending", userID, friend)             
+    console.log("UNfriending", userID, friend);
     return this.userService.unfriendUser(Number(userID), Number(friend));
   }
 
   @Get('is-friend/:id')
   @UseGuards(SessionGuard)
   isFriend(@Param('id') id: number, @Req() req: any) {
-    const userID = req.session.userId;        
+    const userID = req.session.userId;
     return this.userService.isFriend(Number(userID), Number(id));
   }
 }

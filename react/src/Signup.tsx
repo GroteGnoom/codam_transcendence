@@ -306,7 +306,8 @@ export function Signup() {
             await sleep(500);
             await getLoggedIn();
             setStarted(true);
-            getUserInfoDatabase();
+			if (isLoggedIn)
+	            getUserInfoDatabase();
         }
         fetchData();
     }, []); // will only be called on initial mount and unmount
