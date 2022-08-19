@@ -335,9 +335,12 @@ export class MatchGateway {
 	  let gameArray = [];
 	  for (const [matchId, gameState] of this.currentGameStates) {
 		  await gameState.getUsernames();
-		  gameArray.push({userName1: gameState.userName1,
-						 userName2: gameState.userName2, 
-						 matchID: gameState.matchID,
+		  gameArray.push({
+            userName1: gameState.userName1,
+						userName2: gameState.userName2, 
+						matchID: gameState.matchID,
+            Player1: gameState.Player1,
+            Player2: gameState.Player2
 		  });
 	  }
 	  this.server.emit('matches', gameArray);

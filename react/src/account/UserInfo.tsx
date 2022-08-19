@@ -7,10 +7,10 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { Avatar, Box, Button, Divider, IconButton, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { get_backend_host } from "../utils";
-import { useNavigate } from 'react-router-dom';
+import { io } from "socket.io-client";
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
@@ -31,6 +31,9 @@ interface UserInfoState {
     isFriend: Boolean;
     matches: any[];   //array of match entities
     ranking?: number;
+    activeMatches: any[];
+    activeMatchesArray: Array<any>;
+    webSocket: any;
 }
 
 class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
@@ -43,10 +46,34 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             isFriend: false,
             matches: [],
             ranking: undefined,
+            activeMatches: [],
+            activeMatchesArray: [],
+            webSocket: {}
         }
+        this.state.webSocket.current = io(get_backend_host() + "/match-ws", {
+			withCredentials: true,
+			path: "/match-ws/socket.io"
+		});
+		this.state.webSocket.current.on("matches", this.listGames.bind(this) )
+        this.state.webSocket.current.emit("getGames", {});
     }
 
     avatar: any;
+
+    listGames(payload: any) {
+        console.log("listGames");
+		console.log("payload:", payload);
+		this.setState({activeMatches: payload}, function(this: any) {
+			console.log("after state set:", this.state.activeMatches)
+			this.setState({activeMatchesArray: Array.from(this.state.activeMatches)});
+		});
+		// if (this.state.activeMatches.length > 0) {
+		// 	this.setState({activeMatchesArray: Array.from(this.state.activeMatches)});
+		// 	this.state.activeMatchesArray.map((game) => {
+		// 		console.log('game:', game);
+		// 	});
+		// }
+	}
 
     async getCurrentUser() {
         return await fetch(get_backend_host() + "/users/user", { 
@@ -251,9 +278,28 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         );
     }
 
+    getGame(userID: number) {
+        const { navigation } = this.props;
+        let matchID: number = 0;
+        this.state.activeMatchesArray.forEach((game) => {
+            console.log("userID: ", userID);
+            console.log("game.Player1: ", game.Player1);
+            console.log("game.Player2: ", game.Player2);
+            if (Number(userID) === Number(game.Player1) || Number(userID) === Number(game.Player2))
+                matchID = Number(game.matchID);
+        });
+        if (!matchID) {
+            console.log("game not found");
+        }
+        else
+            return matchID;
+    }
+
     renderFriendsRow(props: ListChildComponentProps) {
         const { index, style } = props;
         const el = this.state.user.friends[index];
+        const game = this.getGame(el.id);
+        console.log("gameID: ", game);
     
         return (
             <ListItem key={index} style={style} sx={{bgcolor: '#f48fb1'}} >
@@ -278,9 +324,16 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 
                 <ListItemText >
                     <Typography variant="body1">
-                        <Link to={{ pathname:`/userinfo/${el.id}`} } style={{ color: '#e91e63' }}>
-                            {`${el.username}`}
-                        </Link>
+                        { el.inGame && el.status==="online" &&
+                            <Link to={{ pathname:`/pinkpong/${game}`} } style={{ color: '#e91e63' }}>
+                                {`${el.username}`}
+                            </Link>
+                        }
+                        { !el.inGame &&
+                            <Link to={{ pathname:`/userinfo/${el.id}`} } style={{ color: '#e91e63' }}>
+                                {`${el.username}`}
+                            </Link>
+                        }
                     </Typography>
                 </ListItemText>         
             </ListItem> 
