@@ -121,21 +121,20 @@ export class UsersController {
     return new StreamableFile(stream);
   }
 
-  @Get('id/:id') // TODO user validation
+  @Get('id/:id')
   @UseGuards(SessionGuard)
   findUser(@Param('id', ParseIntPipe) id: number) {                 //need this endpoint to get owner name of a channel
     return this.userService.findUsersById(Number(id));
   }
 
-  @Put('block/:id') // TODO user validation
+  @Put('block/:id')
   @UseGuards(SessionGuard)
-
   blockUser(@Param('id', ParseIntPipe) blocked: number, @Req() req: any) {
     const blocker = req.session.userId;
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 
-  @Put('unblock/:id') // TODO user validation
+  @Put('unblock/:id')
   @UseGuards(SessionGuard)
   unblockUser(@Param('id', ParseIntPipe) blocked: number, @Req() req: any) {
     const blocker = req.session.userId;
@@ -144,29 +143,28 @@ export class UsersController {
 
   @Get('is-blocked/:id')
   @UseGuards(SessionGuard)
-  isBlocked(@Param('id') id: number, @Req() req: any) {
+  isBlocked(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
     const blocker = req.session.userId;        
     return this.userService.isBlocked(Number(blocker), Number(id));
   }
 
-
-  @Put('friend/:id') // TODO user validation
+  @Put('friend/:id')
   @UseGuards(SessionGuard)
-  friendUser(@Param('id') friend: number, @Req() req: any) {
+  friendUser(@Param('id', ParseIntPipe) friend: number, @Req() req: any) {
     const userID = req.session.userId;
     return this.userService.friendUser(Number(userID), Number(friend));
   }
 
-  @Put('unfriend/:id') // TODO user validation
+  @Put('unfriend/:id')
   @UseGuards(SessionGuard)
-  unfriendUser(@Param('id') friend: number, @Req() req: any) {
-    const userID = req.session.userId;  
+  unfriendUser(@Param('id', ParseIntPipe) friend: number, @Req() req: any) {
+    const userID = req.session.userId;
     return this.userService.unfriendUser(Number(userID), Number(friend));
   }
 
   @Get('is-friend/:id')
   @UseGuards(SessionGuard)
-  isFriend(@Param('id') id: number, @Req() req: any) {
+  isFriend(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
     const userID = req.session.userId;
     return this.userService.isFriend(Number(userID), Number(id));
   }

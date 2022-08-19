@@ -68,12 +68,6 @@ export class UsersService {
       return null;
     return user.avatarId;
   }
-  
-  // setUsername(userId: number, username: string) {
-  //   if (this.usernameAlreadyExists(userId, username))
-  //     throw new BadRequestException('account with this username already exists');
-  //   return this.userRepository.update(userId, {username : username});
-  // }
 
   async findUsersById(id: number) {
     const user = await this.userRepository.findOne( { // returns first user with id: id
@@ -86,14 +80,6 @@ export class UsersService {
     if (!user)
       throw new NotFoundException('user not found');
     return user;
-    // return this.userRepository.findOne( { // returns first user with id: id
-    //   where: { id : id },
-    //   relations: ['friends', 'gameStats']
-    // }).catch(
-    //   (e) => {
-    //     throw new BadRequestException(e.message);
-    //     // throw new NotFoundException('User not found');
-    //   });
   }
 
   findUsersByName(username: string) {
@@ -113,10 +99,6 @@ export class UsersService {
         throw new BadRequestException(e.message);
       });
   }
-
-  // findUsersByIntraname(intraName: string) {
-  //   return this.userRepository.findOne({ where: {intraName : intraName} });
-  // }
 
   async signUpUser(userId: number, username: string) {
     if (await this.usernameAlreadyExists(userId, username))
@@ -201,8 +183,8 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
     }).catch(
-      () => {
-        throw new NotFoundException('User not found');
+      (e) => {
+        throw new BadRequestException(e.message);
       });
     if (user.blockedUsers.includes(blocked)) {
       return user;
@@ -214,7 +196,10 @@ export class UsersService {
   async unblockUser(blocker: number, blocked: number) {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
-    });
+    }).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
     user.blockedUsers = user.blockedUsers.filter((id) => id != blocked);
     return this.userRepository.save(user); 
   }
@@ -223,35 +208,50 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
     });
-    return  (user.blockedUsers.includes(id));
+    return (user.blockedUsers.includes(id));
   }
 
   async friendUser(userId: number, friend: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    });
+    }).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
     if (user.friends.map((user) => user.id).includes(friend)) {
       return user;
     }
     user.friends = [...user.friends, this.newFriend(friend)];
-    return this.userRepository.save(user);
+    return this.userRepository.save(user).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   async unfriendUser(userId: number, friend: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    });
-    user.friends = user.friends.filter((user) => Number(user.id) !== friend)
-    return this.userRepository.save(user);
+    }).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
+    user.friends = user.friends.filter((user) => Number(user.id) !== friend);
+    return this.userRepository.save(user).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   async isFriend(userId: number, friend: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    });
+    }).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
     return (user.friends.map((user) => Number(user.id)).includes(friend))
   }
 
