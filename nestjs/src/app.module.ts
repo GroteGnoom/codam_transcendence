@@ -50,9 +50,6 @@ import { inviteWaitingRoomModule } from './inviteWaitingroom/inviteWaitingroom.m
 		ClassicWaitingRoomModule,
 		PinkPongWaitingRoomModule,
 		inviteWaitingRoomModule,
-		ServeStaticModule.forRoot({
-			rootPath: join(__dirname, '..', 'test_homepage'), 
-    }),
 	],
 	controllers: [],
 	providers: [AppService],
