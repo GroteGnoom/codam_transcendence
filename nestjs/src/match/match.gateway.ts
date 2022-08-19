@@ -357,6 +357,9 @@ export class MatchGateway {
   @SubscribeMessage('startGame')
   async startGame(client: Socket, payload: any): Promise<void> {
     const player = getUserFromClient(client, this.configService);
+    if (!player) {
+      this.server.emit("redirectHomeMatch", {"client": client.id});
+    }
     if (Number(player) === Number(payload.Player1) || Number(player) === Number(payload.Player2))
       this.matchStarted = this.matchStarted + 1;
     if (this.matchStarted === 2) {
@@ -399,6 +402,9 @@ export class MatchGateway {
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
       const userID = getUserFromClient(client, this.configService);
+      if (!userID) {
+        this.server.emit("redirectHomeMatch", {"client": client.id});
+      }
       const gameState = this.currentGameStates.get(payload.matchID);
       if (gameState)
         gameState.setKeyPresses(payload.leftKeyPressed, payload.rightKeyPressed, userID);

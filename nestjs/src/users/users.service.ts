@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   ValidatorConstraint
 } from 'class-validator';
-import { User } from 'src/typeorm';
+import { User, UserSecrets } from 'src/typeorm';
 import { GameStats } from 'src/typeorm/gameStats.entity';
 import { UserDto } from 'src/users/users.dtos';
 import { Repository } from 'typeorm';
@@ -15,6 +15,7 @@ export class UsersService {
   private readonly logger = new Logger(UsersService.name);
   constructor(
       @InjectRepository(User) private readonly userRepository: Repository<User>,
+      @InjectRepository(UserSecrets) private readonly userSecretRepository: Repository<UserSecrets>,
       @InjectRepository(GameStats) private readonly gameStatsRepository: Repository<GameStats>,
       private readonly databaseFilesService: DatabaseFilesService,
   ) {}
@@ -33,26 +34,33 @@ export class UsersService {
 
   async createUser(body: UserDto) {
     const gameStats = this.gameStatsRepository.create()
-    const newUser = this.userRepository.create({...body, gameStats: gameStats});
+    const newUser = await this.userRepository.create({...body, gameStats: gameStats});
+	console.log('newUser: ', newUser);
+	console.log('body: ', body);
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
-      throw new BadRequestException('account with this username already exists');
-    return this.userRepository.save(newUser).catch(
-      (e) => {
-        throw new BadRequestException(e.message);
-      });
-  }
+		throw new BadRequestException('account with this username already exists');
+	const savedUser = await this.userRepository.save(newUser).catch(
+		(e) => {
+			throw new BadRequestException(e.message);
+		});
+    const userSecrets = this.userSecretRepository.create({id: savedUser.id})
 
-  filterUserInfo(user: any) {
-	  delete user.twoFactorAuthenticationSecret;
-	  delete user.isTfaEnabled;
+	this.userSecretRepository.save(userSecrets).catch(
+		(e) => {
+			throw new BadRequestException(e.message);
+	});
+	return savedUser;
   }
 
   getUsers() {
 	  return this.userRepository.find({
 		  order: {username: 'ASC'}
-	  }).then((users) => { 
-		  users.forEach(this.filterUserInfo);
-		  return users;
+	  });
+  }
+
+  getUserSecrets(id: number) {
+	  return this.userSecretRepository.findOne({
+		  where: { id : id },
 	  });
   }
 
@@ -76,11 +84,7 @@ export class UsersService {
     return this.userRepository.findOne( { // returns first user with id: id
       where: { id : id },
       relations: ['friends', 'gameStats']
-    }).then((user) => { 
-		this.filterUserInfo(user);
-		user.friends.forEach(this.filterUserInfo);
-		return user;
-	  });
+    });
   }
 
   findUsersByName(username: string) {
@@ -135,7 +139,7 @@ export class UsersService {
     const newUser = this.userRepository.create(user);
     this.userRepository.save(newUser);
 */
-    return this.userRepository.update(userId,
+    return this.userSecretRepository.update(userId,
                                       {twoFactorAuthenticationSecret : secret});
   }
 

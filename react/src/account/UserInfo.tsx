@@ -219,6 +219,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         }
         else{
             console.log("no websocket :(")
+            const { navigation } = this.props;
+            navigation("/", {replace:true});
         }
          // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
         
@@ -273,7 +275,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     getGame(userID: number) {
-        const { navigation } = this.props;
         let matchID: number = 0;
         this.state.activeMatchesArray.forEach((game) => {
             console.log("userID: ", userID);
