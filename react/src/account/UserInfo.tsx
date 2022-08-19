@@ -74,10 +74,11 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             method: 'GET',
             credentials: 'include',
         })
-		.then((response) => response.json())
-        .then((response) => {
-            this.setState({ currentUser: response });
-        })
+        .then(async (response) => {            
+            await response.json();
+            if (response.ok)
+                this.setState({ currentUser: response });
+        });
     }
 
     getUserInfo() {
@@ -85,10 +86,15 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             method: 'GET',
             credentials: 'include',
         })
-		.then((response) => response.json())
-        .then((response) => {
-            this.setState({ user: response });            
-        })
+        .then(async (response) => {            
+            await response.json();
+            if (response.ok)
+                this.setState({ user: response });
+        });
+		// .then((response) => response.json())
+        // .then((response) => {
+        //     this.setState({ user: response });            
+        // })
     }
 
     getRanking() {
