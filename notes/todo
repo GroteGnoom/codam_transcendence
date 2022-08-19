@@ -26,6 +26,8 @@ maybe(if all the important things are done):
 not allow a player to be in multiple games at once?
 you should not be able to block yourself in chat
 
+if you first have tfa turned on, and then turn it off and on, your secret is changed, but you weren't asked to check it, so now you don't have the proper codes on your google authenticator.
+
 at the end, just before evals:
 - use production server, not develop
 - everything should work with
