@@ -16,7 +16,6 @@ import { InviteWaitingRoomGateway } from 'src/inviteWaitingroom/inviteWaitingroo
   imports: [
     TypeOrmModule.forFeature([Match, GameStats, User]), 
     UsersModule,
-    // AuthModule
   ],
   controllers: [MatchController],
   providers: [MatchGateway, MatchService, ClassicWaitingRoomGateway, PinkPongWaitingRoomGateway, StatusGateway, InviteWaitingRoomGateway]

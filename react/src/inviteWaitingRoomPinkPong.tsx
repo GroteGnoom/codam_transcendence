@@ -11,7 +11,6 @@ const InviteWaitingRoomPinkPong = () => {
     let navigate = useNavigate();
 
     useEffect(() => {
-    console.log('Opening WebSocket');
     webSocket.current = io(get_backend_host() + "/inviteWaitingroom-ws", {
         withCredentials: true,
         path: "/inviteWaitingroom-ws/socket.io"
@@ -37,13 +36,8 @@ const InviteWaitingRoomPinkPong = () => {
 
         let P1:number = payload.Player1;
         let P2:number = payload.Player2;
-
-        console.log("User: ", user);
-        console.log("Player1: ", P1);
-        console.log("Player2: ", P2);
         
         if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
-            console.log("Emit start game");
             await webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
@@ -57,19 +51,16 @@ const InviteWaitingRoomPinkPong = () => {
     webSocket.current.on("redirectHomeInvite", redirHome ) // subscribe on backend events
 
     async function redirHome(payload: any) {
-        console.log("RedirHome");
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
-        console.log(await li);
         if (await li === false)
             navigate("/", { replace: true });
     }
 
     return () => {
         webSocket.current.emit("playerLeftInvite", {});
-        console.log('Closing WebSocket');
         webSocket.current.close();
     }
     }, );

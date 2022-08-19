@@ -7,9 +7,6 @@ import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
-import { MatchService } from '../match/match.service';
-import { MatchGateway } from 'src/match/match.gateway';
-import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
   namespace: '/classicWaitingRoom-ws',
@@ -22,8 +19,6 @@ import { UsersService } from 'src/users/users.service';
 export class ClassicWaitingRoomGateway {
   constructor (
   private readonly configService: ConfigService,
-  private readonly matchService: MatchService,
-  private readonly userService: UsersService
 	) {}
 
   waitingUsers = new Set<number>;
@@ -36,15 +31,11 @@ export class ClassicWaitingRoomGateway {
   server: Server;
 
 	handleConnection(client: Socket, @Session() session) {
-    console.log("started classic waitingroom server", session);
     if (!getUserFromClient(client, this.configService)) {
-      console.log("Redirect to home page");
       this.server.emit("redirectHomeClassic", {"client": client.id});
-      // this.server.close();
     }
     else {
       this.waitingUsers.add(getUserFromClient(client, this.configService));
-      console.log("Pushed user");
     }
 	}
 
@@ -53,7 +44,6 @@ export class ClassicWaitingRoomGateway {
     if (getUserFromClient(client, this.configService)) {
       this.waitingUsers.delete(getUserFromClient(client, this.configService));
     }
-    console.log("Left: ", this.logins);
   }
 
   @SubscribeMessage('loggedInClassic')
@@ -67,13 +57,10 @@ export class ClassicWaitingRoomGateway {
 
   async checkWaitingRoom() {
     if (this.waitingUsers.size >= 2) {
-      console.log("Found 2 players");
       const [first] = this.waitingUsers;
       const [, second] = this.waitingUsers;
       this.Player1 = await this.getUser(first);
       this.Player2 = await this.getUser(second);
-      console.log("Player1 waitingroom: ", this.Player1);
-      console.log("Player2 waitingroom: ", this.Player2);
       await this.server.emit("found2PlayersClassic", {
         "Player1": this.Player1,
         "Player2": this.Player2

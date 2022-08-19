@@ -7,8 +7,6 @@ import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
-import { MatchService } from '../match/match.service';
-import { UsersService } from 'src/users/users.service';
 
 class Game {
   constructor(
@@ -40,11 +38,7 @@ class Game {
 export class InviteWaitingRoomGateway {
   constructor (
   private readonly configService: ConfigService,
-  private readonly matchService: MatchService,
-  private readonly userService: UsersService
-	) {
-    console.log("invite gateway constructor");
-  }
+	) {}
 
   waitingUsers = new Array<Game>;
   user: number = 0;
@@ -57,9 +51,7 @@ export class InviteWaitingRoomGateway {
   server: Server;
 
 	handleConnection(client: Socket, @Session() session) {
-    console.log("started invite waitingroom server", session);
     if (!getUserFromClient(client, this.configService)) {
-      console.log("Redirect to home page");
       this.server.emit("redirectHomeInvite", {"client": client.id});
     }
 	}
@@ -71,14 +63,12 @@ export class InviteWaitingRoomGateway {
       this.waitingUsers.splice(obj);
     }
     this.Player1 = 0;
-    console.log("Left: ", this.waitingUsers.length);
   }
 
   @SubscribeMessage('loggedIn')
   async handleLoggedIn(client: Socket, payload: any) {
     let user:number = await getUserFromClient(client, this.configService);
     if (!user) {
-      console.log("Redirect to home page");
       await this.server.emit("redirectHomeInvite", {"client": client.id});
     } else {
       await this.waitingUsers.forEach((game) => {
@@ -90,10 +80,6 @@ export class InviteWaitingRoomGateway {
         this.Player1 = payload.Player1;
         this.Player2 = payload.Player2;
         this.PinkPong = payload.PinkPong;
-        console.log("Pushed user");
-        console.log("PinkPong this: ", this.PinkPong);
-        console.log("Player1 this: ", this.Player1);
-        console.log("Player2 this: ", this.Player2);
         this.checkWaitingRoom();
       }
       this.alreadyExists = false;
@@ -102,10 +88,8 @@ export class InviteWaitingRoomGateway {
 
   @SubscribeMessage('loggedInInvite')
   async handleLoggedInInvite(client: Socket, payload: any): Promise<void> {
-    console.log("Emit received");
     let user:number = await getUserFromClient(client, this.configService);
     this.waitingUsers.push(new Game(user, payload.Player1, payload.Player2, payload.PinkPong));
-    console.log("WaitingUsers after push: ", this.waitingUsers);
   }
 
   async checkWaitingRoom() {
@@ -120,7 +104,6 @@ export class InviteWaitingRoomGateway {
           });
           const obj = [...this.waitingUsers].findIndex(obj => obj === game);
           await this.waitingUsers.splice(obj, 1);
-          console.log("WaitingUsers after splice: ", this.waitingUsers);
         }
       }
     );

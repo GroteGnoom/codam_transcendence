@@ -41,20 +41,18 @@ export default function PinkPong() {
 	
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		console.log("spectateMatchID:", spectateMatchID);
 		canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
 		if (!canvas)
-		console.log("error");
+			navigate("/", { replace: true });
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 		if (!ctx)
-		console.log("error");
+			navigate("/", { replace: true });
 		
 		componentDidMount();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		setTimeOut = false;
 		
-		console.log('Opening WebSocket');
 		webSocket.current = io(get_backend_host() + "/match-ws", {
 			withCredentials: true, 
 			path: "/match-ws/socket.io"
@@ -65,7 +63,6 @@ export default function PinkPong() {
 		webSocket.current.on("redirectHomeMatch", redirHome ) // subscribe on backend events
 
 		async function redirHome(payload: any) {
-			console.log("RedirHome");
 			const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 				method: 'GET',
 				credentials: 'include',
@@ -76,7 +73,6 @@ export default function PinkPong() {
 		}
 
 		return () => {
-			console.log('Closing WebSocket');
 			webSocket.current.close();
 		}
 	}, []);
@@ -122,12 +118,9 @@ export default function PinkPong() {
 				credentials: 'include',
 			}).then((response) => response.json())
 			.then((response) => {player = response.id})
-			console.log("player: ", player);
-			console.log("payload.userID: ", payload.userID);
 		}
 		if (Number(player) === Number(payload.userID)) {
 			matchID = payload.matchID;
-			console.log("matchID: ", matchID);
 		}
 	}
 	
@@ -151,7 +144,6 @@ export default function PinkPong() {
 			paddleHeight = 15 * (fieldHeight / 1000);
 	
 			if (payload.winner !== 0 && payload.winner !== -1) {
-				console.log("EndGame");
 				EndGame(payload.winner, payload.scoreP1, payload.scoreP2);
 			}
 			else if (payload.winner === 0) {
@@ -249,16 +241,13 @@ export default function PinkPong() {
 				"reset": true
 				})
 				delay(100);
-				console.log('Closing WebSocket EndGame');
 				webSocket.current.close();
-				console.log('Opening WebSocket');
 				webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
 					withCredentials: true, 
 					path: "/classicWaitingRoom-ws/socket.io"
 				}); // open websocket connection with backend
 				webSocket.current.emit("gameEnded", {});
 				webSocket.current.close();
-				console.log('Opening WebSocket');
 				webSocket.current = io(get_backend_host() + "/PinkPongWaitingRoom-ws", {
 					withCredentials: true, 
 					path: "/PinkPongWaitingRoom-ws/socket.io"

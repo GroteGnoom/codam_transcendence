@@ -10,11 +10,7 @@ import { MatchService } from './match.service';
 import { Session } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 
-
-let matchIDStr: string;
-
 class gameState {
-  
   constructor(
     private userService: UsersService,
     Player1:number,
@@ -330,36 +326,27 @@ export class MatchGateway {
   currentGameStates = new Map<number, gameState>;
   
   handleConnection(client: Socket, @Session() session) {
-    console.log("Handle connection match gateway");
     if (!getUserFromClient(client, this.configService)) {
-      console.log("Redirect to home page");
       this.server.emit("redirectHomeMatch", {"client": client.id});
-      // this.server.close();
     }
   }
 
   async emitGames() {
 	  let gameArray = [];
 	  for (const [matchId, gameState] of this.currentGameStates) {
-		  console.log('pushing match');
 		  await gameState.getUsernames();
-		  console.log('after get usernames');
 		  gameArray.push({userName1: gameState.userName1,
 						 userName2: gameState.userName2, 
 						 matchID: gameState.matchID,
 		  });
 	  }
-	  console.log('emitting array');
-	  console.log('gameArray', gameArray);
 	  this.server.emit('matches', gameArray);
   }
 
   @SubscribeMessage('getGames')
   getGames(client: Socket, payload: any): void {
     if (!getUserFromClient(client, this.configService)) {
-      console.log("Redirect to home page");
       this.server.emit("redirectHomeMatch", {"client": client.id});
-      // this.server.close();
     }
 	  this.emitGames();
   }
@@ -369,13 +356,8 @@ export class MatchGateway {
     const player = getUserFromClient(client, this.configService);
     if (Number(player) === Number(payload.Player1) || Number(player) === Number(payload.Player2))
       this.matchStarted = this.matchStarted + 1;
-    console.log("Player: ", player);
-    console.log("Player1: ", payload.Player1);
-    console.log("Player2: ", payload.Player2);
     if (this.matchStarted === 2) {
       this.matchStarted = 0;
-      
-      console.log("Start game message");
       
       const match = await this.matchService.addMatch(payload.Player1, payload.Player2);
       const matchID:number = match.id;
@@ -385,9 +367,7 @@ export class MatchGateway {
       
       this.currentGameStates.set(matchID, new gameState(this.userService, payload.Player1, payload.Player2, matchID, payload.PinkPong));
       
-      console.log("currentGameState size: ", this.currentGameStates.size);
-	  console.log('emitting matches at startGame');
-	  this.emitGames();
+	    this.emitGames();
     }
   }
 
@@ -404,8 +384,6 @@ export class MatchGateway {
     this.currentGameStates.forEach((gameState, matchID) => {
       const emitMessage = gameState.update();
       this.server.emit('boardUpdated', emitMessage);
-      // console.log("emit matchID: ", matchID);
-      // this.server.to(matchID.toString()).emit('boardUpdated', emitMessage);
       if (emitMessage.winner === 1 || emitMessage.winner === 2) {
         this.matchService.storeResult(emitMessage.matchID, emitMessage.scoreP1, emitMessage.scoreP2, this.server);
         this.currentGameStates.delete(matchID);
@@ -417,7 +395,6 @@ export class MatchGateway {
 
   @SubscribeMessage('keyPressed')
   async handleKeyPressed(client: Socket, payload: any): Promise<void> {
-      // console.log("Key pressed: ", matchIDStr);
       const userID = getUserFromClient(client, this.configService);
       const gameState = this.currentGameStates.get(payload.matchID);
       if (gameState)

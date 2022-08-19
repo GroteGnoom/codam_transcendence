@@ -10,7 +10,6 @@ const ClassicWaitingRoom = () => {
     let navigate = useNavigate();
 
     useEffect(() => {
-    console.log('Opening WebSocket');
     webSocket.current = io(get_backend_host() + "/classicWaitingRoom-ws", {
         withCredentials: true,
         path: "/classicWaitingRoom-ws/socket.io"
@@ -35,13 +34,8 @@ const ClassicWaitingRoom = () => {
 
         let P1:number = payload.Player1;
         let P2:number = payload.Player2;
-
-        console.log("User: ", user);
-        console.log("Player1: ", P1);
-        console.log("Player2: ", P2);
         
         if (Number(user) === Number(P1) || Number(user) === Number(P2)) {
-            console.log("Emit start game");
             webSocketMatch.current.emit("startGame", {
                 "Player1": P1,
                 "Player2": P2,
@@ -58,19 +52,16 @@ const ClassicWaitingRoom = () => {
     webSocket.current.on("redirectHomeClassic", redirHome ) // subscribe on backend events
 
     async function redirHome(payload: any) {
-        console.log("RedirHome");
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
 			method: 'GET',
 			credentials: 'include',
 		}).then(response => response.json());
-        console.log(await li);
         if (await li === false)
             navigate("/", { replace: true });
     }
 
     return () => {
         webSocket.current.emit("playerLeftClassic", {});
-        console.log('Closing WebSocket');
         webSocket.current.close();
     }
     }, );
