@@ -34,7 +34,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     async getUsers(){
-        fetch(get_backend_host() + `/users`, { method: 'GET'})
+        fetch(get_backend_host() + `/users`, { method: 'GET', credentials: 'include'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ users: response });            
@@ -42,7 +42,7 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
     }
 
     async getCurrentMembers(){
-        fetch(get_backend_host() + `/channels/${this.props.activeChannel}`, { method: 'GET'})
+        fetch(get_backend_host() + `/channels/${this.props.activeChannel}`, { method: 'GET', credentials: 'include'})
 		.then((response) => response.json())
         .then((response) => {
             this.setState({ currentMembers: response.members.map((member: any) => member.user.id) });            
