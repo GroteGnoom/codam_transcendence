@@ -1,7 +1,6 @@
-import { Avatar, Box, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Avatar, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
 import { get_backend_host } from "../utils";
 import { useNavigate } from 'react-router-dom';
 

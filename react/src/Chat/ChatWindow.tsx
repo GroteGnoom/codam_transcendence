@@ -4,13 +4,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
-import {SelectChangeEvent} from '@mui/material'
 import { io } from "socket.io-client";
 
 const ENTER_KEY_CODE = 13;
@@ -228,11 +227,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
             )}
         );
             
-        const actions = [
-            { icon: <SportsEsportsIcon />, name: 'Classic' },
-            { icon: <SportsEsportsIcon />, name: 'Special' },
-        ];
-
         return (
             <Fragment>
             <Container>
