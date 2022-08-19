@@ -59,6 +59,8 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     avatar: any;
+    validUserId: any;
+    started: any = false;
 
     listGames(payload: any) {
         console.log("listGames");
@@ -74,15 +76,10 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             method: 'GET',
             credentials: 'include',
         })
-        .then(async (response) => {            
-            const json = await response.json();
-            if (response.ok)
-                return json;
-        })
+        .then((response) => response.json())
         .then((response) => {
-            if (response.ok)
-                this.setState({ currentUser: response });
-        });
+            this.setState({ currentUser: response });
+        })
     }
 
     getUserInfo() {
@@ -90,15 +87,10 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             method: 'GET',
             credentials: 'include',
         })
-        .then(async (response) => {            
-            await response.json();
-            if (response.ok)
-                this.setState({ user: response });
-        });
-		// .then((response) => response.json())
-        // .then((response) => {
-        //     this.setState({ user: response });            
-        // })
+		.then((response) => response.json())
+        .then((response) => {
+            this.setState({ user: response });            
+        })
     }
 
     getRanking() {
@@ -361,6 +353,21 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         );
     }
 
+    async isValidId() {
+        fetch(get_backend_host() + `/users/id/${this.props.params.id}`, { 
+            method: 'GET',
+            credentials: 'include',
+        })
+        .then(async (response) => {            
+            await response.json();
+            if (response.ok){
+                console.log("yes this is goooddd id");
+                this.validUserId = true;
+            }
+            this.started = true;
+        });
+    }
+
     async redirHome() {
         const { navigation } = this.props;
         const li =  fetch(get_backend_host() + "/auth/amiloggedin", { 
@@ -380,12 +387,21 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
     }
 
     render(){
+        this.isValidId();
         this.redirHome();
-        if (!this.avatar)
+        
+        if (!this.avatar || !this.started)
             return;
+        if (!this.validUserId){
+            return(
+                <div className="menu">
+                    Error: user not valid
+                </div>
+            )
+        }
 
         return (
-            <div className="menu">
+            (<div className="menu">
                 <Stack direction="row">
                 { this.state.user &&
                         <Avatar
@@ -501,7 +517,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                     {this.renderFriends()}
                     {this.renderMatches()}
                 </Stack>
-            </div>
+            </div>)
         )
     }
 }
