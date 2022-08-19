@@ -102,16 +102,6 @@ export class AuthController
 	}
 
 	@UseGuards(SessionGuard)
-	@Get('is_tfa_enabled')
-	async isTfaEnabled(@Req() request: Request) {
-		const user = await this.userService.findUsersById(request.session.userId);
-		this.logger.log("tfa enabled?", user.isTfaEnabled);
-		if (request.session.logged_in)
-			return true;
-		return false;
-	}
-
-	@UseGuards(SessionGuard)
 	@Get('user_id')
 	getUserId(@Req() request: Request) {
 		this.logger.log("getting user name", request.session.userId);
