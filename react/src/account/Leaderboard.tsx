@@ -72,7 +72,7 @@ class Leaderboard extends React.Component<LeaderboardProps, LeaderboardState> {
                     <TableCell align="center" >{`${index + 1}`}</TableCell>
                     <TableCell align="right" style={{ width: 40 }}>
                         <Avatar
-                            alt={el.user.username} // first letter of alt (alternative) text is default avatar if loading src fails
+                            alt={el.user.intraName} // first letter of alt (alternative) text is default avatar if loading src fails
                             src={`${avatar.imgSrc}?${avatar.imgHash}`}
                             sx={{ height: 50, width: 50 }}
                         />

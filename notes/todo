@@ -7,18 +7,19 @@ TODOS
 [V] randomness random name generator: fetch if user already exists? and max length check
 [ ] better validation checks; only all the user input; check type and not empty! (depending on the type of request probably?) (2fa code, image, username)
 [V] severity error 2fa wrong to error!
+[V] signup doesn't work? either or signup.tsx or signup: true
 curl -X POST http://f1r1s16.codam.nl:5000/users/create -H "Content-Type: application/json" -d '{"username": "bla", "intraname": "ta"}'
-[ ] signup doesn't work? either or signup.tsx or signup: true
 curl -X POST http://f1r1s16.codam.nl:5000/users/avatar -H "Content-Type: application/json" -d '{"username": "bla"}'
 curl -X PUT http://f1r1s16.codam.nl:5000/users/block/bla
-whenever accepting a parameter as number, check this 
+[ ] whenever accepting a parameter as number, check this
+curl -X PUT http://f1r1s16.codam.nl:5000/users/updateuser -H "Content-Type: application/json" -d '
+{"isTfaEnabled": true, "username": "1234"}'
 [ ] userinfo: alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if statements)
-curl -X PUT http://f1r1s16.codam.nl:5000/users/updateuser -H "Content-Type: application/json" -d '{"isTfaEnabled": true, "username": "1234"}'
 
 [ ] add useguard to all endpoints
 [ ] password error channels
-[ ] open leaderboard: Uncaught TypeError: Cannot read properties of null (reading 'id') in leaderboard.tsx:64
-
+[V] open leaderboard: Uncaught TypeError: Cannot read properties of null (reading 'id') in leaderboard.tsx:64
+[ ] save secret only when save user, not when qr code created
 the backend should not send sensitive userdata about other users
 
 maybe(if all the important things are done):
@@ -32,6 +33,7 @@ at the end, just before evals:
   not via a makefile
 - remove the backend homepage
 - do TODO's including the fake login. Very important.
+- delete signout button
 
 important forever:
 every Post and Put should not cause a 500, even with random input. All `save` and `find`, which query the database need to have a catch and throw bad request

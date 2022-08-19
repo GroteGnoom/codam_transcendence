@@ -10,6 +10,7 @@ import {
   UsePipes,
   UseGuards,
   UnsupportedMediaTypeException,
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDto } from 'src/users/users.dtos';
@@ -58,27 +59,24 @@ export class UsersController {
     return this.userService.updateUser(req.session.userId, body.username, body.isTfaEnabled);
   }
 
-  @Put('signoutuser') // TODO user validation
+  @Put('signoutuser')
   @UseGuards(SessionGuard)
   signOutUser(@Req() req: any) {
     return this.userService.signOutUser(req.session.userId);
   }
 
-  @Put('logoutuser') // TODO user validation
+  @Put('logoutuser')
   @UseGuards(SessionGuard)
   logOutUser(@Req() req: any) {
     return this.userService.logOutUser(req.session.userId);
   }
 
-  @Post('avatar') // TODO user validation
+  @Post('avatar')
   @UseGuards(SessionGuard)
   @UseInterceptors(FileInterceptor('file'))
   async addAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) { // UploadedFile to extract file from request
     if (!file)
       throw new BadRequestException("File not provided");
-    this.logger.log("file size: ", file.size);
-    this.logger.log("filename: ", file.originalname);
-    this.logger.log("mimetype: ", file.mimetype);
     if (!file.mimetype.includes("image"))
       throw new UnsupportedMediaTypeException("Unsupported Media Type: type must be `image`");
     if (file.size > 2000000)
@@ -87,15 +85,17 @@ export class UsersController {
                                       file.originalname);
   }
 
-  @Get('avatar')
+  @Get('avatar') // TODO uservalidation
   @UseGuards(SessionGuard)
-  async getDatabaseFileById(@Req() req: any, @Response({passthrough : true})
-                                             res): Promise<StreamableFile> {
+  async getDatabaseFileById(@Req() req: any,
+          @Response({passthrough : true}) res): Promise<StreamableFile> {
     const userId = req.session.userId;
     const avatarId = await this.userService.getAvatarId(userId);
-    if (avatarId === null)
-      return null;
+    if (!avatarId)
+      throw new NotFoundException('Avatar not found');
     const file = await this.databaseFilesService.getFileById(avatarId);
+    if (!file)
+      throw new NotFoundException('Avatar not found');
     const stream = Readable.from(file.data);
     res.set({
       'Content-Type' : 'image',
@@ -104,14 +104,16 @@ export class UsersController {
     return new StreamableFile(stream);
   }
 
-  @Get('avatar/:id')
+  @Get('avatar/:id') // TODO uservalidation
   @UseGuards(SessionGuard)
-  async getAvatarForUSer(@Param('id') id: number, @Response({passthrough : true})
-                                             res): Promise<StreamableFile> {
+  async getAvatarForUSer(@Param('id') id: number,
+          @Response({passthrough : true}) res): Promise<StreamableFile> {
     const avatarId = await this.userService.getAvatarId(id);
-    if (avatarId === null)
-      return null;
+    if (!avatarId)
+      throw new NotFoundException('Avatar not found');
     const file = await this.databaseFilesService.getFileById(avatarId);
+    if (!file)
+      throw new NotFoundException('Avatar not found');
     const stream = Readable.from(file.data);
     res.set({
       'Content-Type' : 'image',
@@ -119,9 +121,6 @@ export class UsersController {
     });
     return new StreamableFile(stream);
   }
-
-
-  // Endpoint needed for chat
 
   @Get('id/:id')
   @UseGuards(SessionGuard)
