@@ -57,7 +57,13 @@ export class UsersService {
   }
 
   async getAvatarId(id: number) {
-    return (await this.userRepository.findOneBy({id : id})).avatarId; // returns all users with id: id
+    const user = await this.userRepository.findOneBy({id : id}).catch( // returns the first user with id: id
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
+    if (!user)
+      return null;
+    return user.avatarId;
   }
   
   setUsername(userId: number, username: string) {
@@ -82,11 +88,17 @@ export class UsersService {
   }
 
   signOutUser(userId: number){
-    return this.userRepository.update(userId, {isSignedUp: false});
+    return this.userRepository.update(userId, {isSignedUp: false}).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   logOutUser(userId: number){
-    return this.userRepository.update(userId, {status: userStatus.Offline});
+    return this.userRepository.update(userId, {status: userStatus.Offline}).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
   }
 
   findUsersByIntraname(intraName: string) {
@@ -157,19 +169,17 @@ export class UsersService {
     return this.createUser(dto);
   }
 
-  async addAvatar(id: number, imageBuffer: Buffer, filename: string) {
-    const avatarIdBefore = await this.getAvatarId(id);
+  async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+    const avatarIdBefore = await this.getAvatarId(userId);
     const avatar = await this.databaseFilesService.uploadDatabaseFile(
-        avatarIdBefore, imageBuffer, filename);
-    this.logger.log(avatar.id);
-    this.logger.log(avatar.filename);
+        avatarIdBefore, imageBuffer, filename); // save the avatar in the database.file
     if (avatarIdBefore === null){
       await this.userRepository.update(
-          id,
+          userId,
           {avatarId : avatar.id}).catch(
             (e) => {
               throw new BadRequestException(e.message);
-            }); // save the id of the avatar in user repository
+            }); // save the id of the avatar in user repository (only with new avatar id)
     }
     return avatar;
   }
