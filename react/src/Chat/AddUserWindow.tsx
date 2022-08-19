@@ -51,7 +51,8 @@ class AddUserWindow extends React.Component<AddUserWindowProps, AddUserWindowSta
 
     async addMember() {
 		return await fetch(get_backend_host() + `/channels/${this.props.activeChannel}/member/${this.state.selectedMember}`, { 
-            method: 'PUT'
+            method: 'PUT',
+			credentials: 'include',
         })
         .then(async (response) => {
             const json = await response.json();
