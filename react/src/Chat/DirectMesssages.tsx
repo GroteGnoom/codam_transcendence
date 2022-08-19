@@ -164,7 +164,6 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
         );
     }
 
-
     render(){
         const excludeCurrentChats = this.state.users.filter((user) =>
             !this.state.chats.find((chat) => chat.displayName === user.username) && // only display users you dont already have dm with

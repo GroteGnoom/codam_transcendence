@@ -39,7 +39,6 @@ function App() {
 
 	return (
 		<ThemeProvider theme={pinkTheme}>
-		 	Status websocket connected: {statusWebSocket ? "YES": "NO"}
 			<Routes>
 				<Route path={"/"} element={<Home statusWebsocket={statusWebSocket} setStatusWebsocket={setStatusWebsocket}/>} />
 				<Route path={"/pinkpong"} element={<PinkPong />} />

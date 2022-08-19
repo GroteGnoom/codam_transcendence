@@ -149,11 +149,8 @@ const Home = (props: HomeProps) => {
 	return (
 		<ThemeProvider theme={pinkTheme}>
 			<main>
-				{uniqueSession ?
-					null : <p>Pink Pong is already open in another browser</p>}
 				<div className="App">
 					<header className="App-header">
-						<ShowLogin />
 						<Link className="App-link" to={{ pathname: "/signup" }}><Button className="button" variant="contained">Log in / Sign up</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/classicWaitingroom" }}><Button disabled={!li} className="button" variant="contained">Classic Pong</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/PinkPongWaitingroom" }}><Button disabled={!li} className="button" variant="contained">Pink Pong</Button></Link>
