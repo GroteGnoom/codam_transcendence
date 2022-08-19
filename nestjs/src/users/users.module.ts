@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {User} from "src/typeorm";
+import {User, UserSecrets} from "src/typeorm";
 import {DatabaseFile} from '../typeorm/databaseFile.entity';
 
 import {UsersController} from './users.controller';
@@ -12,7 +12,7 @@ import { GameStats } from 'src/typeorm/gameStats.entity';
 
 @Module({
   imports : [
-    TypeOrmModule.forFeature([ User, DatabaseFile, GameStats ])
+    TypeOrmModule.forFeature([ User, UserSecrets, DatabaseFile, GameStats ])
   ],
   controllers : [ UsersController ],
   providers : [ uniqueUserConstraint, UsersService, DatabaseFilesService, StatusGateway ],

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
 import {DatabaseFile} from './databaseFile.entity';
 import { GameStats } from './gameStats.entity';
 
@@ -35,10 +35,6 @@ export class User {
 	@Column({ default: false })
 	public isSignedUp: boolean;
 
-	@Column({ nullable: true })
-	public twoFactorAuthenticationSecret?: string;
-	password: string;
-
 	@Column({ default: false })
 	public isTfaEnabled: boolean;
 
@@ -67,4 +63,16 @@ export class User {
 
 	@Column({ default: false })
 	inGame: boolean;
+}
+
+@Entity()
+export class UserSecrets {
+	@PrimaryColumn({
+		type: 'bigint',
+	})
+	id: number
+
+	@Column({ nullable: true })
+	public twoFactorAuthenticationSecret?: string;
+	password: string;
 }

@@ -59,7 +59,8 @@ export class TwoFactorAuthenticationController {
 	) {
 		const user = await this.userService.findUsersById(request.session.userId);
 		this.logger.log('received 2fa code: ' + twoFactorAuthenticationCode);
-		const secret = user.twoFactorAuthenticationSecret;
+		const secrets = await this.userService.getUserSecrets(request.session.userId)
+		const secret = secrets.twoFactorAuthenticationSecret;
 		this.logger.log("secret: ", secret);
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
 			twoFactorAuthenticationCode, secret
