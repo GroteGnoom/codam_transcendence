@@ -31,9 +31,7 @@ export class ChannelsGateway {
   server: Server;
 
   handleConnection(client: Socket, @Session() session) {
-    console.log("started chat server", session);
     if (!getUserFromClient(client, this.configService)) {
-      console.log("Redirect to home page");
       this.server.emit("redirectHomeChat", {"client": client.id});
     }
   }
@@ -77,7 +75,6 @@ export class ChannelsGateway {
   }
 
   afterInit(server: Server) {
-    console.log("started up websocket gateway");
   }
 }
 

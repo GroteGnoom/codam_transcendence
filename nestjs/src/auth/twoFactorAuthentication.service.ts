@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { authenticator } from 'otplib';
 import { User } from '../typeorm/user.entity';
 import { UsersService } from '../users/users.service';
@@ -8,7 +8,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TwoFactorAuthenticationService {
-	private readonly logger = new Logger(TwoFactorAuthenticationService.name);
 	constructor (
 		private readonly usersService: UsersService,
 		private readonly configService: ConfigService
@@ -31,7 +30,6 @@ export class TwoFactorAuthenticationService {
 	}
 
 	public isTwoFactorAuthenticationCodeValid(twoFactorAuthenticationCode: string, secret: string) {
-		this.logger.log("token", twoFactorAuthenticationCode, "secret", secret);
 		return authenticator.verify({
 			token: twoFactorAuthenticationCode,
 			secret

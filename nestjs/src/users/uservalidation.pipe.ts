@@ -1,7 +1,6 @@
 import {
   ArgumentMetadata,
   Injectable,
-  Logger,
   PipeTransform,
   BadRequestException,
 } from '@nestjs/common';
@@ -25,10 +24,6 @@ export class UserValidationPipe implements PipeTransform {
   }
 
   async transform(values: any, metadata: ArgumentMetadata) {
-    // this.logger.log("-------value:" + values);
-    // this.logger.log("-------metadata.type:" + metadata.type);
-    // this.logger.log("-------metadata.metatype:" + metadata.metatype);
-    // this.logger.log("-------metadata.data:" + metadata.data);
     if (!metadata.type || !this.toValidate(metadata.metatype)) {
       return values;
     }

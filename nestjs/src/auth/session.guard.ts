@@ -7,7 +7,6 @@ export class SessionGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-	console.log('userId in guard: ', request.session.userId);
     return (request.session.logged_in);
   }
 }

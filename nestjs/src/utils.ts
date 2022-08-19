@@ -35,7 +35,6 @@ export function getUserFromClient(client: Socket, configService: ConfigService) 
 	const SID = cookieParser.signedCookie(cookie[name], secret)
 	userID = GlobalService.users.get(SID as string)
 	if (GlobalService.users.get(SID as string) != userID) {
-		console.log("session id's don't match, disconnecting");
 		client.disconnect();
 	}
 	return userID

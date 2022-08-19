@@ -10,7 +10,6 @@ import {
 	Get,
 	Body,
 	UnauthorizedException, HttpCode,
-	Logger,
 } from '@nestjs/common';
 import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
 import { Response, Request } from 'express';
@@ -29,7 +28,6 @@ export default RequestWithUser;
 @Controller('2fa')
 @UseInterceptors(ClassSerializerInterceptor)
 export class TwoFactorAuthenticationController {
-	private readonly logger = new Logger(TwoFactorAuthenticationController.name);
 	constructor(
 		private readonly twoFactorAuthenticationService: TwoFactorAuthenticationService,
 		private readonly userService: UsersService
@@ -58,18 +56,14 @@ export class TwoFactorAuthenticationController {
 		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
 	) {
 		const user = await this.userService.findUsersById(request.session.userId);
-		this.logger.log('received 2fa code: ' + twoFactorAuthenticationCode);
 		const secrets = await this.userService.getUserSecrets(request.session.userId)
 		const secret = secrets.twoFactorAuthenticationSecret;
-		this.logger.log("secret: ", secret);
 		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
 			twoFactorAuthenticationCode, secret
 		);
 		if (!isCodeValid) {
-			this.logger.log('2fa code is incorrect :(');
 			throw new UnauthorizedException('Wrong authentication code');
 		}
-		this.logger.log('2fa code is correct');
 		request.session.tfa_validated = true;
 		return await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 	}

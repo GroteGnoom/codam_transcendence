@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get, Logger, Param, Post,
+  Get, Param, Post,
   Put,
   Req, Response,
   StreamableFile,
@@ -24,14 +24,12 @@ import { request } from 'http';
 
 @Controller('users')
 export class UsersController {
-  private readonly logger = new Logger(UsersController.name);
   constructor(private readonly userService: UsersService,
               private readonly databaseFilesService: DatabaseFilesService) {};
 
   @Get()
   @UseGuards(SessionGuard)
   getUsers() {
-    this.logger.log('getting users\n');
     return this.userService.getUsers();
   }
 
@@ -132,7 +130,6 @@ export class UsersController {
   @UseGuards(SessionGuard)
   blockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;  
-    console.log("Blocking", blocker, blocked);
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 
@@ -140,7 +137,6 @@ export class UsersController {
   @UseGuards(SessionGuard)
   unblockUser(@Param('id') blocked: number, @Req() req: any) {
     const blocker = req.session.userId;
-    console.log("UNblocking", blocker, blocked);
     return this.userService.unblockUser(Number(blocker), Number(blocked));
   }
 
@@ -156,7 +152,6 @@ export class UsersController {
   @UseGuards(SessionGuard)
   friendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;
-    console.log("Befriending", userID, friend);
     return this.userService.friendUser(Number(userID), Number(friend));
   }
 
@@ -164,7 +159,6 @@ export class UsersController {
   @UseGuards(SessionGuard)
   unfriendUser(@Param('id') friend: number, @Req() req: any) {
     const userID = req.session.userId;  
-    console.log("UNfriending", userID, friend);
     return this.userService.unfriendUser(Number(userID), Number(friend));
   }
 
