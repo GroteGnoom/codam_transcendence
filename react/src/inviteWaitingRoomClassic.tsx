@@ -21,6 +21,9 @@ export default function InviteWaitingRoomClassic() {
         path: "/match-ws/socket.io"
     });
 
+    console.log("Player1 frontend: ", Number(Player1));
+    console.log("Player2 frontend: ", Number(Player2));
+
     webSocket.current.emit("loggedIn", {
         "Player1": Number(Player1),
         "Player2": Number(Player2),

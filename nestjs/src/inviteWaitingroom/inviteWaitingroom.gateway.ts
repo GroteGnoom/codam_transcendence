@@ -10,11 +10,23 @@ import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { MatchService } from '../match/match.service';
 import { UsersService } from 'src/users/users.service';
 
-var game = {
-  "user": 0,
-  "Player1": 0,
-  "Player2": 0,
-  "PinkPong": false
+class Game {
+  constructor(
+    user:number,
+    Player1:number,
+    Player2:number,
+    PinkPong:boolean,
+
+    ) {
+      this.user = user;
+      this.Player1 = Player1;
+      this.Player2 = Player2;
+      this.PinkPong = PinkPong;
+    };
+  user: number;
+  Player1: number;
+  Player2: number;
+  PinkPong: boolean;
 }
 
 @WebSocketGateway({
@@ -34,7 +46,7 @@ export class InviteWaitingRoomGateway {
     console.log("invite gateway constructor");
   }
 
-  waitingUsers = new Set<typeof game>;
+  waitingUsers = new Array<Game>;
   user: number = 0;
   Player1: number = 0;
   Player2: number = 0;
@@ -55,11 +67,11 @@ export class InviteWaitingRoomGateway {
   @SubscribeMessage('playerLeftInvite')
   async handlePlayerLeavesInvite(client: Socket, payload: any): Promise<void> {
     if (getUserFromClient(client, this.configService)) {
-      const obj = [...this.waitingUsers].find(obj => obj.user === getUserFromClient(client, this.configService));
-      this.waitingUsers.delete(obj);
+      const obj = [...this.waitingUsers].findIndex(obj => obj.user === getUserFromClient(client, this.configService));
+      this.waitingUsers.splice(obj);
     }
     this.Player1 = 0;
-    console.log("Left: ", this.waitingUsers.size);
+    console.log("Left: ", this.waitingUsers.length);
   }
 
   @SubscribeMessage('loggedIn')
@@ -67,9 +79,9 @@ export class InviteWaitingRoomGateway {
     let user:number = await getUserFromClient(client, this.configService);
     if (!user) {
       console.log("Redirect to home page");
-      this.server.emit("redirectHomeInvite", {"client": client.id});
+      await this.server.emit("redirectHomeInvite", {"client": client.id});
     } else {
-      this.waitingUsers.forEach((game) => {
+      await this.waitingUsers.forEach((game) => {
         if (Number(user) === Number(game.user))
           this.alreadyExists = true;
       });
@@ -92,28 +104,23 @@ export class InviteWaitingRoomGateway {
   async handleLoggedInInvite(client: Socket, payload: any): Promise<void> {
     console.log("Emit received");
     let user:number = await getUserFromClient(client, this.configService);
-    game.user = user;
-    game.Player1 = payload.Player1;
-    game.Player2 = payload.Player2;
-    game.PinkPong = payload.PinkPong;
-    this.waitingUsers.add(game);
-    console.log("Pushed user");
-    console.log("PinkPong game: ", game.PinkPong);
-    console.log("Player1 game: ", game.Player1);
-    console.log("Player2 game: ", game.Player2);
+    this.waitingUsers.push(new Game(user, payload.Player1, payload.Player2, payload.PinkPong));
+    console.log("WaitingUsers after push: ", this.waitingUsers);
   }
 
   async checkWaitingRoom() {
-    this.waitingUsers.forEach((game) => {
+    this.waitingUsers.forEach(async (game) => {
         if ((Number(this.user) === Number(game.Player1) || Number(this.user) === Number(game.Player2)) 
           && Number(game.Player1) === Number(this.Player1) && Number(game.Player2) === Number(this.Player2) 
             && Boolean(this.PinkPong) === Boolean(game.PinkPong)) {
-          this.server.emit("found2PlayersInvite", {
+          await this.server.emit("found2PlayersInvite", {
             "Player1": game.Player1,
             "Player2": game.Player2,
             "PinkPong": game.PinkPong
           });
-          this.waitingUsers.delete(game);
+          const obj = [...this.waitingUsers].findIndex(obj => obj === game);
+          await this.waitingUsers.splice(obj, 1);
+          console.log("WaitingUsers after splice: ", this.waitingUsers);
         }
       }
     );
