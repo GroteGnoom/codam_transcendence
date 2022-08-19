@@ -11,6 +11,7 @@ import {
   UseGuards,
   UnsupportedMediaTypeException,
   NotFoundException,
+  ParseIntPipe
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDto } from 'src/users/users.dtos';
@@ -85,7 +86,7 @@ export class UsersController {
                                       file.originalname);
   }
 
-  @Get('avatar') // TODO uservalidation
+  @Get('avatar')
   @UseGuards(SessionGuard)
   async getDatabaseFileById(@Req() req: any,
           @Response({passthrough : true}) res): Promise<StreamableFile> {
@@ -104,7 +105,7 @@ export class UsersController {
     return new StreamableFile(stream);
   }
 
-  @Get('avatar/:id') // TODO uservalidation
+  @Get('avatar/:id')
   @UseGuards(SessionGuard)
   async getAvatarForUSer(@Param('id') id: number,
           @Response({passthrough : true}) res): Promise<StreamableFile> {
@@ -122,23 +123,23 @@ export class UsersController {
     return new StreamableFile(stream);
   }
 
-  @Get('id/:id')
+  @Get('id/:id') // TODO user validation
   @UseGuards(SessionGuard)
-  findUser(@Param('id') id: number) {                 //need this endpoint to get owner name of a channel
+  findUser(@Param('id', ParseIntPipe) id: number) {                 //need this endpoint to get owner name of a channel
     return this.userService.findUsersById(Number(id));
   }
 
   @Put('block/:id') // TODO user validation
   @UseGuards(SessionGuard)
-  blockUser(@Param('id') blocked: number, @Req() req: any) {
-    const blocker = req.session.userId;  
+  blockUser(@Param('id', ParseIntPipe) blocked: number, @Req() req: any) {
+    const blocker = req.session.userId;
     console.log("Blocking", blocker, blocked);
     return this.userService.blockUser(Number(blocker), Number(blocked));
   }
 
   @Put('unblock/:id') // TODO user validation
   @UseGuards(SessionGuard)
-  unblockUser(@Param('id') blocked: number, @Req() req: any) {
+  unblockUser(@Param('id', ParseIntPipe) blocked: number, @Req() req: any) {
     const blocker = req.session.userId;
     console.log("UNblocking", blocker, blocked);
     return this.userService.unblockUser(Number(blocker), Number(blocked));

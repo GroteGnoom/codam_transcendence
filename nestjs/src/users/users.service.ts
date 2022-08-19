@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, Logger, Body } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, Body, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ValidatorConstraint
 } from 'class-validator';
+import { NotFoundError } from 'rxjs';
 import { User, UserSecrets } from 'src/typeorm';
 import { GameStats } from 'src/typeorm/gameStats.entity';
 import { UserDto } from 'src/users/users.dtos';
@@ -74,17 +75,31 @@ export class UsersService {
     return user.avatarId;
   }
   
-  setUsername(userId: number, username: string) {
-    if (this.usernameAlreadyExists(userId, username))
-      throw new BadRequestException('account with this username already exists');
-    return this.userRepository.update(userId, {username : username});
-  }
+  // setUsername(userId: number, username: string) {
+  //   if (this.usernameAlreadyExists(userId, username))
+  //     throw new BadRequestException('account with this username already exists');
+  //   return this.userRepository.update(userId, {username : username});
+  // }
 
-  findUsersById(id: number) {
-    return this.userRepository.findOne( { // returns first user with id: id
+  async findUsersById(id: number) {
+    const user = await this.userRepository.findOne( { // returns first user with id: id
       where: { id : id },
       relations: ['friends', 'gameStats']
-    });
+    }).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
+    if (!user)
+      throw new NotFoundException('user not found');
+    return user;
+    // return this.userRepository.findOne( { // returns first user with id: id
+    //   where: { id : id },
+    //   relations: ['friends', 'gameStats']
+    // }).catch(
+    //   (e) => {
+    //     throw new BadRequestException(e.message);
+    //     // throw new NotFoundException('User not found');
+    //   });
   }
 
   findUsersByName(username: string) {
@@ -105,9 +120,9 @@ export class UsersService {
       });
   }
 
-  findUsersByIntraname(intraName: string) {
-    return this.userRepository.findOne({ where: {intraName : intraName} });
-  }
+  // findUsersByIntraname(intraName: string) {
+  //   return this.userRepository.findOne({ where: {intraName : intraName} });
+  // }
 
   async signUpUser(userId: number, username: string) {
     if (await this.usernameAlreadyExists(userId, username))
@@ -201,12 +216,15 @@ export class UsersService {
   async blockUser(blocker: number, blocked: number) {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
-    });
+    }).catch(
+      () => {
+        throw new NotFoundException('User not found');
+      });
     if (user.blockedUsers.includes(blocked)) {
       return user;
     }
     user.blockedUsers.push(blocked);
-    return this.userRepository;
+    return this.userRepository.save(user);
   }
 
   async unblockUser(blocker: number, blocked: number) {
