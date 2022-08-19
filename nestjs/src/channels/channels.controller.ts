@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe, ParseIntPipe } from '@nestjs/common';
 import { SessionGuard } from 'src/auth/session.guard';
 import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
@@ -37,7 +37,7 @@ export class ChannelsController {
 	}
 
     @Post('dm/:id')
-    async createDirectMessage(@Req() req: any, @Param('id') other: number) {
+    async createDirectMessage(@Req() req: any, @Param('id', ParseIntPipe) other: number) {
         const userID = req.session.userId;
         return this.channelsService.createDirectMessage(userID, other);
     }
@@ -49,11 +49,6 @@ export class ChannelsController {
 		return this.channelsService.updateChannel(createChannelDto, userID);
 	}
 
-    // @Delete(':name')
-    // removeChannel(@Param('name') name: string) {        
-    //     return this.channelsService.removeChannelByName(name);
-    // }
-
     @Put(':name/admin/:id')
     async addAdminToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
@@ -61,7 +56,7 @@ export class ChannelsController {
     }
 
     @Delete(':name/admin/:id')
-    demoteAdmin(@Param('name') name: string, @Param('id') admin: number, @Req() req: any) {
+    demoteAdmin(@Param('name') name: string, @Param('id', ParseIntPipe) admin: number, @Req() req: any) {
         const userID = req.session.userId;
         return this.channelsService.demoteAdmin(name, Number(admin), userID);
     }
@@ -72,7 +67,7 @@ export class ChannelsController {
 	}
 
     @Put(':name/member/:id')
-    async addMemberToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newMember: number) {
+    async addMemberToChannel(@Res() res: any, @Param('name') name: string, @Param('id', ParseIntPipe) newMember: number) {
         const channel = await this.channelsService.addMemberToChannel(name, Number(newMember));
         if (!channel) {
             throw new NotFoundException('Channel not found');
@@ -102,13 +97,13 @@ export class ChannelsController {
     }
 
     @Delete(':name/member/:id')
-    removeMemberFromChannel(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
+    removeMemberFromChannel(@Req() req: any, @Param('name') name: string, @Param('id', ParseIntPipe) member: number) {
         const userID = req.session.userId;
         return this.channelsService.removeMemberFromChannel(name, Number(member), userID);
     }
 
     @Put(':name/mute/:id')
-    async muteMember(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
+    async muteMember(@Req() req: any, @Param('name') name: string, @Param('id', ParseIntPipe) member: number) {
         const userID = req.session.userId;
         return this.channelsService.muteMemberInChannel(name, Number(member), userID);
     }
@@ -120,7 +115,7 @@ export class ChannelsController {
     }
 
     @Put(':name/ban/:id')
-    async banMember(@Req() req: any, @Param('name') name: string, @Param('id') member: number) {
+    async banMember(@Req() req: any, @Param('name') name: string, @Param('id', ParseIntPipe) member: number) {
         const userID = req.session.userId;
         return this.channelsService.banMemberFromChannel(name, Number(member), userID);
     }

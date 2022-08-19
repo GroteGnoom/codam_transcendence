@@ -3,6 +3,7 @@ import {
 	Get,
 	Param,
 	UseGuards,
+    ParseIntPipe,
 } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { SessionGuard } from '../auth/session.guard';
@@ -14,7 +15,7 @@ export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
     @Get('history/:id')
-    getMatchHistory(@Param('id') playerID: number) {
+    getMatchHistory(@Param('id', ParseIntPipe) playerID: number) {
         return this.matchService.getMatchHistory(playerID);
     }
 
@@ -24,7 +25,7 @@ export class MatchController {
     }
 
     @Get('ranking/:id')
-    getRanking(@Param('id') playerID: number) {
+    getRanking(@Param('id', ParseIntPipe) playerID: number) {
         return this.matchService.getRanking(Number(playerID));
     }
 }

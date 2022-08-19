@@ -105,7 +105,7 @@ export class UsersController {
 
   @Get('avatar/:id')
   @UseGuards(SessionGuard)
-  async getAvatarForUSer(@Param('id') id: number,
+  async getAvatarForUSer(@Param('id', ParseIntPipe) id: number,
           @Response({passthrough : true}) res): Promise<StreamableFile> {
     const avatarId = await this.userService.getAvatarId(id);
     if (!avatarId)
