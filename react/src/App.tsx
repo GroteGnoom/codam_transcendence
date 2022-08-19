@@ -12,9 +12,8 @@ import PinkPong from './PinkPong';
 import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import InviteWaitingRoomClassic from './inviteWaitingRoomClassic';
 import InviteWaitingRoomPinkPong from './inviteWaitingRoomPinkPong';
-import QR from './QR';
 import { Signup } from './Signup';
-import { get_backend_host, userStatus } from './utils';
+import { get_backend_host } from './utils';
 import { io } from 'socket.io-client';
 import Leaderboard from './account/Leaderboard';
 import Spectate from './Spectate';
@@ -23,7 +22,6 @@ const pinkTheme = createTheme({ palette: { primary: pink } })
 
 
 function App() {
-	// const statusWebSocket: any = useRef(null); // useRef creates an object with a 'current' property
 	const [statusWebSocket, setStatusWebsocket] = useState(null);
 
 	useEffect(() => {
