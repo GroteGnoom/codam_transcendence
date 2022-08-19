@@ -325,7 +325,7 @@ export function Account() {
                     // startIcon={<PersonOutlineSharpIcon />}
                     onClick={() => saveUser()}
                     > Save changes </Button>
-                <Link className={"App-link"} to={{ pathname: "/userinfo/" + userId.toString() }}><Button className="item" variant="contained">My profile</Button></Link>
+                <Link className={"App-link"} to={{ pathname: "/userinfo/" + userId }}><Button className="item" variant="contained">My profile</Button></Link>
             </div>
         )
     }
