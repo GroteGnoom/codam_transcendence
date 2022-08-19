@@ -67,12 +67,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
 			console.log("after state set:", this.state.activeMatches)
 			this.setState({activeMatchesArray: Array.from(this.state.activeMatches)});
 		});
-		// if (this.state.activeMatches.length > 0) {
-		// 	this.setState({activeMatchesArray: Array.from(this.state.activeMatches)});
-		// 	this.state.activeMatchesArray.map((game) => {
-		// 		console.log('game:', game);
-		// 	});
-		// }
 	}
 
     async getCurrentUser() {
@@ -318,22 +312,17 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
                 { el.inGame && el.status==="online" &&
                     <IconButton
                     color="secondary" >
-                        <SportsTennisIcon fontSize='small'/>
+                        <Link to={{ pathname:`/pinkpong/${game}`} } style={{ color: '#be02cf' }}>
+                            <SportsTennisIcon fontSize='small'/>
+                        </Link>
                     </IconButton>
                 }
 
                 <ListItemText >
                     <Typography variant="body1">
-                        { el.inGame && el.status==="online" &&
-                            <Link to={{ pathname:`/pinkpong/${game}`} } style={{ color: '#e91e63' }}>
-                                {`${el.username}`}
-                            </Link>
-                        }
-                        { !el.inGame &&
-                            <Link to={{ pathname:`/userinfo/${el.id}`} } style={{ color: '#e91e63' }}>
-                                {`${el.username}`}
-                            </Link>
-                        }
+                        <Link to={{ pathname:`/userinfo/${el.id}`} } style={{ color: '#e91e63' }}>
+                            {`${el.username}`}
+                        </Link>
                     </Typography>
                 </ListItemText>         
             </ListItem> 
