@@ -11,15 +11,16 @@ TODOS
 curl -X POST http://f1r1s16.codam.nl:5000/users/create -H "Content-Type: application/json" -d '{"username": "bla", "intraname": "ta"}'
 curl -X POST http://f1r1s16.codam.nl:5000/users/avatar -H "Content-Type: application/json" -d '{"username": "bla"}'
 curl -X PUT http://f1r1s16.codam.nl:5000/users/block/bla
-[ ] whenever accepting a parameter as number, check this
 curl -X PUT http://f1r1s16.codam.nl:5000/users/updateuser -H "Content-Type: application/json" -d '
 {"isTfaEnabled": true, "username": "1234"}'
+[ ] whenever accepting a parameter as number, check this
 [ ] userinfo: alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if statements)
+[ ] delete functions not needed
+[ ] save secret only when save user, not when qr code created
 
 [ ] add useguard to all endpoints
 [ ] password error channels
 [V] open leaderboard: Uncaught TypeError: Cannot read properties of null (reading 'id') in leaderboard.tsx:64
-[ ] save secret only when save user, not when qr code created
 the backend should not send sensitive userdata about other users
 
 maybe(if all the important things are done):
