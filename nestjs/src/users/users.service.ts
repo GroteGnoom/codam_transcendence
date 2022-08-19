@@ -1,9 +1,6 @@
-import { BadRequestException, Injectable, Logger, Body, NotFoundException } from '@nestjs/common';
+
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  ValidatorConstraint
-} from 'class-validator';
-import { NotFoundError } from 'rxjs';
 import { User, UserSecrets } from 'src/typeorm';
 import { GameStats } from 'src/typeorm/gameStats.entity';
 import { UserDto } from 'src/users/users.dtos';
@@ -13,7 +10,6 @@ import { DatabaseFilesService } from './databaseFiles.service';
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
   constructor(
       @InjectRepository(User) private readonly userRepository: Repository<User>,
       @InjectRepository(UserSecrets) private readonly userSecretRepository: Repository<UserSecrets>,
@@ -36,8 +32,6 @@ export class UsersService {
   async createUser(body: UserDto) {
     const gameStats = this.gameStatsRepository.create()
     const newUser = await this.userRepository.create({...body, gameStats: gameStats});
-	console.log('newUser: ', newUser);
-	console.log('body: ', body);
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
 		throw new BadRequestException('account with this username already exists');
 	const savedUser = await this.userRepository.save(newUser).catch(
@@ -144,16 +138,6 @@ export class UsersService {
   }
 
   async setTwoFactorAuthenticationSecret(secret: string, userId: number) {
-    this.logger.log("called setTwoFactorAuthenticationSecret");
-    /*
-    const user = {
-            username: "testName",
-            intraName: "testIntra",
-            isActive: true,
-    }
-    const newUser = this.userRepository.create(user);
-    this.userRepository.save(newUser);
-*/
     return this.userSecretRepository.update(userId,
                                       {twoFactorAuthenticationSecret : secret});
   }

@@ -1,7 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import {
 	Injectable,
-	Logger,
 } from '@nestjs/common';
 import { Strategy } from 'passport-oauth2';
 import { stringify } from 'querystring';
@@ -14,9 +13,7 @@ const callbackURL = get_backend_host() + '/auth/ft';
 @Injectable()
 export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 {
-	private readonly logger = new Logger(FtStrategy.name);
 	constructor(
-		//private authService: AuthService,
 		private httpService: HttpService,
 		private configService: ConfigService,
 	) {
@@ -51,22 +48,12 @@ export class FtStrategy extends PassportStrategy(Strategy, 'ft')
 				callbackURL,
 		};
 		super(block);
-		this.logger.log('FtStrategy constructed\n');
-		this.logger.log('am i local?', process.env.AMILOCAL);
-		this.logger.log('hostname: ', process.env.MYHOSTNAME);
-		this.logger.log('callback url: ', callbackURL);
-		this.logger.log('clientID: ', client_id);
-		this.logger.log('clientSecret: ', client_secret);
 	}
 
 	async validate ( accessToken: string): Promise<string> {
-		this.logger.log('validate is called\n');
 		const resp = await this.httpService .get('https://api.intra.42.fr/v2/me', {
-			//this.httpService .get('https://api.intra.42.fr/v2/users', {
 			headers: { Authorization: `Bearer ${accessToken}` },
 		}).toPromise();
-
-		this.logger.log("validation result:", resp.data.login);
 
 		return resp.data.login;
 

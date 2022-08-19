@@ -33,7 +33,6 @@ export class ChannelsController {
 	@UsePipes(new ValidationPipe({stopAtFirstError: true}))   //validates body (not empty etc)
 	createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req: any) {
         const userID = req.session.userId;
-        console.log("user id: ", userID);
 		return this.channelsService.createChannel(createChannelDto, userID);
 	}
 
@@ -99,7 +98,6 @@ export class ChannelsController {
     @Delete(':name/member/self')
     removeSelfFromChannel(@Req() req: any, @Param('name') name: string) {
         const userID = req.session.userId;
-        console.log("Removing self from channel")
         return this.channelsService.leaveFromChannel(name, userID);
     }
 

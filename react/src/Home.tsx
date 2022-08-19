@@ -10,39 +10,6 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Alert } from '@mui/m
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
-interface LoginState {
-	li: boolean;
-}
-
-interface LoginProps {
-}
-class ShowLogin extends React.Component<LoginProps, LoginState> {
-	constructor(props: LoginProps) {
-		super(props);
-		this.state = {
-			li: false,
-		}
-	}
-	getLiString() {
-		if (!this.state.li)
-			return "not";
-		return "";
-	}
-	async componentDidMount() {
-		console.log("hostname:", window.location.hostname);
-		console.log("uri:", window.location.hostname + ":5000/auth/amiloggedin");
-		//const li =  fetch("http://" + window.location.hostname + ":5000/auth/amiloggedin", { 
-		const li = fetch(get_backend_host() + "/auth/amiloggedin", {
-			method: 'GET',
-			credentials: 'include',
-		}).then(response => response.json());
-		this.setState({ li: await li });
-	}
-	render() {
-		return (<div>"You are {this.getLiString()} logged in"</div>);
-	}
-}
-
 interface HomeProps {
 	statusWebsocket: any;
 	setStatusWebsocket: any;
@@ -52,7 +19,6 @@ let achievement = "";
 
 const Home = (props: HomeProps) => {
 	const [li, setLi] = useState(false);
-	const [uniqueSession, setUniqueSession] = useState(false);
 	let navigate = useNavigate();
 	let player = -1;
 
@@ -78,17 +44,6 @@ const Home = (props: HomeProps) => {
 
 	if (webSocket.current)
 		webSocket.current.on("achievement", setAchievementEvent) // subscribe on backend events
-
-	//backend calls
-	async function getUniqueSession() {
-		return await fetch(get_backend_host() + "/auth/uniqueSession", {
-			method: "GET",
-			credentials: 'include',
-		}).then(response => response.json())
-			.then((response) => {
-				setUniqueSession(response);
-			})
-	}
 
 	async function signOutUser() {
 		return await fetch(get_backend_host() + "/users/signoutuser", {
@@ -142,7 +97,6 @@ const Home = (props: HomeProps) => {
 		}); // open websocket connection with backend
 
 		getLoggedIn();
-		getUniqueSession();
 	}, []); // will only be called on initial mount and unmount
 
 

@@ -1,9 +1,8 @@
-import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, MenuItem, Select, SelectChangeEvent, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import React from 'react';
 import { Channel } from './Chat.types';
 import AddIcon from '@mui/icons-material/Add';
 import { get_backend_host } from '../utils';
-import { Link } from "react-router-dom";
 
 
 interface DirectMessageProps { 

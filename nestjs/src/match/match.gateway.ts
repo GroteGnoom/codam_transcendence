@@ -393,7 +393,6 @@ export class MatchGateway {
       if (emitMessage.winner === 1 || emitMessage.winner === 2) {
         this.matchService.storeResult(emitMessage.matchID, emitMessage.scoreP1, emitMessage.scoreP2, this.server);
         this.currentGameStates.delete(matchID);
-		console.log('emitting games at loop, game ended');
 		this.emitGames();
       }
     });

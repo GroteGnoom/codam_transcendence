@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, Logger} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {
   registerDecorator,
   ValidationArguments,
