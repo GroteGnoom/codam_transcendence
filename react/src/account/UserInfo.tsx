@@ -75,7 +75,11 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             credentials: 'include',
         })
         .then(async (response) => {            
-            await response.json();
+            const json = await response.json();
+            if (response.ok)
+                return json;
+        })
+        .then((response) => {
             if (response.ok)
                 this.setState({ currentUser: response });
         });
