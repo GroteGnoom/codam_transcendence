@@ -196,7 +196,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         console.log("update Game Status: ")
         console.log(socketMessage)
         user.friends.forEach((el: any) => {
-            if (socketMessage.userID === Number(el.id)){
+            if (Number(socketMessage.userID) === Number(el.id)){ // userID via invite is a string, so cast necessary
                 el.inGame = socketMessage.inGame;
                 this.setState( { user : user } );
             }
@@ -361,7 +361,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         .then(async (response) => {            
             await response.json();
             if (response.ok){
-                console.log("yes this is goooddd id");
                 this.validUserId = true;
             }
             this.started = true;
