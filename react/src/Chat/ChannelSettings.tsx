@@ -72,7 +72,7 @@ class ChannelSettings extends React.Component<ChannelSettingsProps, ChannelSetti
     }
 
     async saveSettings() {
-        return await fetch(get_backend_host() + `/channels/update/${this.props.channel.name}`, { // todo make update endpoint
+        return await fetch(get_backend_host() + `/channels/update/${this.props.channel.name}`, {
             method: 'PUT',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -395,9 +395,7 @@ class MemberSettings extends React.Component<MemberSettingsProps, MemberSettings
         .then( () => this.props.handleClose() )
 	}
 
-    componentDidMount() { 
-        console.log("member settings")
-    }
+    componentDidMount() {}
 
     render() {
         const buttons = [

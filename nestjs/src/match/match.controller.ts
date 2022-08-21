@@ -6,7 +6,6 @@ import {
 import { SessionGuard } from '../auth/session.guard';
 import { MatchService } from './match.service';
 
-
 @UseGuards(SessionGuard)
 @Controller('match')
 export class MatchController {

@@ -27,17 +27,23 @@ export class MatchService {
     async storeResult(matchID : number, scoreP1 : number, scoreP2 : number, server: Server) {
         const match = await this.matchRepository.findOne({
             where: {id: matchID}
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve match');
+		});
 
         let player_1_stats = await this.gameStatsRepository.findOne({
             where: { user: { id: match.player_1.id }}
-        })
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve player stats');
+		});
         if (!player_1_stats)
             player_1_stats = this.gameStatsRepository.create({ user: {id: match.player_1.id }, wins:0, losses:0 })
 
         let player_2_stats = await this.gameStatsRepository.findOne({
             where: { user: { id: match.player_2.id }}
-        })
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve player stats');
+		});
         if (!player_2_stats)
             player_2_stats = this.gameStatsRepository.create({ user: {id: match.player_2.id }, wins:0, losses:0 })
         if (player_1_stats.wins + player_1_stats.losses === 0) {
@@ -87,7 +93,7 @@ export class MatchService {
 		});
     }
 
-    getMatchHistory(player_id : number) {      //returns array of match entities
+    async getMatchHistory(player_id : number) {      //returns array of match entities
         return this.matchRepository.find({ 
             where : [
                 { player_1 : {id : player_id} },    // OR
@@ -128,7 +134,6 @@ export class MatchService {
         this.userRepository.save(player_2).catch( (e) => {
 			throw new BadRequestException('could not save player 2');
 		});
-
 
         this.statusGateway.inGameStatus(player_1_id, status) // currently in or out a game
         this.statusGateway.inGameStatus(player_2_id, status)  

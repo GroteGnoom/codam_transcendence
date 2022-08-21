@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { SessionGuard } from 'src/auth/session.guard';
 import { CreateChannelDto, JoinChannelDto } from 'src/channels/channels.dtos';
 import { ChannelsService } from './channels.service';
@@ -37,7 +37,7 @@ export class ChannelsController {
 	}
 
     @Post('dm/:id')
-    async createDirectMessage(@Req() req: any, @Param('id', ParseIntPipe) other: number) {
+    createDirectMessage(@Req() req: any, @Param('id', ParseIntPipe) other: number) {
         const userID = req.session.userId;
         return this.channelsService.createDirectMessage(userID, other);
     }
@@ -50,9 +50,9 @@ export class ChannelsController {
 	}
 
     @Put(':name/admin/:id')
-    async addAdminToChannel(@Res() res: any, @Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
+    addAdminToChannel(@Param('name') name: string, @Param('id') newAdmin: number, @Req() req: any) {
         const userID = req.session.userId;
-        const channel = await this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
+        return this.channelsService.addAdminToChannel(name, Number(newAdmin), Number(userID));
     }
 
     @Delete(':name/admin/:id')
@@ -67,24 +67,19 @@ export class ChannelsController {
 	}
 
     @Put(':name/member/:id')
-    async addMemberToChannel(@Res() res: any, @Param('name') name: string, @Param('id', ParseIntPipe) newMember: number) {
-        const channel = await this.channelsService.addMemberToChannel(name, Number(newMember));
-        if (!channel) {
-            throw new NotFoundException('Channel not found');
-        } else {
-            res.status(HttpStatus.OK).json(channel).send();
-        }
+    addMemberToChannel(@Param('name') name: string, @Param('id', ParseIntPipe) newMember: number) {
+        return this.channelsService.addMemberToChannel(name, Number(newMember));
     }
 
     @Get(':name/is-member')
-    async checkIfMember(@Req() req: any, @Param('name') name: string) {
+    checkIfMember(@Req() req: any, @Param('name') name: string) {
         const userID = req.session.userId;
         return this.channelsService.checkIfMember(name, userID);
     }
 
     @Put(':name/join')
     @UsePipes(new ValidationPipe({stopAtFirstError: true}))
-    async joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
+    joinChannel(@Req() req:any, @Param('name') name: string, @Body() joinChannelDto: JoinChannelDto) {
         const userID = req.session.userId;
         const password = joinChannelDto.password;
         return this.channelsService.joinChannel(name, userID, password);

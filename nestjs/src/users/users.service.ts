@@ -15,7 +15,9 @@ export class UsersService {
       @InjectRepository(UserSecrets) private readonly userSecretRepository: Repository<UserSecrets>,
       @InjectRepository(GameStats) private readonly gameStatsRepository: Repository<GameStats>,
       private readonly databaseFilesService: DatabaseFilesService,
-  ) {}
+  ) {
+    this.userRepository.update({}, { status: userStatus.Offline, inGame: false })  //reset status of user in database in case server was taken down
+  }
 
   async usernameAlreadyExists(userId: number, username: string) {
     // if (userId === undefined || userId === null || username === undefined || username === null) // TODO: kan dit uit na betere validators??
@@ -53,10 +55,12 @@ export class UsersService {
 	  });
   }
 
-  getUserSecrets(id: number) {
+  async getUserSecrets(id: number) {
 	  return this.userSecretRepository.findOne({
 		  where: { id : id },
-	  });
+	  }).catch( (e) => {
+			throw new BadRequestException('could not retrieve user secrets');
+		});
   }
 
   async getAvatarId(id: number) {
@@ -82,8 +86,10 @@ export class UsersService {
     return user;
   }
 
-  findUsersByName(username: string) {
-    return this.userRepository.findOne({ where: {username : username} });
+  async findUsersByName(username: string) {
+    return this.userRepository.findOne({ where: {username : username} }).catch( (e) => {
+			throw new BadRequestException('could not retrieve user');
+		});
   }
 
   async signOutUser(userId: number){
@@ -135,7 +141,9 @@ export class UsersService {
       name = await fetch("http://names.drycodes.com/1")
         .then(response => response.json())
         .then((response) => response[0]);
-      if (!(await this.userRepository.findOne({where: {username: name}})) && name.length <= 30)
+      if (!(await this.userRepository.findOne({where: {username: name}}).catch( (e) => {
+        throw new BadRequestException('could not retrieve user');
+      })) && name.length <= 30)
         unique = true;
     }
     return name;
@@ -172,74 +180,92 @@ export class UsersService {
   async setStatus(userId: number, status : userStatus){
     const user = await this.userRepository.findOne({
       where: { id: userId }
-    });
+    }).catch( (e) => {
+			throw new BadRequestException('could not retrieve user');
+		});
     if (!user)
-      return;
+      throw new BadRequestException('User does not exist'); 
     user.status = status;
-    return this.userRepository.save(user);
+    return this.userRepository.save(user).catch( (e) => {
+      throw new BadRequestException(e.message);
+    });
   }
 
   async blockUser(blocker: number, blocked: number) {
+    if (blocker === blocked)
+      throw new BadRequestException('Can not block self');
     const user = await this.userRepository.findOne({
       where: { id: blocker }
-    }).catch(
-      (e) => {
+    }).catch( (e) => {
         throw new BadRequestException(e.message);
       });
+    if(!user)
+      throw new BadRequestException('User does not exist'); 
     if (user.blockedUsers.includes(blocked)) {
       return user;
     }
     user.blockedUsers.push(blocked);
-    return this.userRepository.save(user);
+    return this.userRepository.save(user).catch( (e) => {
+      throw new BadRequestException(e.message);
+    });
   }
 
   async unblockUser(blocker: number, blocked: number) {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
-    }).catch(
-      (e) => {
+    }).catch( (e) => {
         throw new BadRequestException(e.message);
-      });
+    });
+    if (!user)
+      throw new BadRequestException('User does not exist'); 
     user.blockedUsers = user.blockedUsers.filter((id) => id != blocked);
-    return this.userRepository.save(user); 
+    return this.userRepository.save(user).catch( (e) => {
+      throw new BadRequestException(e.message);
+    });
   }
 
   async isBlocked(blocker: number, id: number) {
     const user = await this.userRepository.findOne({
       where: { id: blocker }
-    });
+    }).catch( (e) => {
+			throw new BadRequestException('could not retrieve user');
+		});
+    if (!user)
+      throw new BadRequestException('User does not exist'); 
     return (user.blockedUsers.includes(id));
   }
 
   async friendUser(userId: number, friend: number) {
+    if (userId === friend)
+      throw new BadRequestException('Can not friend self :(');
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    }).catch(
-      (e) => {
+    }).catch( (e) => {
         throw new BadRequestException(e.message);
       });
+    if (!user)
+      throw new BadRequestException('User does not exist'); 
     if (user.friends.map((user) => user.id).includes(friend)) {
       return user;
     }
     user.friends = [...user.friends, this.newFriend(friend)];
-    return this.userRepository.save(user).catch(
-      (e) => {
+    return this.userRepository.save(user).catch( (e) => {
         throw new BadRequestException(e.message);
-      });
+    });
   }
 
   async unfriendUser(userId: number, friend: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    }).catch(
-      (e) => {
+    }).catch( (e) => {
         throw new BadRequestException(e.message);
       });
+    if (!user)
+      throw new BadRequestException('User does not exist'); 
     user.friends = user.friends.filter((user) => Number(user.id) !== friend);
-    return this.userRepository.save(user).catch(
-      (e) => {
+    return this.userRepository.save(user).catch((e) => {
         throw new BadRequestException(e.message);
       });
   }
@@ -248,10 +274,11 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['friends']
-    }).catch(
-      (e) => {
+    }).catch( (e) => {
         throw new BadRequestException(e.message);
-      });
+    });
+    if (!user)
+      throw new BadRequestException('User does not exist'); 
     return (user.friends.map((user) => Number(user.id)).includes(friend))
   }
 
