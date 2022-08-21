@@ -1,16 +1,14 @@
+import { forwardRef, Inject, Session } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
+  WebSocketServer
 } from '@nestjs/websockets';
-import { Socket, Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { getUserFromClient, get_frontend_host } from 'src/utils';
 import { ChannelsService } from './channels.service';
 import { SocketMessage } from './message.dtos';
-import { ConfigService } from '@nestjs/config';
-import { forwardRef, Inject } from '@nestjs/common';
-import { getUserFromClient } from 'src/utils';
-import { get_frontend_host } from 'src/utils';
-import { Session } from '@nestjs/common';
 
 @WebSocketGateway({
   namespace: '/channels-ws', // https://stackoverflow.com/questions/66764826/nestjs-socket-io-serving-websockets-from-microservice-at-nested-path-instead-o

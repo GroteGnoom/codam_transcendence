@@ -1,11 +1,11 @@
-import {
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer
-  } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
 import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer
+} from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
 
 @WebSocketGateway({

@@ -3,7 +3,6 @@ import { Alert } from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
 import { pink } from '@mui/material/colors';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -11,16 +10,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import Paper from '@mui/material/Paper';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import FormData from 'form-data';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Account.css';
 import { get_backend_host, userStatus } from '../utils';
-import Switch from '@mui/material/Switch';
-import Typography from '@mui/material/Typography';
+import './Account.css';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 

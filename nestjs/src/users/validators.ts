@@ -1,12 +1,10 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
+  registerDecorator, ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
-import {UsersService} from './users.service';
+import { UsersService } from './users.service';
 
 @ValidatorConstraint({async : true})
 @Injectable()

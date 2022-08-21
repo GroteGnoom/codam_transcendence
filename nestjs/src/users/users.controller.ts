@@ -2,26 +2,19 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get, Param, Post,
+  Get, NotFoundException, Param, ParseIntPipe, Post,
   Put,
   Req, Response,
-  StreamableFile,
-  UploadedFile, UseInterceptors,
-  UsePipes,
-  UseGuards,
-  UnsupportedMediaTypeException,
-  NotFoundException,
-  ParseIntPipe
+  StreamableFile, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors,
+  UsePipes
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDto } from 'src/users/users.dtos';
 import { UsersService } from 'src/users/users.service';
 import { Readable } from 'stream';
-import { UserValidationPipe } from './uservalidation.pipe'
-import { DatabaseFilesService } from './databaseFiles.service';
-import { TwoFactorAuthenticationController } from 'src/auth/twoFactorAuthentication.controller';
 import { SessionGuard } from '../auth/session.guard';
-import { request } from 'http';
+import { DatabaseFilesService } from './databaseFiles.service';
+import { UserValidationPipe } from './uservalidation.pipe';
 
 @Controller('users')
 export class UsersController {

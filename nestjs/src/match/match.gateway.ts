@@ -1,3 +1,4 @@
+import { Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   SubscribeMessage,
@@ -6,9 +7,8 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { getUserFromClient, get_frontend_host } from 'src/utils';
-import { MatchService } from './match.service';
-import { Session } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
+import { MatchService } from './match.service';
 
 class gameState {
   constructor(

@@ -2,31 +2,29 @@ import { pink } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom";
+import { io } from 'socket.io-client';
 import { Account } from './account/Account';
+import Leaderboard from './account/Leaderboard';
 import UserInfo from './account/UserInfo';
 import './App.css';
 import Chat from './Chat/Chat';
 import ClassicWaitingRoom from './classicWaitingRoom';
 import Home from './Home';
-import PinkPong from './PinkPong';
-import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import InviteWaitingRoomClassic from './inviteWaitingRoomClassic';
 import InviteWaitingRoomPinkPong from './inviteWaitingRoomPinkPong';
+import PinkPong from './PinkPong';
+import PinkPongWaitingRoom from './PinkPongWaitingRoom';
 import { Signup } from './Signup';
-import { get_backend_host } from './utils';
-import { io } from 'socket.io-client';
-import Leaderboard from './account/Leaderboard';
 import Spectate from './Spectate';
+import { get_backend_host } from './utils';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
-
 
 function App() {
 	const [statusWebSocket, setStatusWebsocket] = useState(null);
 
 	useEffect(() => {
 		if (!statusWebSocket) {
-			console.log("Opening status websocket")
 			const socket = io(get_backend_host() + "/status-ws", {
 				withCredentials: true,
 				path: "/status-ws/socket.io" 

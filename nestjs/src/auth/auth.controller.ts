@@ -1,11 +1,9 @@
 import {
-	BadRequestException,
 	Controller,
-	Get, Redirect,
+	Get, Param, Redirect,
 	Req,
 	Res,
-	UseGuards,
-	Param,
+	UseGuards
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';

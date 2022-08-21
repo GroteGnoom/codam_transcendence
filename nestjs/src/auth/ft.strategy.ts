@@ -1,13 +1,13 @@
-import { PassportStrategy } from '@nestjs/passport';
+import { HttpService } from '@nestjs/axios';
 import {
-	Injectable,
+	Injectable
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-oauth2';
 import { stringify } from 'querystring';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-const util = require('node:util');
 import { get_backend_host } from 'src/utils';
+const util = require('node:util');
 const callbackURL = get_backend_host() + '/auth/ft';
 
 @Injectable()

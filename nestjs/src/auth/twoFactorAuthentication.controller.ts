@@ -1,23 +1,13 @@
 import {
-	ClassSerializerInterceptor,
-	Controller,
-	Header,
-	Post,
-	UseInterceptors,
-	Res,
-	UseGuards,
-	Req,
-	Get,
-	Body,
-	UnauthorizedException, HttpCode,
+	Body, ClassSerializerInterceptor,
+	Controller, Get, HttpCode, Post, Req, Res, UnauthorizedException, UseGuards, UseInterceptors
 } from '@nestjs/common';
-import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
+import { SessionGuard } from '../auth/session.guard';
 import { User } from '../typeorm/user.entity';
 import { UsersService } from '../users/users.service';
-import { TwoFactorAuthenticationDto } from './dto'
-import * as rawbody from 'raw-body';
-import { SessionGuard } from '../auth/session.guard';
+import { TwoFactorAuthenticationDto } from './dto';
+import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
  
 interface RequestWithUser extends Request {
   user: User;

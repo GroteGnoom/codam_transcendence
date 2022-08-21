@@ -1,9 +1,9 @@
-import { io } from "socket.io-client";
-import { get_backend_host } from './utils';
 import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Button from '@mui/material/Button';
+import { io } from "socket.io-client";
+import { get_backend_host } from './utils';
 
 interface SpectateProps {
 }

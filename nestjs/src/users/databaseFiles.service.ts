@@ -1,8 +1,7 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-
-import {DatabaseFile} from '../typeorm/databaseFile.entity';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DatabaseFile } from '../typeorm/databaseFile.entity';
 
 @Injectable()
 export class DatabaseFilesService {

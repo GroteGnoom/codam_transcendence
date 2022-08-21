@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Server } from 'socket.io';
 import { GameStats } from 'src/typeorm/gameStats.entity';
 import { Match } from 'src/typeorm/match.entity';
 import { User } from 'src/typeorm/user.entity';
 import { StatusGateway } from 'src/users/status.gateway';
 import { Repository } from 'typeorm';
-import { Server } from 'socket.io';
 
 @Injectable()
 export class MatchService {

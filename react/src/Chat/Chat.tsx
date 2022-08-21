@@ -1,13 +1,13 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
+import { get_backend_host } from "../utils";
 import ChannelList from './ChannelList';
 import ChannelSettings from './ChannelSettings';
 import ChatWindow from './ChatWindow';
 import DirectMessage from "./DirectMesssages";
-import { io } from "socket.io-client";
-import { get_backend_host } from "../utils";
-import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
 	const [channelsWebSocket, setChannelsWebsocket] = useState(null);

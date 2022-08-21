@@ -1,12 +1,10 @@
-import { 
-	Controller,
-	Get,
-	Param,
-	UseGuards,
-    ParseIntPipe,
+import {
+    Controller,
+    Get,
+    Param, ParseIntPipe, UseGuards
 } from '@nestjs/common';
-import { MatchService } from './match.service';
 import { SessionGuard } from '../auth/session.guard';
+import { MatchService } from './match.service';
 
 
 @UseGuards(SessionGuard)

@@ -86,14 +86,14 @@ export class UsersService {
     return this.userRepository.findOne({ where: {username : username} });
   }
 
-  signOutUser(userId: number){
+  async signOutUser(userId: number){
     return this.userRepository.update(userId, {isSignedUp: false}).catch(
       (e) => {
         throw new BadRequestException(e.message);
       });
   }
 
-  logOutUser(userId: number){
+  async logOutUser(userId: number){
     return this.userRepository.update(userId, {status: userStatus.Offline}).catch(
       (e) => {
         throw new BadRequestException(e.message);
