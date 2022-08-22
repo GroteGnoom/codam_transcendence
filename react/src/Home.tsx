@@ -44,13 +44,6 @@ const Home = (props: HomeProps) => {
 	if (webSocket.current)
 		webSocket.current.on("achievement", setAchievementEvent) // subscribe on backend events
 
-	async function signOutUser() {
-		return await fetch(get_backend_host() + "/users/signoutuser", {
-			method: "PUT",
-			credentials: 'include',
-		})
-	}
-
 	async function getLoggedIn() {
 		return await fetch(get_backend_host() + "/auth/amiloggedin/", {
 			method: "GET",
@@ -68,19 +61,6 @@ const Home = (props: HomeProps) => {
 				// }
 				setLi(json);
 			});
-	}
-
-	async function logOutUser() {
-		await fetch(get_backend_host() + "/users/logoutuser", {
-			method: "PUT",
-			credentials: 'include',
-		})
-		await fetch(get_backend_host() + "/auth/logout/", {
-			method: "GET",
-			credentials: 'include',
-		})
-		props.statusWebsocket.close() // this will set the user-status offline
-		getLoggedIn();
 	}
 
 	// effect hooks
@@ -111,8 +91,6 @@ const Home = (props: HomeProps) => {
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/spectate" }}><Button disabled={!li} className="button" variant="contained">Spectate</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/account" }}><Button disabled={!li} className="button" variant="contained">My account</Button></Link>
 						<Link className={!li ? "disabledLink" : "App-link"} to={{ pathname: "/leaderboard" }}><Button disabled={!li} className="button" variant="contained">Leaderboard</Button></Link>
-						<Button disabled={!li} className="button" onClick={() => signOutUser()} variant="contained">Sign out</Button>
-						<Button disabled={!li} className="button" onClick={() => logOutUser()} variant="contained">Log out</Button>
 					</header>
 				</div>
 			</main>
