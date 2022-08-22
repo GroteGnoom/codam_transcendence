@@ -1,8 +1,7 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-
-import {DatabaseFile} from '../typeorm/databaseFile.entity';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DatabaseFile } from '../typeorm/databaseFile.entity';
 
 @Injectable()
 export class DatabaseFilesService {
@@ -14,13 +13,17 @@ export class DatabaseFilesService {
   async uploadDatabaseFile(avatarId: number, dataBuffer: Buffer,
                            filename: string) {
     const newFile =
-        await this.databaseFilesRepository.create({filename, data : dataBuffer})
+        this.databaseFilesRepository.create({filename, data : dataBuffer})
     if (avatarId !== null) {
       await this.databaseFilesRepository.update(
-          avatarId, {filename : newFile.filename, data : newFile.data});
+          avatarId, {filename : newFile.filename, data : newFile.data}).catch( (e) => {
+            throw new BadRequestException('could not update databaseFilesRepository');
+          });
     }
     else {
-      await this.databaseFilesRepository.save(newFile);
+      await this.databaseFilesRepository.save(newFile).catch( (e) => {
+        throw new BadRequestException('could not save databaseFilesRepository');
+      });
     }
     return newFile;
   }

@@ -19,27 +19,28 @@ export class ChannelsService {
         private readonly channelGateway: ChannelsGateway,
         private readonly userService: UsersService ) {}
 
-    getChannels(userID: number){
-        return this.channelRepository.find({
-            where : [
-                {channelType: ChannelType.Private, members: [{user: {id: userID}}]},    // OR
-                {channelType: ChannelType.Protected},  //https://orkhan.gitbook.io/typeorm/docs/find-options
-                {channelType: ChannelType.Public}
+    async getChannels(userID: number){
+        return await this.channelRepository.find({
+            where: [
+                { channelType: ChannelType.Private, members: [{ user: { id: userID } }] },
+                { channelType: ChannelType.Protected },
+                { channelType: ChannelType.Public }
             ],
             order: {
                 name: "ASC" // "DESC"
             }
         }).catch( (e) => {
-			throw new BadRequestException('could not find channels');
+			throw new BadRequestException('could not get channels');
 		});
-;
     };
 
     async getChannelByName(name: string) {
         const channel = await this.channelRepository.findOne({
             where: {name: name},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve channel');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -47,17 +48,19 @@ export class ChannelsService {
         return channel;
     }
 
-    getChats(userID: number) { //gets direct messages
-        return this.channelRepository.find({
-            where: {channelType: ChannelType.dm, admins: [{id: userID}]},
+    async getChats(userID: number) { //gets direct messages
+        return await this.channelRepository.find({
+            where: { channelType: ChannelType.dm, admins: [{ id: userID }] },
             relations: ['members', 'admins']
         }).catch( (e) => {
-			throw new BadRequestException('could not find channels');
+			throw new BadRequestException('could not get channel');
 		});
     }
 
     async createChannel(createChannelDto: CreateChannelDto, userID: number) {
-        if (await this.channelRepository.findOne({where: {name: createChannelDto.name}})){
+        if (await this.channelRepository.findOne({where: {name: createChannelDto.name}}).catch( (e) => {
+			throw new BadRequestException('could not create channel');
+        })){
             throw new BadRequestException(`ChannelName ${createChannelDto.name} already exist.`);
         }
 
@@ -109,7 +112,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: createChannelDto.name},
             relations: ['admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not update channel');
+		});
         if (! channel ) {
             throw new NotFoundException('Channel not Found');
         }
@@ -130,16 +135,13 @@ export class ChannelsService {
 		});
     }
 
-    // removeChannelByName(name: string) {
-    //     this.memberRepository.delete({channel: {name: name}})   // first delete all channel member relations
-    //     return this.channelRepository.delete({name: name});     // then delete channel
-    // }
-
     async addAdminToChannel(channelName: string, newAdmin: number, requester: number) {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not add admin');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -153,8 +155,7 @@ export class ChannelsService {
             throw new BadRequestException('User is already admin');
         }
         const admins = [...channel.admins, {id: newAdmin}];
-        return this.channelRepository.save({name: channelName, admins: admins
-        }).catch( (e) => {
+        return await this.channelRepository.save({name: channelName, admins: admins }).catch( (e) => {
 			throw new BadRequestException('could not add admin');
 		});
     }
@@ -163,7 +164,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not demote admin');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -174,8 +177,7 @@ export class ChannelsService {
             throw new BadRequestException('Cannot remove owner from administators');
         }
         const admins = channel.admins.filter((user) => user.id != id)
-        return this.channelRepository.save({name: channelName, admins: admins
-        }).catch( (e) => {
+        return await this.channelRepository.save({name: channelName, admins: admins }).catch( (e) => {
 			throw new BadRequestException('could not demote admin');
 		});
     }
@@ -184,7 +186,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not add member to channel');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -198,8 +202,7 @@ export class ChannelsService {
             return channel;
         }
         const members = [...channel.members, this.newMember(newMember)];
-        return this.channelRepository.save({name: channelName, members: members
-        }).catch( (e) => {
+        return this.channelRepository.save({name: channelName, members: members }).catch( (e) => {
 			throw new BadRequestException('could not add member');
 		});
     }
@@ -208,7 +211,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve member');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }     
@@ -219,7 +224,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not check if muted');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -230,7 +237,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not join channel');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -244,8 +253,7 @@ export class ChannelsService {
             }
         }
         const members = [...channel.members, this.newMember(id)];
-        return this.channelRepository.save({name: channelName, members: members
-        }).catch( (e) => {
+        return this.channelRepository.save({name: channelName, members: members }).catch( (e) => {
 			throw new BadRequestException('could not join channel');
 		});
     }
@@ -254,7 +262,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not remove member from channel');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -269,8 +279,7 @@ export class ChannelsService {
         }
         const members = channel.members.filter((member) => member.user.id != id)
         const admins = channel.admins.filter((admin) => admin.id != id)
-        return this.channelRepository.save({name: channelName, members: members, admins: admins
-        }).catch( (e) => {
+        return this.channelRepository.save({name: channelName, members: members, admins: admins }).catch( (e) => {
 			throw new BadRequestException('could not remove member from channel');
 		});
     }
@@ -279,7 +288,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not leave channel');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -301,7 +312,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName},
             relations: ['members', 'admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not mute member');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -341,7 +354,7 @@ export class ChannelsService {
                 this.memberRepository.save(el).catch( (e) => {
 			throw new BadRequestException('could not mute member in channel');
 		})
-                this.channelGateway.broadcastUnmuteUser(el.channel.name, el.user.id);
+        this.channelGateway.broadcastUnmuteUser(el.channel.name, el.user.id);
             }
         })
       }
@@ -351,7 +364,9 @@ export class ChannelsService {
         const channel: Channel = await this.channelRepository.findOne({
             where: {name: channelName },
             relations: ['admins']
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not ban member');
+		});
         if (!channel) {
             throw new NotFoundException('Channel not found');
         }
@@ -361,8 +376,7 @@ export class ChannelsService {
         channel.bannedUsers.push(Number(id));
         return this.channelRepository.save(channel).catch( (e) => {
 			throw new BadRequestException('could not ban member from channel');
-		})
-; 
+		}); 
     }
 
     async addMessage(channel: string, sender: number, message: MessageDto) {
@@ -373,25 +387,32 @@ export class ChannelsService {
         }); // will create id and date for message
         const channelExist: Channel = await this.channelRepository.findOne({
             where: {name: channel }
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not add message');
+		});
         if (!channelExist) {
             throw new NotFoundException('Channel not found');
         }
         newMessage.channel = channel;
 		await this.messageRepository.save(newMessage).catch( (e) => {
 			throw new BadRequestException('could not add message channel');
-		})
-;
+		});
         return this.messageRepository.findOne({
             where: {id: newMessage.id},
-        });
+        }).catch( (e) => {
+			throw new BadRequestException('could not retrieve message');
+		});
     }
 
-    getMessages(channel: string) {
-        return this.messageRepository.find({
-            where : {channel: channel},
-            order: { date: "ASC" } // "DESC"
-        });
+    async getMessages(channel: string) {
+        try {
+            return await this.messageRepository.find({
+                where: { channel: channel },
+                order: { date: "ASC" } // "DESC"
+            });
+        } catch (e) {
+            throw new BadRequestException('could not get messages');
+        }
     }
 
     private newMember(userId: number) {

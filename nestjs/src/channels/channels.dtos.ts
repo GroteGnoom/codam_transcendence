@@ -1,4 +1,4 @@
-import { IsNotEmpty, MaxLength, IsOptional } from "class-validator";
+import { IsNotEmpty, IsOptional, MaxLength } from "class-validator";
 
 export enum ChannelType {
 	Private = "private",

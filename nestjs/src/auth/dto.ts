@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
  
 export class TwoFactorAuthenticationDto {
 	@IsNotEmpty()

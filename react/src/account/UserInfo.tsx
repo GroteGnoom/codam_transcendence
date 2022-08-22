@@ -7,16 +7,13 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { Avatar, Box, Button, Divider, IconButton, ListItem, ListItemText, Stack, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
 import React from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { get_backend_host } from "../utils";
 import { io } from "socket.io-client";
+import { get_backend_host } from "../utils";
 
 //https://ui.dev/react-router-url-parameters
 //https://stackoverflow.com/questions/58548767/react-router-dom-useparams-inside-class-component
-// function withParams(Component: any) {
-//   return (props: any) => <Component {...props} params={useParams()} />;
-// }
 
 interface UserInfoProps { 
     params: any;
@@ -196,7 +193,7 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         console.log("update Game Status: ")
         console.log(socketMessage)
         user.friends.forEach((el: any) => {
-            if (socketMessage.userID === Number(el.id)){
+            if (Number(socketMessage.userID) === Number(el.id)){ // userID via invite is a string, so cast necessary
                 el.inGame = socketMessage.inGame;
                 this.setState( { user : user } );
             }
@@ -224,7 +221,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
             const { navigation } = this.props;
             navigation("/", {replace:true});
         }
-         // TODO test if first subscribing to the socket and then getting friends helps concurrency issues 
         
         this.getUserInfo()
         this.getCurrentUser()
@@ -361,7 +357,6 @@ class UserInfo extends React.Component<UserInfoProps, UserInfoState> {
         .then(async (response) => {            
             await response.json();
             if (response.ok){
-                console.log("yes this is goooddd id");
                 this.validUserId = true;
             }
             this.started = true;

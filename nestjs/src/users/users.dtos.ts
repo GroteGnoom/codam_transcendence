@@ -1,6 +1,6 @@
-import {IsAlphanumeric, IsNotEmpty, Max, MaxLength, IsDefined, IsIn, IsString, IsBoolean, IsEnum, IsOptional} from "class-validator";
-import {userStatus} from '../typeorm/user.entity'
-import {IsNotBlank, IsUniqueUser} from './validators';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import { userStatus } from '../typeorm/user.entity';
+import { IsNotBlank } from './validators';
 
 export class UserDto { // Nestjs Data Transfer Object = a class that defines the
                        // values of the body from the request

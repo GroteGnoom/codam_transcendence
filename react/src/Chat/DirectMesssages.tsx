@@ -1,8 +1,8 @@
+import AddIcon from '@mui/icons-material/Add';
 import { Avatar, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import React from 'react';
-import { Channel } from './Chat.types';
-import AddIcon from '@mui/icons-material/Add';
 import { get_backend_host } from '../utils';
+import { Channel } from './Chat.types';
 
 
 interface DirectMessageProps { 
@@ -39,7 +39,6 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
     }
 
     componentDidMount() {
-        console.log("direct messages")
         this.getUsers()
         this.getCurrentUser()
         .then(() => this.getChats())
@@ -100,7 +99,6 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
     handleChange = (event: SelectChangeEvent) => {
         this.setState({selectedMember: Number(event.target.value)});
-        console.log("selectedmember: ", Number(event.target.value));
     };
 
     async getUsers(){
@@ -165,7 +163,6 @@ class DirectMessage extends React.Component<DirectMessageProps, DirectMessageSta
 
     render(){
         if (!this.state.users.length) {
-            console.log("!users.length");
             return;
         }
         const excludeCurrentChats = this.state.users.filter((user) =>

@@ -14,13 +14,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Snackbar from '@mui/material/Snackbar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import FormData from 'form-data';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
 import { get_backend_host, userStatus } from './utils';
-import Switch from '@mui/material/Switch';
 
 const pinkTheme = createTheme({ palette: { primary: pink } })
 
@@ -376,15 +376,15 @@ export function Signup() {
                 </Alert>
             </Snackbar>
 
-            <Dialog open={error !== ""} >  {/*pop window for new error message */}
+            <Dialog open={error !== ""}>  {/*pop window for new error message */}
                 <DialogTitle>Error</DialogTitle>
                 <DialogContent>
                     <Alert severity="error">
                         {error}
                     </Alert>
                 </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => setError("")}>OK</Button> {/* TODO: enter to get out of dialog */}
+                <DialogActions >
+                    <Button variant="contained" onClick={() => setError("")}>OK</Button>
                 </DialogActions>
             </Dialog>
         </ThemeProvider>

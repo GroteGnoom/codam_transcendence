@@ -1,12 +1,9 @@
 import {
-  //HttpModule,
-  Module,
+  Module
 } from '@nestjs/common';
-import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
-//import { UsersModule } from '../users/users.module';
-import { TwoFactorAuthenticationController } from './twoFactorAuthentication.controller';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
+import { TwoFactorAuthenticationController } from './twoFactorAuthentication.controller';
+import { TwoFactorAuthenticationService } from './twoFactorAuthentication.service';
 
 @Module({
   imports    : [

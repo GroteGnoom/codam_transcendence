@@ -2,15 +2,15 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SendIcon from '@mui/icons-material/Send';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import { Container, Divider, FormControl, Grid, IconButton, List, ListItem, Paper, SpeedDial, SpeedDialAction, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { io } from "socket.io-client";
 import { get_backend_host } from '../utils';
 import AddUserWindow from './AddUserWindow';
 import { Channel } from './Chat.types';
-import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
-import { io } from "socket.io-client";
 
 const ENTER_KEY_CODE = 13;
 
@@ -96,7 +96,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
 
     onReceiveMessage(socketMessage: any){   //subscribed to recMessage events through ws
         if (socketMessage.channel === this.props.channel.name) {
-            console.log("Received a message for this channel")
             this.setState( { messages: [...this.state.messages, socketMessage.message] } );
         }           
     }
@@ -105,7 +104,6 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
         if (this.props.channel.name === payload.channel 
             && this.state.currentUser 
             && Number(payload.userId) === Number(this.state.currentUser.id)) {
-                console.log("I am muted", muted)
                 this.setState({muted: muted}) // true or false depending on which event type is received
         }
     }
@@ -135,7 +133,7 @@ class ChatWindow extends React.Component<ChatWindowProps, ChatWindowState> {
                 "invite": true
             }
         })
-        console.log("Pressed link");
+        console.log("Pressed invite link");
         await this.inviteWebSocket.emit("loggedInInvite", {
             "Player1": this.props.channel.name.split('-')[1],
             "Player2": this.props.channel.name.split('-')[2],

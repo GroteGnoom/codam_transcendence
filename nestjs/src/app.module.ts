@@ -1,19 +1,17 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {TypeOrmModule} from '@nestjs/typeorm';
-import entities from './typeorm';
-import { ChannelsModule } from './channels/channels.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TwoFactorAuthenticationModule } from './auth/twoFactorAuthentication.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { MatchModule } from './match/match.module';
+import { ChannelsModule } from './channels/channels.module';
 import { ClassicWaitingRoomModule } from './classicWaitingroom/classicWaitingroom.module';
-import { PinkPongWaitingRoomModule } from './PinkPongWaitingroom/PinkPongWaitingroom.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { inviteWaitingRoomModule } from './inviteWaitingroom/inviteWaitingroom.module';
+import { MatchModule } from './match/match.module';
+import { PinkPongWaitingRoomModule } from './PinkPongWaitingroom/PinkPongWaitingroom.module';
+import entities from './typeorm';
+import { UsersModule } from './users/users.module';
 
 @Module({
 	imports: [

@@ -1,8 +1,8 @@
-import { GlobalService } from './global.service';
-import * as cookieParser from 'cookie-parser';
-import { parse } from 'cookie';
-import { Socket } from 'socket.io';
 import { ConfigService } from '@nestjs/config';
+import { parse } from 'cookie';
+import * as cookieParser from 'cookie-parser';
+import { Socket } from 'socket.io';
+import { GlobalService } from './global.service';
 
 const { exec } = require('child_process');
 
