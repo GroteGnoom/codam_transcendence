@@ -352,7 +352,6 @@ export function Account() {
         getUserInfoDatabase();
     }, []); // will only be called on initial mount and unmount
 
-
     return ( // holds the HTML code
         <ThemeProvider theme={pinkTheme}>
             <div>
@@ -373,7 +372,7 @@ export function Account() {
                     </Alert>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => setError("")}>OK</Button> {/* TODO: enter to get out of dialog */}
+                    <Button variant="contained" onClick={() => setError("")}>OK</Button>
                 </DialogActions>
             </Dialog>
         </ThemeProvider>

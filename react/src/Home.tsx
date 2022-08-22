@@ -125,7 +125,7 @@ const Home = (props: HomeProps) => {
 					</Alert>
 				</DialogContent>
 				<DialogActions>
-					<Button variant="contained" onClick={() => resetAchievement()}>OK</Button> {/* TODO: enter to get out of dialog */}
+					<Button variant="contained" onClick={() => resetAchievement()}>OK</Button>
 				</DialogActions>
 			</Dialog>
 		</ThemeProvider>

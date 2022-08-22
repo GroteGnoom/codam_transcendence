@@ -376,15 +376,15 @@ export function Signup() {
                 </Alert>
             </Snackbar>
 
-            <Dialog open={error !== ""} >  {/*pop window for new error message */}
+            <Dialog open={error !== ""}>  {/*pop window for new error message */}
                 <DialogTitle>Error</DialogTitle>
                 <DialogContent>
                     <Alert severity="error">
                         {error}
                     </Alert>
                 </DialogContent>
-                <DialogActions>
-                    <Button variant="contained" onClick={() => setError("")}>OK</Button> {/* TODO: enter to get out of dialog */}
+                <DialogActions >
+                    <Button variant="contained" onClick={() => setError("")}>OK</Button>
                 </DialogActions>
             </Dialog>
         </ThemeProvider>
