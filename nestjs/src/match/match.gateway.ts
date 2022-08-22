@@ -362,6 +362,8 @@ export class MatchGateway {
     }
     if (Number(player) === Number(payload.Player1) || Number(player) === Number(payload.Player2))
       this.matchStarted = this.matchStarted + 1;
+    else
+      this.server.emit("redirectHomeMatch", {"client": client.id});
     if (this.matchStarted === 2) {
       this.matchStarted = 0;
       
