@@ -52,8 +52,8 @@ services:
     networks:
       - transcendence
     environment:
-      - SERVER_LOCATION
-      - MYHOSTNAME
+      - SERVER_LOCATION=stef
+      - MYHOSTNAME=f1r1s17.codam.nl
 
     
 networks: 

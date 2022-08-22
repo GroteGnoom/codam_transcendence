@@ -42,15 +42,15 @@ export class AuthController
 		return {url: get_frontend_host() + '/signup'};
 	}
 
-	@Get('fake_ft:name') //TODO remove
-	@Redirect(get_frontend_host() + '/logged_in', 302)
-	async fakeLogin(@Req() req: Request, @Res() response:Response, @Param('name') intraname: string): Promise<any> { //the function name doesn't matter?
-		const userID = (await this.userService.findOrCreateUser(intraname)).id;
-		req.session.logged_in = true;
-		req.session.userId = userID;
-		GlobalService.users.set(req.session.id, Number(userID))
-		return {url: get_frontend_host() + '/signup'};
-	}
+	// @Get('fake_ft:name') //TODO remove
+	// @Redirect(get_frontend_host() + '/logged_in', 302)
+	// async fakeLogin(@Req() req: Request, @Res() response:Response, @Param('name') intraname: string): Promise<any> { //the function name doesn't matter?
+	// 	const userID = (await this.userService.findOrCreateUser(intraname)).id;
+	// 	req.session.logged_in = true;
+	// 	req.session.userId = userID;
+	// 	GlobalService.users.set(req.session.id, Number(userID))
+	// 	return {url: get_frontend_host() + '/signup'};
+	// }
 
 	@UseGuards(SessionGuard)
 	@Get('uniqueSession')

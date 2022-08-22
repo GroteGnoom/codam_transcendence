@@ -24,8 +24,3 @@ important forever:
 every Post and Put should not cause a 500, even with random input. All `save` and `find`, which query the database need to have a catch and throw bad request
 
 at the end, just before evals:
-- use production server, not develop
-- everything should work with
-  docker-compose up --build
-  not via a makefile
-- do TODO's in the code (do find TODO in vscode, or grep for TODO) including the fake login. Very important.
