@@ -30,4 +30,3 @@ at the end, just before evals:
   docker-compose up --build
   not via a makefile
 - do TODO's in the code (do find TODO in vscode, or grep for TODO) including the fake login. Very important.
-- delete signout button
