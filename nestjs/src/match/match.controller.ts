@@ -11,16 +11,19 @@ import { MatchService } from './match.service';
 export class MatchController {
     constructor(private readonly matchService: MatchService) {}
 
+    @UseGuards(SessionGuard)
     @Get('history/:id')
     getMatchHistory(@Param('id', ParseIntPipe) playerID: number) {
         return this.matchService.getMatchHistory(playerID);
     }
 
+    @UseGuards(SessionGuard)
     @Get('leaderboard')
     getLeaderboard() {
         return this.matchService.getLeaderboard();
     }
 
+    @UseGuards(SessionGuard)
     @Get('ranking/:id')
     getRanking(@Param('id', ParseIntPipe) playerID: number) {
         return this.matchService.getRanking(Number(playerID));

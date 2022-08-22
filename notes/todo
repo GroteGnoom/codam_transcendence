@@ -13,7 +13,7 @@ TODOS
 [V] whenever accepting a parameter as number, check this
 [V] userinfo: alles in frontend aanpassen (catch nu helemaal geen errors in userinfo, of if statements)
 [ ] save secret only when save user, not when qr code created: if you first have tfa turned on, and then turn it off and on, your secret is changed, but you weren't asked to check it, so now you don't have the proper codes on your google authenticator.
-[ ] add useguard to all endpoints
+[V] add useguard to all endpoints
 [ ] password error channels
 [ ] the backend should not send sensitive userdata about other users
 

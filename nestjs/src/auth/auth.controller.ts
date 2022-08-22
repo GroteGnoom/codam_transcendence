@@ -52,17 +52,18 @@ export class AuthController
 		return {url: get_frontend_host() + '/signup'};
 	}
 
+	@UseGuards(SessionGuard)
 	@Get('uniqueSession')
 	async getUniqueSession(@Req() req: Request) {
 		return (!(await GlobalService.users.has(req.session.id)))
 	}
 
-	@UseGuards(SessionGuard)
 	@Get('profile')
 	getProfile(@Req() req) {
 		return req.user;
 	}
 
+	@UseGuards(SessionGuard)
 	@Get('logout')
 	logout(@Req() req) {
 		req.session.destroy();
@@ -75,6 +76,7 @@ export class AuthController
 		return false;
 	}
 
+	@UseGuards(SessionGuard)
 	@Get('amitfavalidated')
 	amITfaValidated(@Req() request: Request) {
 		if (request.session.tfa_validated)
