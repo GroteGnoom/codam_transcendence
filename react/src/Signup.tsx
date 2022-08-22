@@ -356,7 +356,7 @@ export function Signup() {
             }
             { started && dataFetched && isLoggedIn && isTfaEnabled && !tfaChecked && // if 2fa enabled, show 2fa
                 <div className="menu">
-                    <TextField className="item"
+                    <TextField autoFocus className="item"
                     inputProps={{ maxLength: 6 }}
                     helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
                     onChange={(e) => setTfaCode(e.target.value)}/>

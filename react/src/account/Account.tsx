@@ -316,7 +316,7 @@ export function Account() {
                     alt={""}
                     />}
                 {checked && newTfa &&
-                    <TextField className="item"
+                    <TextField autoFocus className="item"
                     inputProps={{ maxLength: 6 }}
                     helperText="Please enter the Google Authenticator code" id="filled-basic" variant="filled" required
                     onChange={(e) => setTfaCode(e.target.value)}/>}
