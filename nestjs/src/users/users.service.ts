@@ -143,7 +143,7 @@ export class UsersService {
         .then((response) => response[0]);
       if (!(await this.userRepository.findOne({where: {username: name}}).catch( (e) => {
         throw new BadRequestException('could not retrieve user');
-      })) && name.length <= 30)
+      })) && name.length <= 20)
         unique = true;
     }
     return name;

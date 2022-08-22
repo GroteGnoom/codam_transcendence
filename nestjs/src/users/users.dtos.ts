@@ -7,7 +7,7 @@ export class UserDto { // Nestjs Data Transfer Object = a class that defines the
                        // overall checks for values are in here
   // @IsDefined() // is not null or undefined, otherwise give error
   // decorators are executed bottom-to-top
-  @MaxLength(30)
+  @MaxLength(20)
   @IsNotBlank({message : 'username must not be empty'})
   @IsNotEmpty()
   @IsString()
