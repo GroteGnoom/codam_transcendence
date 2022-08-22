@@ -295,7 +295,7 @@ export function Account() {
                     disabled value={intraName || ''} id="filled-basic" label="Intraname" variant="filled" />
                 <TextField className="item"
                     value={username || ''}
-                    inputProps={{ maxLength: 30 }}
+                    inputProps={{ maxLength: 20 }}
                     helperText="Please enter a username" id="filled-basic" label="Username" variant="filled" required
                     onKeyUp={(e) => keyRelease(e)}
                     onChange={(e) => setUsername(e.target.value)} />

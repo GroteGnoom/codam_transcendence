@@ -35,17 +35,17 @@ export class UsersService {
     const gameStats = this.gameStatsRepository.create()
     const newUser = await this.userRepository.create({...body, gameStats: gameStats});
     if (await this.usernameAlreadyExists(newUser.id, newUser.username))
-		throw new BadRequestException('account with this username already exists');
-	const savedUser = await this.userRepository.save(newUser).catch(
-		(e) => {
-			throw new BadRequestException(e.message);
-		});
-    const userSecrets = this.userSecretRepository.create({id: savedUser.id})
+      throw new BadRequestException('account with this username already exists');
+    const savedUser = await this.userRepository.save(newUser).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+      });
+      const userSecrets = this.userSecretRepository.create({id: savedUser.id})
 
-	this.userSecretRepository.save(userSecrets).catch(
-		(e) => {
-			throw new BadRequestException(e.message);
-	});
+    this.userSecretRepository.save(userSecrets).catch(
+      (e) => {
+        throw new BadRequestException(e.message);
+    });
 	return savedUser;
   }
 
@@ -143,7 +143,7 @@ export class UsersService {
         .then((response) => response[0]);
       if (!(await this.userRepository.findOne({where: {username: name}}).catch( (e) => {
         throw new BadRequestException('could not retrieve user');
-      })) && name.length <= 30)
+      })) && name.length <= 20)
         unique = true;
     }
     return name;
