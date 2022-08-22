@@ -140,6 +140,31 @@ export function Signup() {
             return false;
         });
     }
+    async function checkSetTfaCode () {
+        const data = new URLSearchParams();
+        data.append("twoFactorAuthenticationCode", tfaCode);
+        console.log('going to post ', tfaCode);
+        return await fetch(get_backend_host() + "/2fa/auth_tmp_set", {
+            method: "POST",
+            credentials: 'include',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: data,
+            mode: 'cors',
+        })
+        .then(async (response) => {
+            const json = await response.json();
+            if (response.ok) {
+                console.log('2-factor authentication was OK');
+                setTfaChecked(true);
+                return true;
+            } else {
+                throw new Error(json.message);
+            }
+        }).catch(() => {
+            setError("2-factor authentication failed");
+            return false;
+        });
+    }
 
     async function signUpUser () {
         getLoggedIn();
@@ -147,7 +172,7 @@ export function Signup() {
         console.log("current users");
         console.log(users);
         if (checked) {
-            const checkTfa = await checkTfaCode();
+            const checkTfa = await checkSetTfaCode();
             if (checkTfa === false)
                 return;
         }

@@ -23,12 +23,6 @@ export class TwoFactorAuthenticationController {
 		private readonly userService: UsersService
 	) {}
 
-	@Post('generate')
-	async register(@Res() response: Response, @Req() request: RequestWithUser) {
-		const { otpauthUrl } = await this.twoFactorAuthenticationService.generateTwoFactorAuthenticationSecret(request.user);
-
-		return this.twoFactorAuthenticationService.pipeQrCodeStream(response, otpauthUrl);
-	}
 	@Get("generate")
 	async register_current_user(@Res() response: Response, @Req() request: RequestWithUser) {
 		const user = await this.userService.findUsersById(request.session.userId);
@@ -55,6 +49,27 @@ export class TwoFactorAuthenticationController {
 			throw new UnauthorizedException('Wrong authentication code');
 		}
 		request.session.tfa_validated = true;
+		return await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
+	}
+
+	@Post('auth_tmp_set')
+	@HttpCode(200)
+	//@UseGuards(JwtAuthenticationGuard)
+	async auth_tmp_set(
+		@Req() request: RequestWithUser,
+		@Body() { twoFactorAuthenticationCode } : TwoFactorAuthenticationDto
+	) {
+		const user = await this.userService.findUsersById(request.session.userId);
+		const secrets = await this.userService.getUserSecrets(request.session.userId)
+		const secret = secrets.tmpTfaSecret;
+		const isCodeValid = this.twoFactorAuthenticationService.isTwoFactorAuthenticationCodeValid(
+			twoFactorAuthenticationCode, secret
+		);
+		if (!isCodeValid) {
+			throw new UnauthorizedException('Wrong authentication code');
+		}
+		request.session.tfa_validated = true;
+		await this.userService.setTwoFactorAuthenticationSecret(secret, request.session.userId);
 		return await this.userService.turnOnTwoFactorAuthentication(request.session.userId);
 	}
 }

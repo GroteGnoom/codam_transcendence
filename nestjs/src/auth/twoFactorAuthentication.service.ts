@@ -18,7 +18,7 @@ export class TwoFactorAuthenticationService {
 
 		const otpauthUrl = authenticator.keyuri(user.intraName, this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'), secret);
 
-		await this.usersService.setTwoFactorAuthenticationSecret(secret, user.id);
+		await this.usersService.setTmpTfaSecret(secret, user.id);
 
 		return {
 			secret,

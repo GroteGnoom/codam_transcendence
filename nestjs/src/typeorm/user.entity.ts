@@ -74,5 +74,7 @@ export class UserSecrets {
 
 	@Column({ nullable: true })
 	public twoFactorAuthenticationSecret?: string;
-	password: string;
+
+	@Column({ nullable: true })
+	public tmpTfaSecret?: string;
 }

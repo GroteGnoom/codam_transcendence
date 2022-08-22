@@ -130,6 +130,11 @@ export class UsersService {
                                       {twoFactorAuthenticationSecret : secret});
   }
 
+  async setTmpTfaSecret(secret: string, userId: number) {
+    return this.userSecretRepository.update(userId,
+                                      {tmpTfaSecret: secret});
+  }
+
   async turnOnTwoFactorAuthentication(userId: number) {
     return this.userRepository.update(userId, {isTfaEnabled : true});
   }
@@ -184,7 +189,7 @@ export class UsersService {
 			throw new BadRequestException('could not retrieve user');
 		});
     if (!user)
-      throw new BadRequestException('User does not exist'); 
+		return;
     user.status = status;
     return this.userRepository.save(user).catch( (e) => {
       throw new BadRequestException(e.message);

@@ -131,7 +131,7 @@ export function Account() {
         const data = new URLSearchParams();
         data.append("twoFactorAuthenticationCode", tfaCode);
         console.log('going to post ', tfaCode);
-        return await fetch(get_backend_host() + "/2fa/authenticate", {
+        return await fetch(get_backend_host() + "/2fa/auth_tmp_set", {
             method: "POST",
             credentials: 'include',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
