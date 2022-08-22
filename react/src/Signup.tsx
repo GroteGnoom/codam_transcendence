@@ -312,6 +312,7 @@ export function Signup() {
 	            getUserInfoDatabase();
         }
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // will only be called on initial mount and unmount
 
     // combination of componentDidMount and componentDidUpdate
@@ -332,6 +333,7 @@ export function Signup() {
         if ( isLoggedIn && isSignedUp && (tfaChecked || !isTfaEnabled) ) {
             navigate('/');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tfaChecked]); // will only be called when tfaChecked changes
 
     useEffect(() => {
@@ -339,6 +341,7 @@ export function Signup() {
         if ( isLoggedIn && isSignedUp && (tfaChecked || !isTfaEnabled) ) {
             navigate('/');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSignedUp]); // will only be called when isSignedUp changes
 
     return ( // holds the HTML code

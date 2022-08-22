@@ -330,9 +330,9 @@ export function Account() {
         )
     }
 
-    const sleep = (milliseconds : any) => {
-        return new Promise(resolve => setTimeout(resolve, milliseconds))
-    }
+    // const sleep = (milliseconds : any) => {
+    //     return new Promise(resolve => setTimeout(resolve, milliseconds))
+    // }
 
     // effect hooks
     // combination of componentDidMount and componentDidUpdate
@@ -346,10 +346,12 @@ export function Account() {
         if ( isLoggedIn ) {
             getUserInfoDatabase();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn]); // will only be called when isLoggedIn changes
 
     useEffect(() => {
         getUserInfoDatabase();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // will only be called on initial mount and unmount
 
     return ( // holds the HTML code
